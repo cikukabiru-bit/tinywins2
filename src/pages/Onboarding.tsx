@@ -11,7 +11,62 @@ interface QuestionDef {
   multiple: boolean
 }
 
+// Rearranged questions as requested by the user
 const QUESTIONS: QuestionDef[] = [
+  {
+    id: 'consistency_blocker',
+    title: 'What usually blocks your consistency?',
+    options: [
+      'Forgetfulness',
+      'Tiredness',
+      'Lack of motivation',
+      'Anxiety/overwhelm',
+      'Too much work',
+      'Unclear goals',
+      'Low energy',
+      'Procrastination'
+    ],
+    multiple: false
+  },
+  {
+    id: 'coach_tone',
+    title: 'What tone should Tiny Coach use?',
+    options: ['Gentle', 'Motivational', 'Spiritual', 'Practical', 'Playful', 'Firm but kind', 'Calm'],
+    multiple: false
+  },
+  {
+    id: 'support_style',
+    title: 'What type of support helps you most?',
+    subtitle: 'Select all that apply.',
+    options: [
+      'Reminders',
+      'Reflection prompts',
+      'Music',
+      'Videos',
+      'Prayer prompts',
+      'Progress charts',
+      'Accountability messages',
+      'Motivational notes'
+    ],
+    multiple: true
+  },
+  {
+    id: 'inspiration_preferences',
+    title: 'Preferred inspiration types',
+    subtitle: 'Select all that apply.',
+    options: [
+      'Motivational quotes',
+      'Calm reflections',
+      'Bible verses',
+      'Saint quotes',
+      'Prayer prompts',
+      'Gratitude prompts',
+      'Focus prompts',
+      'Self-care reminders',
+      'Mixed'
+    ],
+    multiple: true
+  },
   {
     id: 'primary_goal',
     title: 'What area do you want to improve first?',
@@ -32,50 +87,19 @@ const QUESTIONS: QuestionDef[] = [
   },
   {
     id: 'available_time',
-    title: 'How much time can you realistically give daily?',
+    title: 'How much time can you realistically give this daily?',
     options: ['1 minute', '3 minutes', '5 minutes', '10 minutes', '15 minutes', 'Flexible'],
     multiple: false
   },
   {
-    id: 'consistency_blocker',
-    title: 'What usually blocks your consistency?',
-    options: [
-      'Forgetfulness',
-      'Tiredness',
-      'Lack of motivation',
-      'Anxiety/overwhelm',
-      'Too much work',
-      'Unclear goals',
-      'Low energy',
-      'Procrastination'
-    ],
-    multiple: false
-  },
-  {
     id: 'preferred_time',
-    title: 'What time of day works best?',
+    title: 'What time of day works best for this goal?',
     options: ['Morning', 'Afternoon', 'Evening', 'Night', 'Flexible'],
     multiple: false
   },
   {
-    id: 'support_style',
-    title: 'What type of support helps you most?',
-    subtitle: 'Select all that apply.',
-    options: [
-      'Reminders',
-      'Reflection prompts',
-      'Music',
-      'Videos',
-      'Prayer prompts',
-      'Progress charts',
-      'Accountability messages',
-      'Motivational notes'
-    ],
-    multiple: true
-  },
-  {
     id: 'growth_preference',
-    title: 'How should habits grow?',
+    title: 'How should this habit grow?',
     options: [
       'Keep tiny',
       'Increase slowly',
@@ -83,29 +107,6 @@ const QUESTIONS: QuestionDef[] = [
       'Let Tiny Coach suggest growth'
     ],
     multiple: false
-  },
-  {
-    id: 'coach_tone',
-    title: 'What tone should Tiny Coach use?',
-    options: ['Gentle', 'Motivational', 'Spiritual', 'Practical', 'Playful', 'Firm but kind', 'Calm'],
-    multiple: false
-  },
-  {
-    id: 'inspiration_preferences',
-    title: 'Preferred inspiration types',
-    subtitle: 'Select all that apply.',
-    options: [
-      'Motivational quotes',
-      'Calm reflections',
-      'Bible verses',
-      'Saint quotes',
-      'Prayer prompts',
-      'Gratitude prompts',
-      'Focus prompts',
-      'Self-care reminders',
-      'Mixed'
-    ],
-    multiple: true
   }
 ]
 
@@ -115,14 +116,14 @@ export default function Onboarding() {
 
   const [step, setStep] = useState(1)
   const [answers, setAnswers] = useState<Record<string, any>>({
+    consistency_blocker: '',
+    coach_tone: '',
+    support_style: [] as string[],
+    inspiration_preferences: [] as string[],
     primary_goal: '',
     available_time: '',
-    consistency_blocker: '',
     preferred_time: '',
-    support_style: [] as string[],
-    growth_preference: '',
-    coach_tone: '',
-    inspiration_preferences: [] as string[]
+    growth_preference: ''
   })
 
   const [submitting, setSubmitting] = useState(false)
@@ -224,19 +225,21 @@ export default function Onboarding() {
         return
       }
 
-      // Insert the initial goal
-      const { error: goalError } = await supabase
+      // Insert the initial goal and select its ID
+      const { data: goalData, error: goalError } = await supabase
         .from('goals')
         .insert(goalPayload)
+        .select('id')
+        .single()
 
-      if (goalError) {
+      if (goalError || !goalData) {
         console.error(goalError)
         setError('We saved your profile, but had trouble creating your first goal. Please try again.')
         return
       }
 
-      // Redirect to /habit-score
-      navigate('/habit-score')
+      // Redirect to /habit-score with the new goal id
+      navigate(`/habit-score?goalId=${goalData.id}`)
     } catch (err) {
       console.error(err)
       setError('A small connection issue occurred. Please try again.')

@@ -1,6 +1,9 @@
-import { Link } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 
 export default function HabitScore() {
+  const [searchParams] = useSearchParams()
+  const goalId = searchParams.get('goalId')
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
       {/* Background ambient glowing effect */}
@@ -15,9 +18,18 @@ export default function HabitScore() {
           All set!
         </h1>
 
-        <p className="font-sans text-base text-plum-light leading-relaxed mb-8 max-w-[240px] mx-auto">
+        <p className="font-sans text-base text-plum-light leading-relaxed mb-6 max-w-[240px] mx-auto">
           You're in. Habit score dashboard coming soon.
         </p>
+
+        {goalId && (
+          <div className="bg-cream-dark/20 rounded-2xl p-4 mb-8 text-xs text-plum-light break-all select-all font-mono">
+            <span className="font-semibold block text-[10px] uppercase tracking-wider text-plum-light/70 mb-1 font-sans">
+              New Goal ID
+            </span>
+            {goalId}
+          </div>
+        )}
 
         <Link
           to="/today"
