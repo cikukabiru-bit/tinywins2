@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Instrument Serif', serif;
+  --font-sans: 'Outfit', sans-serif;
+  
+  --color-sunset-start: #fff0e6;
+  --color-sunset-mid: #ffd1b3;
+  --color-sunset-end: #ff7a60;
+  
+  --color-plum-dark: #220b19;
+  --color-plum-main: #3d142d;
+  --color-plum-light: #6b435d;
+  
+  --color-cream-light: #fcfaf2;
+  --color-cream-dark: #f5f0e1;
+}
