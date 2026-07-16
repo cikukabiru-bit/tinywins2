@@ -136,9 +136,9 @@ export default function NewHabit() {
       }
 
       navigate('/habits')
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      setError('Could not save this habit. Please check your connection.')
+      setError(err?.message ? `Could not save habit: ${err.message}` : 'Could not save this habit. Please check your connection.')
     } finally {
       setSubmitting(false)
     }

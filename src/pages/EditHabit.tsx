@@ -154,9 +154,9 @@ export default function EditHabit() {
       if (updateError) throw updateError
 
       navigate('/habits')
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      setError('Could not update this habit. Please check your connection.')
+      setError(err?.message ? `Could not update habit: ${err.message}` : 'Could not update this habit. Please check your connection.')
     } finally {
       setSubmitting(false)
     }
@@ -178,9 +178,9 @@ export default function EditHabit() {
       if (restError) throw restError
 
       navigate('/habits')
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      setError('Could not rest this habit. Please check your connection.')
+      setError(err?.message ? `Could not rest habit: ${err.message}` : 'Could not rest this habit. Please check your connection.')
       setShowRestConfirm(false)
     } finally {
       setSubmitting(false)
