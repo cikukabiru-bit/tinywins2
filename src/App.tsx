@@ -10,6 +10,7 @@ import HabitScore from './pages/HabitScore'
 import HabitsList from './pages/HabitsList'
 import NewHabit from './pages/NewHabit'
 import EditHabit from './pages/EditHabit'
+import Timeline from './pages/Timeline'
 
 function App() {
   return (
@@ -64,6 +65,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditHabit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/timeline"
+            element={
+              <ProtectedRoute>
+                <Timeline />
               </ProtectedRoute>
             }
           />
