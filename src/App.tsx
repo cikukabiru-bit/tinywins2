@@ -7,6 +7,9 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Onboarding from './pages/Onboarding'
 import HabitScore from './pages/HabitScore'
+import HabitsList from './pages/HabitsList'
+import NewHabit from './pages/NewHabit'
+import EditHabit from './pages/EditHabit'
 
 function App() {
   return (
@@ -37,6 +40,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <HabitScore />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/habits"
+            element={
+              <ProtectedRoute>
+                <HabitsList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/habits/new"
+            element={
+              <ProtectedRoute>
+                <NewHabit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/habits/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditHabit />
               </ProtectedRoute>
             }
           />
