@@ -51,15 +51,27 @@ export default function HabitsList() {
     if (!user) return
 
     try {
-      const { data, error: fetchError } = await supabase
+      const { data: habitsData, error: habitsError } = await supabase
         .from('habits')
-        .select('*, goals(area), habit_logs(*)')
+        .select('*, habit_logs(*)')
         .eq('user_id', user.id)
         .eq('active', true)
-        .order('created_at', { ascending: true })
 
-      if (fetchError) throw fetchError
-      setHabits(data || [])
+      if (habitsError) throw habitsError
+
+      const { data: goalsData, error: goalsError } = await supabase
+        .from('goals')
+        .select('id, area')
+        .eq('user_id', user.id)
+
+      if (goalsError) throw goalsError
+
+      const combined = (habitsData || []).map((h) => ({
+        ...h,
+        goals: goalsData?.find((g) => g.id === h.goal_id) || null
+      }))
+
+      setHabits(combined)
     } catch (err) {
       console.error('Error fetching habits:', err)
       setError('A small issue occurred while loading your habits. Please try again.')
