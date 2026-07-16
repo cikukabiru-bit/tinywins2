@@ -5,6 +5,8 @@ import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import Onboarding from './pages/Onboarding'
+import HabitScore from './pages/HabitScore'
 
 function App() {
   return (
@@ -19,6 +21,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/habit-score"
+            element={
+              <ProtectedRoute>
+                <HabitScore />
               </ProtectedRoute>
             }
           />

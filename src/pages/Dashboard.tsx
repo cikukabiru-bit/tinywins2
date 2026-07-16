@@ -1,9 +1,41 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 
 export default function Dashboard() {
-  const { name, signOut } = useAuth()
+  const { user, name, signOut } = useAuth()
   const navigate = useNavigate()
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true)
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user) return
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('user_id', user.id)
+          .maybeSingle()
+
+        if (error) {
+          console.error('Error fetching onboarding status:', error)
+        }
+
+        if (!data || !data.onboarding_completed) {
+          navigate('/onboarding')
+        } else {
+          setCheckingOnboarding(false)
+        }
+      } catch (err) {
+        console.error(err)
+        setCheckingOnboarding(false)
+      }
+    }
+
+    checkOnboardingStatus()
+  }, [user, navigate])
 
   const handleLogout = async () => {
     try {
@@ -12,6 +44,16 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Logout failed', error)
     }
+  }
+
+  if (checkingOnboarding) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans">
+        <div className="text-plum-main font-medium tracking-wide animate-pulse">
+          Loading...
+        </div>
+      </main>
+    )
   }
 
   return (
