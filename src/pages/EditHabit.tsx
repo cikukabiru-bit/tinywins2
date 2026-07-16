@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 
@@ -12,6 +12,9 @@ export default function EditHabit() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const focusField = searchParams.get('focus')
+  const tinyGoalInputRef = useRef<HTMLInputElement>(null)
 
   const [goals, setGoals] = useState<Goal[]>([])
   const [loading, setLoading] = useState<boolean>(true)
@@ -32,6 +35,15 @@ export default function EditHabit() {
   const [growthMode, setGrowthMode] = useState('Increase slowly')
 
   const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (focusField === 'tiny_goal' && !loading) {
+      setTimeout(() => {
+        tinyGoalInputRef.current?.focus()
+        tinyGoalInputRef.current?.select()
+      }, 100)
+    }
+  }, [focusField, loading])
 
   // Fetch goals and habit details
   useEffect(() => {
@@ -260,6 +272,7 @@ export default function EditHabit() {
                   <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Tiny Goal</label>
                   <input
                     type="text"
+                    ref={tinyGoalInputRef}
                     value={tinyGoal}
                     onChange={(e) => setTinyGoal(e.target.value)}
                     className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"

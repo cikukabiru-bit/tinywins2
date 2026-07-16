@@ -60,6 +60,17 @@ export default function Dashboard() {
   const todayDate = new Date()
   const yesterdayDate = new Date(Date.now() - 86400000)
 
+  const [dismissedNudges, setDismissedNudges] = useState<string[]>(() => {
+    const list = localStorage.getItem('dismissed_nudges_' + todayStr)
+    return list ? JSON.parse(list) : []
+  })
+
+  const dismissNudge = (habitId: string) => {
+    const newList = [...dismissedNudges, habitId]
+    setDismissedNudges(newList)
+    localStorage.setItem('dismissed_nudges_' + todayStr, JSON.stringify(newList))
+  }
+
   // 1. Check onboarding status
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -373,29 +384,84 @@ export default function Dashboard() {
                 scheduledToday.map((habit) => {
                   const stats = calculateStreaks(habit.start_date, habit.frequency, habit.custom_days, habit.habit_logs, todayStr)
                   const isCompleted = habit.habit_logs.some((l) => l.log_date === todayStr)
+                  const isSavedByFreeze = stats.freeze_used_dates.includes(yesterdayStr)
+                  
+                  // Setup nudge rotation
+                  const nudgeMessages = [
+                    "It's been a little while. Want to begin again today?",
+                    "No pressure at all — shall we start this one gently again?",
+                    "Ready to return? We can make this habit even smaller so it's easier to come back to."
+                  ]
+                  const charCodeSum = habit.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+                  const nudgeText = nudgeMessages[charCodeSum % nudgeMessages.length]
+                  const showNudge = stats.consecutive_missed >= 3 && !isCompleted && !dismissedNudges.includes(habit.id)
 
                   return (
                     <div 
                       key={habit.id}
-                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col justify-between"
+                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col justify-between gap-3"
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
-                              {habit.goals?.area || 'General'}
-                            </span>
-                            {stats.current_streak > 0 && (
-                              <span className="text-[8px] text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded font-bold">
-                                🔥 {stats.current_streak}d streak
+                      <div>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                              <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                                {habit.goals?.area || 'General'}
                               </span>
-                            )}
+                              {stats.current_streak > 0 && (
+                                <span className="text-[8px] text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded font-bold">
+                                  🔥 {stats.current_streak}d streak
+                                </span>
+                              )}
+                              <span className="text-[8px] text-plum-light/60 bg-plum-main/5 px-1.5 py-0.5 rounded font-semibold flex items-center gap-0.5 select-none">
+                                ❄️ {stats.remaining_freezes} {stats.remaining_freezes === 1 ? 'freeze' : 'freezes'}
+                              </span>
+                              {isSavedByFreeze && (
+                                <span className="text-[8px] text-green-700 bg-green-50/15 border border-green-600/10 px-1.5 py-0.5 rounded font-semibold select-none">
+                                  🛡️ Saved by freeze
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="font-semibold text-plum-dark text-sm mb-0.5">{habit.name}</h4>
+                            <p className="text-xs text-plum-light/80 font-light">
+                              Tiny goal: {habit.tiny_goal}
+                            </p>
                           </div>
-                          <h4 className="font-semibold text-plum-dark text-sm mb-0.5">{habit.name}</h4>
-                          <p className="text-xs text-plum-light/80 font-light">
-                            Tiny goal: {habit.tiny_goal}
-                          </p>
                         </div>
+
+                        {/* Soft return nudge banner */}
+                        {showNudge && (
+                          <div className="bg-coral-50/10 border border-plum-main/15 rounded-xl p-3.5 mt-2 mb-1 text-xs text-plum-light text-left relative animate-fadeIn leading-relaxed">
+                            <button
+                              type="button"
+                              onClick={() => dismissNudge(habit.id)}
+                              className="absolute right-2 top-2 text-plum-light/40 hover:text-plum-main p-0.5 cursor-pointer"
+                              title="Dismiss nudge"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                            <p className="font-serif italic text-plum-dark font-medium pr-6 mb-2">
+                              "{nudgeText}"
+                            </p>
+                            <div className="flex gap-2.5">
+                              <button
+                                type="button"
+                                onClick={() => handleCheckIn(habit)}
+                                className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3 rounded-lg font-medium cursor-pointer text-[10px]"
+                              >
+                                Begin again
+                              </button>
+                              <Link
+                                to={`/habits/${habit.id}/edit?focus=tiny_goal`}
+                                className="border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-1.5 px-3 rounded-lg font-medium text-center cursor-pointer text-[10px] bg-cream-light"
+                              >
+                                Make it smaller
+                              </Link>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div>

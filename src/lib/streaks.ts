@@ -19,48 +19,41 @@ export function getLocalDateString(date: Date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
-// Calculate the current streak working backwards from today
-export function calculateCurrentStreak(
+// Calculate the consecutive missed scheduled days up to today (not including today)
+export function calculateConsecutiveMissedScheduled(
   startDateStr: string,
   frequency: string,
   customDays: number[],
   completedDates: Set<string>,
   todayStr: string
 ): number {
-  let streak = 0;
-  // Initialize to local mid-day to prevent daylight savings/timezone boundary bugs
+  let missedCount = 0;
+  // Initialize to local mid-day to prevent daylight savings shifts
   let currentDate = new Date(todayStr + 'T12:00:00');
   const startDate = new Date(startDateStr + 'T12:00:00');
 
-  // If today is a scheduled day and it has not been logged as completed yet,
-  // we count the streak starting from yesterday to allow the user today to complete it.
-  const todayIsScheduled = isScheduledDay(currentDate, frequency, customDays);
-  const todayIsCompleted = completedDates.has(todayStr);
+  // We start checking from yesterday, because today is not a miss yet
+  currentDate.setDate(currentDate.getDate() - 1);
 
-  if (todayIsScheduled && !todayIsCompleted) {
-    currentDate.setDate(currentDate.getDate() - 1);
-  }
-
-  // Iterate backwards day by day
   while (currentDate >= startDate) {
     const dateStr = getLocalDateString(currentDate);
     const isScheduled = isScheduledDay(currentDate, frequency, customDays);
 
     if (isScheduled) {
       if (completedDates.has(dateStr)) {
-        streak++;
-      } else {
-        // A missed scheduled day breaks the streak (soft reset)
+        // Broken by a completion!
         break;
+      } else {
+        missedCount++;
       }
     }
     currentDate.setDate(currentDate.getDate() - 1);
   }
 
-  return streak;
+  return missedCount;
 }
 
-// Calculate all stats: current streak, longest streak, completions, and completion rate
+// Calculate all stats: current streak (protected by freezes), longest streak, completions, remaining freezes, and missed count
 export function calculateStreaks(
   startDateStr: string,
   frequency: string,
@@ -77,10 +70,13 @@ export function calculateStreaks(
   const startDate = new Date(startDateStr + 'T12:00:00');
   const today = new Date(todayStr + 'T12:00:00');
 
+  let freezes = 3;
+  let consecutiveCompleted = 0;
+  let currentStreak = 0;
   let maxStreak = 0;
-  let tempStreak = 0;
+  let freezeUsedDates: string[] = [];
 
-  // Forward loop to calculate longest streak
+  // Walk day by day from startDate to today
   let iterDate = new Date(startDate.getTime());
   while (iterDate <= today) {
     const dateStr = getLocalDateString(iterDate);
@@ -91,21 +87,34 @@ export function calculateStreaks(
       const isToday = dateStr === todayStr;
 
       if (isCompleted) {
-        tempStreak++;
-        maxStreak = Math.max(maxStreak, tempStreak);
+        consecutiveCompleted++;
+        if (consecutiveCompleted === 7) {
+          freezes = Math.min(3, freezes + 1);
+          consecutiveCompleted = 0;
+        }
+        currentStreak++;
+        maxStreak = Math.max(maxStreak, currentStreak);
       } else {
-        // Today doesn't break the longest streak calculation if it's not completed *yet*
-        if (!isToday) {
-          tempStreak = 0;
+        if (isToday) {
+          // Today is not completed yet, but it's not a miss yet.
+          // We do nothing (streak does not increase, consecutive does not increase,
+          // but it doesn't break or consume a freeze).
+        } else {
+          // Past scheduled day missed!
+          consecutiveCompleted = 0; // consecutive breaks
+          if (freezes > 0) {
+            freezes--;
+            freezeUsedDates.push(dateStr);
+            currentStreak++; // Streak is protected!
+            maxStreak = Math.max(maxStreak, currentStreak);
+          } else {
+            currentStreak = 0; // Soft reset!
+          }
         }
       }
     }
     iterDate.setDate(iterDate.getDate() + 1);
   }
-
-  // Calculate current streak
-  const currentStreak = calculateCurrentStreak(startDateStr, frequency, customDays, completedDates, todayStr);
-  maxStreak = Math.max(maxStreak, currentStreak);
 
   // Total completed logs count
   const totalCompletions = completedDates.size;
@@ -121,11 +130,21 @@ export function calculateStreaks(
   }
 
   const completionRate = totalScheduled > 0 ? totalCompletions / totalScheduled : 0;
+  const consecutiveMissedCount = calculateConsecutiveMissedScheduled(
+    startDateStr,
+    frequency,
+    customDays,
+    completedDates,
+    todayStr
+  );
 
   return {
     current_streak: currentStreak,
     longest_streak: maxStreak,
     total_completions: totalCompletions,
-    completion_rate: completionRate
+    completion_rate: completionRate,
+    remaining_freezes: freezes,
+    freeze_used_dates: freezeUsedDates,
+    consecutive_missed: consecutiveMissedCount
   };
 }
