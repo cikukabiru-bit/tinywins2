@@ -21,6 +21,7 @@ import EditLibraryItem from './pages/EditLibraryItem'
 import Inspiration from './pages/Inspiration'
 import NewInspiration from './pages/NewInspiration'
 import EditInspiration from './pages/EditInspiration'
+import Settings from './pages/Settings'
 
 function App() {
   return (
@@ -163,6 +164,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditInspiration />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             }
           />
