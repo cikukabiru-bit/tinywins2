@@ -1,4 +1,4 @@
-import { getLocalDateString, isScheduledDay } from './streaks';
+import { getLocalDateString, isScheduledDay, calculateStreaks } from './streaks';
 
 export interface CoachSuggestion {
   message: string;
@@ -569,4 +569,86 @@ function calculateStreakForGeneral(
     total_scheduled: totalScheduled,
     consecutive_missed: consecutiveMissed
   };
+}
+
+// Optional AI enhancement layer with 5s timeout fallback
+export async function getSuggestionWithFallback(
+  habit: any, // or null for overall
+  allHabits: any[],
+  logs: any[],
+  tone: string,
+  todayStr: string,
+  supabaseClient: any,
+  aiConsent: boolean
+): Promise<CoachSuggestion> {
+  const localSuggestion = habit
+    ? generateHabitSuggestion(habit, logs, tone, todayStr)
+    : generateGeneralSuggestion(allHabits, tone, todayStr);
+
+  if (!aiConsent) {
+    return localSuggestion;
+  }
+
+  try {
+    const category = habit ? habit.category : 'Overall';
+    
+    let completionPattern = 'none';
+    if (habit) {
+      const completedLogs = logs.filter(l => l.status === 'completed');
+      completionPattern = `completed ${completedLogs.length} times total`;
+    } else {
+      completionPattern = `overall habits count: ${allHabits.length}`;
+    }
+
+    let stats = { current_streak: 0, consecutive_missed: 0 };
+    if (habit) {
+      stats = calculateStreaks(habit.start_date, habit.frequency, habit.custom_days, logs, todayStr);
+    }
+
+    // Reflection Note summary: get the most recent log with a reflection note
+    let reflectionSummary = '';
+    const logsWithReflection = logs.filter(l => l.reflection && l.reflection.trim());
+    if (logsWithReflection.length > 0) {
+      const sortedLogs = [...logsWithReflection].sort((a, b) => new Date(b.log_date).getTime() - new Date(a).getTime());
+      reflectionSummary = sortedLogs[0].reflection;
+    }
+
+    const payload = {
+      category,
+      completion_pattern: completionPattern,
+      current_streak: stats.current_streak,
+      consecutive_missed: stats.consecutive_missed,
+      coach_tone: tone,
+      reflection_summary: reflectionSummary || undefined
+    };
+
+    // Call Supabase Edge Function with a timeout
+    const fetchPromise = supabaseClient.functions.invoke('tiny-coach', {
+      body: payload
+    });
+
+    // 5 second timeout
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), 5000)
+    );
+
+    const response: any = await Promise.race([fetchPromise, timeoutPromise]);
+    
+    if (response.error) {
+      throw new Error(response.error.message || 'Edge Function error');
+    }
+
+    if (response.data && response.data.suggestion) {
+      return {
+        message: response.data.suggestion,
+        actionLabel: localSuggestion.actionLabel,
+        actionPath: localSuggestion.actionPath
+      };
+    }
+
+    return localSuggestion;
+  } catch (err) {
+    console.warn('Tiny Coach AI failed or timed out. Falling back to local mock suggestions.', err);
+    return localSuggestion;
+  }
 }

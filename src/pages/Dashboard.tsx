@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { calculateStreaks, getLocalDateString, isScheduledDay } from '../lib/streaks'
-import { generateGeneralSuggestion } from '../lib/coach'
+import { generateGeneralSuggestion, getSuggestionWithFallback, type CoachSuggestion } from '../lib/coach'
 
 interface Habit {
   id: string
@@ -48,6 +48,8 @@ export default function Dashboard() {
   const [loadingData, setLoadingData] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [coachTone, setCoachTone] = useState('Gentle')
+  const [coachSuggestion, setCoachSuggestion] = useState<CoachSuggestion | null>(null)
+  const [loadingCoach, setLoadingCoach] = useState(false)
 
   // Reflection modal states
   const [activeReflectionLogId, setActiveReflectionLogId] = useState<string | null>(null)
@@ -144,6 +146,38 @@ export default function Dashboard() {
       fetchDashboardData()
     }
   }, [user, checkingOnboarding])
+
+  useEffect(() => {
+    const loadCoachSuggestion = async () => {
+      if (habits.length === 0 || !user) return
+
+      // Calculate local mock suggestion first so the card is never empty
+      const localSugg = generateGeneralSuggestion(habits, coachTone, todayStr)
+      setCoachSuggestion(localSugg)
+
+      const consent = localStorage.getItem(`ai_personalization_consent_${user.id}`) === 'true'
+      if (!consent) return
+
+      setLoadingCoach(true)
+      const sugg = await getSuggestionWithFallback(
+        null,
+        habits,
+        [],
+        coachTone,
+        todayStr,
+        supabase,
+        consent
+      )
+      setCoachSuggestion(sugg)
+      setLoadingCoach(false)
+    }
+
+    if (!loadingData) {
+      loadCoachSuggestion()
+    } else {
+      setCoachSuggestion(null)
+    }
+  }, [habits, coachTone, user, loadingData])
 
   const handleLogout = async () => {
     try {
@@ -515,38 +549,36 @@ export default function Dashboard() {
             </div>
 
             {/* Tiny Coach Card */}
-            {(() => {
-              const coachSuggestion = generateGeneralSuggestion(habits, coachTone, todayStr)
-              return (
-                <div className="bg-cream-light border border-plum-main/10 rounded-2xl p-4 text-left shadow-sm select-none mb-2">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-sunset-end animate-pulse"></span>
-                      <h4 className="text-[10px] uppercase tracking-wider text-plum-light/60 font-bold">
-                        Tiny Coach
-                      </h4>
-                    </div>
-                    <Link to="/coach" className="text-[10px] text-sunset-end hover:text-plum-main font-semibold flex items-center gap-0.5">
-                      <span>View all</span>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
+            {coachSuggestion && (
+              <div className="bg-cream-light border border-plum-main/10 rounded-2xl p-4 text-left shadow-sm select-none mb-2 relative">
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${loadingCoach ? 'bg-sunset-end animate-ping' : 'bg-sunset-end'}`}></span>
+                    <h4 className="text-[10px] uppercase tracking-wider text-plum-light/60 font-bold flex items-center gap-1">
+                      <span>Tiny Coach</span>
+                      {loadingCoach && <span className="lowercase font-normal text-[7px] text-plum-light/45">(thinking...)</span>}
+                    </h4>
                   </div>
-                  <p className="text-xs text-plum-dark/80 font-light leading-relaxed mb-3">
-                    "{coachSuggestion.message}"
-                  </p>
-                  {coachSuggestion.actionLabel && coachSuggestion.actionPath && (
-                    <Link
-                      to={coachSuggestion.actionPath}
-                      className="inline-block bg-plum-main/5 hover:bg-plum-main/10 text-plum-main text-[10px] font-semibold py-1.5 px-3 rounded-lg transition-colors cursor-pointer"
-                    >
-                      {coachSuggestion.actionLabel}
-                    </Link>
-                  )}
+                  <Link to="/coach" className="text-[10px] text-sunset-end hover:text-plum-main font-semibold flex items-center gap-0.5">
+                    <span>View all</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
                 </div>
-              )
-            })()}
+                <p className="text-xs text-plum-dark/80 font-light leading-relaxed mb-3">
+                  "{coachSuggestion.message}"
+                </p>
+                {coachSuggestion.actionLabel && coachSuggestion.actionPath && (
+                  <Link
+                    to={coachSuggestion.actionPath}
+                    className="inline-block bg-plum-main/5 hover:bg-plum-main/10 text-plum-main text-[10px] font-semibold py-1.5 px-3 rounded-lg transition-colors cursor-pointer"
+                  >
+                    {coachSuggestion.actionLabel}
+                  </Link>
+                )}
+              </div>
+            )}
 
           </div>
 

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { getLocalDateString } from '../lib/streaks'
-import { generateHabitSuggestion, generateGeneralSuggestion } from '../lib/coach'
+import { generateHabitSuggestion, generateGeneralSuggestion, getSuggestionWithFallback, type CoachSuggestion } from '../lib/coach'
 
 interface Habit {
   id: string
@@ -30,6 +30,20 @@ export default function Coach() {
   
   // Selection: null means "overall"
   const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null)
+
+  const [aiConsent, setAiConsent] = useState(() => {
+    return localStorage.getItem(`ai_personalization_consent_${user?.id}`) === 'true'
+  })
+
+  const [suggestion, setSuggestion] = useState<CoachSuggestion | null>(null)
+  const [loadingCoach, setLoadingCoach] = useState(false)
+
+  const handleToggleConsent = (val: boolean) => {
+    setAiConsent(val)
+    if (user) {
+      localStorage.setItem(`ai_personalization_consent_${user.id}`, String(val))
+    }
+  }
 
   const todayStr = getLocalDateString()
 
@@ -72,10 +86,36 @@ export default function Coach() {
 
   const selectedHabit = habits.find((h) => h.id === selectedHabitId)
 
-  // Get suggestion
-  const suggestion = selectedHabit
-    ? generateHabitSuggestion(selectedHabit, selectedHabit.habit_logs, coachTone, todayStr)
-    : generateGeneralSuggestion(habits, coachTone, todayStr)
+  useEffect(() => {
+    const loadSuggestion = async () => {
+      if (loading) return
+      if (habits.length === 0) return
+
+      const selectedHabit = habits.find((h) => h.id === selectedHabitId)
+      const localSugg = selectedHabit
+        ? generateHabitSuggestion(selectedHabit, selectedHabit.habit_logs, coachTone, todayStr)
+        : generateGeneralSuggestion(habits, coachTone, todayStr)
+      setSuggestion(localSugg)
+
+      const consent = localStorage.getItem(`ai_personalization_consent_${user?.id}`) === 'true'
+      if (!consent) return
+
+      setLoadingCoach(true)
+      const sugg = await getSuggestionWithFallback(
+        selectedHabit || null,
+        habits,
+        selectedHabit ? selectedHabit.habit_logs : [],
+        coachTone,
+        todayStr,
+        supabase,
+        consent
+      )
+      setSuggestion(sugg)
+      setLoadingCoach(false)
+    }
+
+    loadSuggestion()
+  }, [selectedHabitId, habits, coachTone, loading, aiConsent, user])
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
@@ -165,25 +205,52 @@ export default function Coach() {
                 ))}
               </div>
 
-              {/* Suggestion Card */}
-              <div className="bg-cream-dark/15 border border-plum-main/10 rounded-3xl p-6 text-left relative animate-fadeIn min-h-[160px] flex flex-col justify-between gap-4">
-                <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold">
-                  {selectedHabit ? `Suggestion for "${selectedHabit.name}"` : 'Overall Direction'}
-                </span>
-                
-                <p className="font-serif italic text-base text-plum-dark leading-relaxed flex-1">
-                  "{suggestion.message}"
-                </p>
-
-                {suggestion.actionLabel && suggestion.actionPath && (
-                  <Link
-                    to={suggestion.actionPath}
-                    className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-3 px-4 rounded-2xl font-medium text-xs text-center block transition-all duration-200 shadow-md shadow-plum-main/10 cursor-pointer"
-                  >
-                    {suggestion.actionLabel}
-                  </Link>
-                )}
+              {/* Privacy Consent Checkbox/Toggle */}
+              <div className="bg-cream-dark/15 border border-plum-main/10 rounded-3xl p-5 text-left mb-6 select-none animate-fadeIn">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={aiConsent}
+                    onChange={(e) => handleToggleConsent(e.target.checked)}
+                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main mt-0.5 cursor-pointer"
+                  />
+                  <div>
+                    <span className="block text-xs font-semibold text-plum-dark">
+                      Enable AI personalized suggestions
+                    </span>
+                    <span className="block text-[10px] text-plum-light/75 leading-relaxed mt-0.5">
+                      Tiny Coach uses your selected habit information to offer suggestions. You can turn this off anytime.
+                    </span>
+                  </div>
+                </label>
               </div>
+
+              {/* Suggestion Card */}
+              {suggestion && (
+                <div className="bg-cream-dark/15 border border-plum-main/10 rounded-3xl p-6 text-left relative animate-fadeIn min-h-[160px] flex flex-col justify-between gap-4">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold">
+                      {selectedHabit ? `Suggestion for "${selectedHabit.name}"` : 'Overall Direction'}
+                    </span>
+                    {loadingCoach && (
+                      <span className="lowercase font-normal text-[7px] text-plum-light/45 animate-pulse">(thinking...)</span>
+                    )}
+                  </div>
+                  
+                  <p className="font-serif italic text-base text-plum-dark leading-relaxed flex-1">
+                    "{suggestion.message}"
+                  </p>
+
+                  {suggestion.actionLabel && suggestion.actionPath && (
+                    <Link
+                      to={suggestion.actionPath}
+                      className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-3 px-4 rounded-2xl font-medium text-xs text-center block transition-all duration-200 shadow-md shadow-plum-main/10 cursor-pointer"
+                    >
+                      {suggestion.actionLabel}
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Bottom Navigation */}
