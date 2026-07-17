@@ -1,5 +1,5 @@
 -- Create content_items table for support links & external resources
-CREATE TABLE public.content_items (
+CREATE TABLE IF NOT EXISTS public.content_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- Null for default seed items
     title TEXT NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE public.content_items (
 );
 
 -- Create inspiration_items table for short encouragements
-CREATE TABLE public.inspiration_items (
+CREATE TABLE IF NOT EXISTS public.inspiration_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- Null for default seed items
     text TEXT NOT NULL,
@@ -44,6 +44,12 @@ ALTER TABLE public.inspiration_items ENABLE ROW LEVEL SECURITY;
 -- ----------------------------------------------------
 -- RLS Policies for Content Items
 -- ----------------------------------------------------
+
+-- Drop existing policies if they exist to prevent duplicate policy errors
+DROP POLICY IF EXISTS "Users can view their own content or default content" ON public.content_items;
+DROP POLICY IF EXISTS "Users can insert their own content" ON public.content_items;
+DROP POLICY IF EXISTS "Users can update their own content" ON public.content_items;
+DROP POLICY IF EXISTS "Users can delete their own content" ON public.content_items;
 
 -- SELECT Policy: Allows authenticated users to select their own content rows OR shared default seed items.
 CREATE POLICY "Users can view their own content or default content"
@@ -70,6 +76,12 @@ USING (auth.uid() = user_id);
 -- ----------------------------------------------------
 -- RLS Policies for Inspiration Items
 -- ----------------------------------------------------
+
+-- Drop existing policies if they exist to prevent duplicate policy errors
+DROP POLICY IF EXISTS "Users can view their own inspirations or default ones" ON public.inspiration_items;
+DROP POLICY IF EXISTS "Users can insert their own inspirations" ON public.inspiration_items;
+DROP POLICY IF EXISTS "Users can update their own inspirations" ON public.inspiration_items;
+DROP POLICY IF EXISTS "Users can delete their own inspirations" ON public.inspiration_items;
 
 -- SELECT Policy: Allows authenticated users to view their own inspiration rows OR shared default seed items.
 CREATE POLICY "Users can view their own inspirations or default ones"
