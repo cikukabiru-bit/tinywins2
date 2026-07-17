@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { calculateStreaks, getLocalDateString, isScheduledDay } from '../lib/streaks'
+import { generateGeneralSuggestion } from '../lib/coach'
 
 interface Habit {
   id: string
@@ -14,6 +15,7 @@ interface Habit {
   frequency: string
   custom_days: number[]
   preferred_time: string
+  growth_mode: string
   start_date: string
   active: boolean
   goals: {
@@ -45,6 +47,7 @@ export default function Dashboard() {
   const [habits, setHabits] = useState<Habit[]>([])
   const [loadingData, setLoadingData] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [coachTone, setCoachTone] = useState('Gentle')
 
   // Reflection modal states
   const [activeReflectionLogId, setActiveReflectionLogId] = useState<string | null>(null)
@@ -79,7 +82,7 @@ export default function Dashboard() {
       try {
         const { data, error: profileError } = await supabase
           .from('profiles')
-          .select('onboarding_completed')
+          .select('onboarding_completed, coach_tone')
           .eq('user_id', user.id)
           .maybeSingle()
 
@@ -88,6 +91,9 @@ export default function Dashboard() {
         if (!data || !data.onboarding_completed) {
           navigate('/onboarding')
         } else {
+          if (data.coach_tone) {
+            setCoachTone(data.coach_tone)
+          }
           setCheckingOnboarding(false)
         }
       } catch (err) {
@@ -508,18 +514,39 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Tiny Coach Placeholder Note Card */}
-            <div className="bg-cream-light border border-plum-main/10 rounded-2xl p-4 text-left shadow-sm select-none mb-2">
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sunset-end"></span>
-                <h4 className="text-[10px] uppercase tracking-wider text-plum-light/60 font-bold">
-                  Tiny Coach
-                </h4>
-              </div>
-              <p className="text-xs text-plum-dark/80 font-light leading-relaxed">
-                Tiny Coach is warming up — real notes coming soon.
-              </p>
-            </div>
+            {/* Tiny Coach Card */}
+            {(() => {
+              const coachSuggestion = generateGeneralSuggestion(habits, coachTone, todayStr)
+              return (
+                <div className="bg-cream-light border border-plum-main/10 rounded-2xl p-4 text-left shadow-sm select-none mb-2">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sunset-end animate-pulse"></span>
+                      <h4 className="text-[10px] uppercase tracking-wider text-plum-light/60 font-bold">
+                        Tiny Coach
+                      </h4>
+                    </div>
+                    <Link to="/coach" className="text-[10px] text-sunset-end hover:text-plum-main font-semibold flex items-center gap-0.5">
+                      <span>View all</span>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                  <p className="text-xs text-plum-dark/80 font-light leading-relaxed mb-3">
+                    "{coachSuggestion.message}"
+                  </p>
+                  {coachSuggestion.actionLabel && coachSuggestion.actionPath && (
+                    <Link
+                      to={coachSuggestion.actionPath}
+                      className="inline-block bg-plum-main/5 hover:bg-plum-main/10 text-plum-main text-[10px] font-semibold py-1.5 px-3 rounded-lg transition-colors cursor-pointer"
+                    >
+                      {coachSuggestion.actionLabel}
+                    </Link>
+                  )}
+                </div>
+              )
+            })()}
 
           </div>
 

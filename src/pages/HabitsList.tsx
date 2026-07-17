@@ -14,6 +14,7 @@ interface Habit {
   frequency: string
   custom_days: number[]
   preferred_time: string
+  growth_mode: string
   start_date: string
   active: boolean
   goals: {

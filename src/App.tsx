@@ -11,6 +11,7 @@ import HabitsList from './pages/HabitsList'
 import NewHabit from './pages/NewHabit'
 import EditHabit from './pages/EditHabit'
 import Timeline from './pages/Timeline'
+import Coach from './pages/Coach'
 
 function App() {
   return (
@@ -73,6 +74,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Timeline />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/coach"
+            element={
+              <ProtectedRoute>
+                <Coach />
               </ProtectedRoute>
             }
           />
