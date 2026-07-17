@@ -105,6 +105,9 @@ export default function EditHabit() {
   const [growthMode, setGrowthMode] = useState('Increase slowly')
 
   const [submitting, setSubmitting] = useState(false)
+  const [reminderTime, setReminderTime] = useState('08:00')
+  const [reminderDays, setReminderDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6])
+  const [reminderMessage, setReminderMessage] = useState('Time for your tiny win.')
 
   useEffect(() => {
     if (focusField === 'tiny_goal' && !loading) {
@@ -200,6 +203,21 @@ export default function EditHabit() {
           setRecommendedLinks(matched.slice(0, 3))
         }
 
+        // Fetch existing reminder
+        const { data: reminderData } = await supabase
+          .from('reminders')
+          .select('*')
+          .eq('habit_id', id)
+          .eq('user_id', user.id)
+          .maybeSingle()
+
+        if (reminderData) {
+          setReminderEnabled(reminderData.is_active)
+          setReminderTime(reminderData.reminder_time ? reminderData.reminder_time.slice(0, 5) : '08:00')
+          setReminderDays(reminderData.reminder_days || [0, 1, 2, 3, 4, 5, 6])
+          setReminderMessage(reminderData.message || 'Time for your tiny win.')
+        }
+
       } catch (err) {
         console.error('Error fetching edit data:', err)
         setError('A small issue occurred while loading this habit.')
@@ -266,6 +284,50 @@ export default function EditHabit() {
         .eq('user_id', user.id)
 
       if (updateError) throw updateError
+
+      // Update/Upsert reminder row
+      if (reminderEnabled) {
+        const { data: existingRem } = await supabase
+          .from('reminders')
+          .select('id')
+          .eq('habit_id', id)
+          .eq('user_id', user.id)
+          .maybeSingle()
+
+        if (existingRem) {
+          const { error: remUpError } = await supabase
+            .from('reminders')
+            .update({
+              reminder_time: reminderTime,
+              reminder_days: reminderDays,
+              message: reminderMessage.trim() || 'Time for your tiny win.',
+              is_active: true,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingRem.id)
+          if (remUpError) throw remUpError
+        } else {
+          const { error: remInError } = await supabase
+            .from('reminders')
+            .insert({
+              user_id: user.id,
+              habit_id: id,
+              reminder_type: 'preferred_time',
+              reminder_time: reminderTime,
+              reminder_days: reminderDays,
+              message: reminderMessage.trim() || 'Time for your tiny win.',
+              is_active: true
+            })
+          if (remInError) throw remInError
+        }
+      } else {
+        // Set inactive if disabled
+        await supabase
+          .from('reminders')
+          .update({ is_active: false, updated_at: new Date().toISOString() })
+          .eq('habit_id', id)
+          .eq('user_id', user.id)
+      }
 
       navigate('/habits')
     } catch (err: any) {
@@ -511,20 +573,87 @@ export default function EditHabit() {
                   </select>
                 </div>
 
-                {/* Reminders Toggle */}
-                <div className="flex items-center gap-2 mt-2 select-none">
-                  <input
-                    type="checkbox"
-                    id="reminder-toggle"
-                    checked={reminderEnabled}
-                    onChange={(e) => setReminderEnabled(e.target.checked)}
-                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main cursor-pointer"
-                    disabled={submitting}
-                  />
-                  <label htmlFor="reminder-toggle" className="text-xs text-plum-light/80 cursor-pointer">
-                    Enable daily reminder (placeholder)
-                  </label>
-                </div>
+                 {/* Reminders Settings UI */}
+                 <div className="flex flex-col gap-2 mt-2 select-none">
+                   <label className="flex items-center gap-2 cursor-pointer">
+                     <input
+                       type="checkbox"
+                       id="reminder-toggle"
+                       checked={reminderEnabled}
+                       onChange={(e) => setReminderEnabled(e.target.checked)}
+                       className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main cursor-pointer"
+                       disabled={submitting}
+                     />
+                     <span className="text-xs text-plum-light/80">
+                       Enable habit reminders
+                     </span>
+                   </label>
+
+                   {reminderEnabled && (
+                     <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 mt-1 text-left animate-fadeIn flex flex-col gap-3">
+                       {/* Time */}
+                       <div>
+                         <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                           Reminder Time
+                         </label>
+                         <input
+                           type="time"
+                           value={reminderTime}
+                           onChange={(e) => setReminderTime(e.target.value)}
+                           className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                           disabled={submitting}
+                         />
+                       </div>
+
+                       {/* Days */}
+                       <div>
+                         <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                           Active Days
+                         </label>
+                         <div className="flex gap-1 justify-between">
+                           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => {
+                             const isChecked = reminderDays.includes(idx)
+                             return (
+                               <button
+                                 key={idx}
+                                 type="button"
+                                 onClick={() =>
+                                   setReminderDays((prev) =>
+                                     prev.includes(idx) ? prev.filter((d) => d !== idx) : [...prev, idx].sort()
+                                   )
+                                 }
+                                 className={`w-7 h-7 rounded-full text-[10px] font-bold transition-all border cursor-pointer select-none ${
+                                   isChecked
+                                     ? 'bg-plum-main text-cream-light border-plum-main'
+                                     : 'bg-cream-light text-plum-main border-plum-main/10 hover:bg-cream-dark/15'
+                                 }`}
+                                 disabled={submitting}
+                               >
+                                 {day}
+                               </button>
+                             )
+                           })}
+                         </div>
+                       </div>
+
+                       {/* Message */}
+                       <div>
+                         <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                           Reminder Message
+                         </label>
+                         <input
+                           type="text"
+                           value={reminderMessage}
+                           onChange={(e) => setReminderMessage(e.target.value)}
+                           className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                           placeholder="Time for your tiny win."
+                           maxLength={100}
+                           disabled={submitting}
+                         />
+                       </div>
+                     </div>
+                   )}
+                 </div>
 
                 {/* Recommended Support Links */}
                 {supportLinksEnabled && recommendedLinks.length > 0 && (

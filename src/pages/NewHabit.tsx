@@ -38,6 +38,9 @@ export default function NewHabit() {
   const [preferredTime, setPreferredTime] = useState('Morning')
   const [reminderEnabled, setReminderEnabled] = useState(false)
   const [growthMode, setGrowthMode] = useState('Increase slowly')
+  const [reminderTime, setReminderTime] = useState('08:00')
+  const [reminderDays, setReminderDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6])
+  const [reminderMessage, setReminderMessage] = useState('Time for your tiny win.')
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -182,11 +185,29 @@ export default function NewHabit() {
       }
 
       // Insert habit
-      const { error: insertError } = await supabase
+      const { data: habitData, error: insertError } = await supabase
         .from('habits')
         .insert(payload)
+        .select()
+        .single()
 
       if (insertError) throw insertError
+
+      // Insert reminder if enabled
+      if (habitData && reminderEnabled) {
+        const { error: reminderError } = await supabase
+          .from('reminders')
+          .insert({
+            user_id: user.id,
+            habit_id: habitData.id,
+            reminder_type: 'preferred_time',
+            reminder_time: reminderTime,
+            reminder_days: reminderDays,
+            message: reminderMessage.trim() || 'Time for your tiny win.',
+            is_active: true
+          })
+        if (reminderError) throw reminderError
+      }
 
       // If this came from a habit score card reflection, mark it as converted
       if (habitScoreId) {
@@ -450,19 +471,86 @@ export default function NewHabit() {
                     </select>
                   </div>
 
-                  {/* Reminders Toggle */}
-                  <div className="flex items-center gap-2 mt-2 select-none">
-                    <input
-                      type="checkbox"
-                      id="reminder-toggle"
-                      checked={reminderEnabled}
-                      onChange={(e) => setReminderEnabled(e.target.checked)}
-                      className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main cursor-pointer"
-                      disabled={submitting}
-                    />
-                    <label htmlFor="reminder-toggle" className="text-xs text-plum-light/80 cursor-pointer">
-                      Enable daily reminder (placeholder)
+                  {/* Reminders Settings UI */}
+                  <div className="flex flex-col gap-2 mt-2 select-none">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        id="reminder-toggle"
+                        checked={reminderEnabled}
+                        onChange={(e) => setReminderEnabled(e.target.checked)}
+                        className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main cursor-pointer"
+                        disabled={submitting}
+                      />
+                      <span className="text-xs text-plum-light/80">
+                        Enable habit reminders
+                      </span>
                     </label>
+
+                    {reminderEnabled && (
+                      <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 mt-1 text-left animate-fadeIn flex flex-col gap-3">
+                        {/* Time */}
+                        <div>
+                          <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                            Reminder Time
+                          </label>
+                          <input
+                            type="time"
+                            value={reminderTime}
+                            onChange={(e) => setReminderTime(e.target.value)}
+                            className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                            disabled={submitting}
+                          />
+                        </div>
+
+                        {/* Days */}
+                        <div>
+                          <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                            Active Days
+                          </label>
+                          <div className="flex gap-1 justify-between">
+                            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => {
+                              const isChecked = reminderDays.includes(idx)
+                              return (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() =>
+                                    setReminderDays((prev) =>
+                                      prev.includes(idx) ? prev.filter((d) => d !== idx) : [...prev, idx].sort()
+                                    )
+                                  }
+                                  className={`w-7 h-7 rounded-full text-[10px] font-bold transition-all border cursor-pointer select-none ${
+                                    isChecked
+                                      ? 'bg-plum-main text-cream-light border-plum-main'
+                                      : 'bg-cream-light text-plum-main border-plum-main/10 hover:bg-cream-dark/15'
+                                  }`}
+                                  disabled={submitting}
+                                >
+                                  {day}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Message */}
+                        <div>
+                          <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                            Reminder Message
+                          </label>
+                          <input
+                            type="text"
+                            value={reminderMessage}
+                            onChange={(e) => setReminderMessage(e.target.value)}
+                            className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                            placeholder="Time for your tiny win."
+                            maxLength={100}
+                            disabled={submitting}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Form Actions */}

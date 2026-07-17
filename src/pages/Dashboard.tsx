@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { calculateStreaks, getLocalDateString, isScheduledDay } from '../lib/streaks'
 import { generateGeneralSuggestion, getSuggestionWithFallback, type CoachSuggestion } from '../lib/coach'
 import { getInspiration } from '../lib/inspiration'
+import { fetchActiveReminders, getDueReminders, triggerLocalNotificationIfPermitted, type Reminder } from '../lib/remindersManager'
 
 interface Habit {
   id: string
@@ -57,6 +58,15 @@ export default function Dashboard() {
   // Inspirations
   const [inspiration, setInspiration] = useState<any | null>(null)
   const [reflectionInspiration, setReflectionInspiration] = useState<any | null>(null)
+
+  // Reminders & PWA Push
+  const [reminders, setReminders] = useState<Reminder[]>([])
+  const [notificationPermissionStatus, setNotificationPermissionStatus] = useState<string>(() => {
+    return ('Notification' in window) ? Notification.permission : 'denied'
+  })
+  const [dismissedNotificationPromo, setDismissedNotificationPromo] = useState<boolean>(() => {
+    return localStorage.getItem('dismissed_notification_promo') === 'true'
+  })
 
   const todayStr = getLocalDateString()
   const yesterdayStr = getLocalDateString(new Date(Date.now() - 86400000))
@@ -135,6 +145,10 @@ export default function Dashboard() {
       })).filter(h => h.goals !== null)
 
       setHabits(combined)
+
+      // Fetch active reminders
+      const activeRems = await fetchActiveReminders(user.id)
+      setReminders(activeRems)
     } catch (err) {
       console.error('Error fetching dashboard habits:', err)
       setError('Could not load your habits for today. Please try again.')
@@ -383,6 +397,48 @@ export default function Dashboard() {
     fetchDashboardInspirations()
   }, [user, loadingData, missedYesterday, bestCurrentStreak])
 
+  // Reminders Selection (Layer 1 In-App)
+  const activeDueReminders = getDueReminders(reminders).filter((rem) => {
+    const habitObj = habits.find(h => h.id === rem.habit_id)
+    const isCompleted = habitObj?.habit_logs.some(l => l.log_date === todayStr)
+    return !isCompleted
+  })
+
+  // Background browser push scheduling (Layer 2 Best-Effort)
+  useEffect(() => {
+    if (notificationPermissionStatus !== 'granted' || activeDueReminders.length === 0) return
+
+    const sentKey = `sent_notifications_${todayStr}`
+    const sentIds = JSON.parse(sessionStorage.getItem(sentKey) || '[]')
+
+    activeDueReminders.forEach((rem) => {
+      if (!sentIds.includes(rem.id)) {
+        triggerLocalNotificationIfPermitted(`TinyWins: ${rem.habits?.name}`, {
+          body: rem.message || 'Time for your tiny win.'
+        })
+        sentIds.push(rem.id)
+      }
+    })
+
+    sessionStorage.setItem(sentKey, JSON.stringify(sentIds))
+  }, [notificationPermissionStatus, activeDueReminders, todayStr])
+
+  const handleRequestNotificationPermission = async () => {
+    if (!('Notification' in window)) return
+    const result = await Notification.requestPermission()
+    setNotificationPermissionStatus(result)
+    if (result === 'granted') {
+      triggerLocalNotificationIfPermitted('TinyWins Reminders Enabled', {
+        body: "We'll gently notify you when it's time for your habits!"
+      })
+    }
+  }
+
+  const handleDismissNotificationPromo = () => {
+    setDismissedNotificationPromo(true)
+    localStorage.setItem('dismissed_notification_promo', 'true')
+  }
+
   if (checkingOnboarding || loadingData) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans">
@@ -452,6 +508,67 @@ export default function Dashboard() {
                     </span>
                   )}
                 </p>
+              </div>
+            )}
+
+            {/* Notification permission opt-in card */}
+            {notificationPermissionStatus === 'default' && !dismissedNotificationPromo && (
+              <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
+                <h4 className="text-[9px] uppercase tracking-wider text-plum-light/65 font-bold mb-1.5 ml-0.5">Browser Reminders</h4>
+                <p className="text-xs text-plum-dark/95 font-light leading-relaxed mb-3">
+                  TinyWins can gently remind you when it's time for a small habit. You can change this anytime.
+                </p>
+                <p className="text-[7.5px] text-plum-light/50 font-light leading-relaxed mb-3">
+                  * Background reminders work best when TinyWins is added to your home screen. Timing can vary by device.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleRequestNotificationPermission}
+                    className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3.5 rounded-xl font-medium text-[10px] cursor-pointer"
+                  >
+                    Enable notifications
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDismissNotificationPromo}
+                    className="border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-1.5 px-3.5 rounded-xl font-medium text-[10px] cursor-pointer bg-cream-light"
+                  >
+                    Not now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Active Due Reminders (Layer 1 In-App) */}
+            {activeDueReminders.length > 0 && (
+              <div className="bg-sunset-end/10 border border-sunset-end/20 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
+                <span className="block text-[8px] uppercase tracking-wider text-sunset-end font-bold mb-2 ml-0.5">
+                  🔔 Gentle Reminder
+                </span>
+                <div className="flex flex-col gap-3">
+                  {activeDueReminders.map((rem) => {
+                    const habitObj = habits.find(h => h.id === rem.habit_id)
+                    return (
+                      <div key={rem.id} className="flex justify-between items-center gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-plum-dark">
+                            {rem.habits?.name}
+                          </p>
+                          <p className="text-[10px] text-plum-light leading-relaxed font-light mt-0.5">
+                            "{rem.message || 'Time for your tiny win.'}"
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleCheckIn(habitObj!)}
+                          className="bg-plum-main hover:bg-plum-dark text-cream-light py-1 px-3 rounded-lg text-[9px] font-semibold transition-colors cursor-pointer"
+                        >
+                          Complete
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             )}
 
