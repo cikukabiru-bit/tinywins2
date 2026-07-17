@@ -22,6 +22,7 @@ import Inspiration from './pages/Inspiration'
 import NewInspiration from './pages/NewInspiration'
 import EditInspiration from './pages/EditInspiration'
 import Settings from './pages/Settings'
+import Preferences from './pages/Preferences'
 
 function App() {
   return (
@@ -172,6 +173,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings/preferences"
+            element={
+              <ProtectedRoute>
+                <Preferences />
               </ProtectedRoute>
             }
           />

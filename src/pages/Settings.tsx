@@ -409,6 +409,22 @@ export default function Settings() {
               </p>
             </div>
 
+            {/* PREFERENCES NAVIGATION LINK */}
+            <div className="bg-cream-dark/10 border border-plum-main/5 p-4 rounded-2xl mb-6 flex flex-col gap-1.5 select-none">
+              <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-0.5">
+                Profile Settings
+              </span>
+              <p className="text-[10px] text-plum-dark/95 leading-normal font-light">
+                Revisit and change your consistency blockers, coach tone, preferred inspirations, and support styles.
+              </p>
+              <Link
+                to="/settings/preferences"
+                className="inline-block text-[10px] text-sunset-end hover:text-plum-main font-semibold mt-2 transition-colors underline decoration-dotted cursor-pointer"
+              >
+                Edit my onboarding answers →
+              </Link>
+            </div>
+
             {/* CONSENTS SECTION */}
             <section className="mb-6">
               <h3 className="text-[9px] uppercase tracking-wider text-plum-light/55 font-bold mb-3 ml-1">Consent Preferences</h3>
