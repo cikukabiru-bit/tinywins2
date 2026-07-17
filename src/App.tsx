@@ -12,6 +12,8 @@ import NewHabit from './pages/NewHabit'
 import EditHabit from './pages/EditHabit'
 import Timeline from './pages/Timeline'
 import Coach from './pages/Coach'
+import Goals from './pages/Goals'
+import NewGoal from './pages/NewGoal'
 
 function App() {
   return (
@@ -82,6 +84,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Coach />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/goals"
+            element={
+              <ProtectedRoute>
+                <Goals />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/goals/new"
+            element={
+              <ProtectedRoute>
+                <NewGoal />
               </ProtectedRoute>
             }
           />
