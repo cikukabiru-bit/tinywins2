@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 
@@ -16,6 +16,7 @@ interface Goal {
 
 export default function Goals() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [goals, setGoals] = useState<Goal[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,12 +27,11 @@ export default function Goals() {
       if (!user) return
 
       try {
-        // Fetch active goals
+        // Fetch all goals for the user (both active and resting)
         const { data: goalsData, error: goalsError } = await supabase
           .from('goals')
           .select('*')
           .eq('user_id', user.id)
-          .eq('active', true)
 
         if (goalsError) throw goalsError
 
@@ -78,8 +78,15 @@ export default function Goals() {
 
       if (updateError) throw updateError
 
-      // Remove from active list locally
-      setGoals((prev) => prev.filter((g) => g.id !== goalId))
+      // Update state locally to move to resting section
+      setGoals((prev) =>
+        prev.map((g) => {
+          if (g.id === goalId) {
+            return { ...g, active: false }
+          }
+          return g
+        })
+      )
     } catch (err) {
       console.error(err)
       setError('Could not rest this goal. Please try again.')
@@ -87,6 +94,40 @@ export default function Goals() {
       setSubmittingId(null)
     }
   }
+
+  const handleReviveGoal = async (goalId: string) => {
+    if (!user) return
+    setSubmittingId(goalId)
+    setError(null)
+
+    try {
+      const { error: updateError } = await supabase
+        .from('goals')
+        .update({ active: true, updated_at: new Date().toISOString() })
+        .eq('id', goalId)
+        .eq('user_id', user.id)
+
+      if (updateError) throw updateError
+
+      // Update state locally to move back to active section
+      setGoals((prev) =>
+        prev.map((g) => {
+          if (g.id === goalId) {
+            return { ...g, active: true }
+          }
+          return g
+        })
+      )
+    } catch (err) {
+      console.error(err)
+      setError('Could not revive this goal. Please try again.')
+    } finally {
+      setSubmittingId(null)
+    }
+  }
+
+  const activeGoals = goals.filter((g) => g.active)
+  const restingGoals = goals.filter((g) => !g.active)
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
@@ -127,19 +168,21 @@ export default function Goals() {
                 </div>
               )}
 
-              {goals.length === 0 ? (
-                <div className="text-center py-12 select-none">
+              {/* Active Goals Section */}
+              {activeGoals.length === 0 ? (
+                <div className="text-center py-8 select-none">
                   <p className="text-sm font-medium text-plum-dark/60 mb-2">No active goals yet.</p>
                   <p className="text-xs text-plum-light/60 max-w-[220px] mx-auto leading-normal">
                     Create a new goal area to begin building tiny habits underneath it.
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin my-2 text-left">
-                  {goals.map((goal) => (
+                <div className="flex flex-col gap-4 max-h-[260px] overflow-y-auto pr-1 scrollbar-thin my-2 text-left">
+                  {activeGoals.map((goal) => (
                     <div
                       key={goal.id}
-                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col transition-all hover:border-plum-main/20"
+                      onClick={() => navigate(`/goals/${goal.id}/edit`)}
+                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col transition-all hover:border-plum-main/20 cursor-pointer relative"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -154,7 +197,10 @@ export default function Goals() {
                         </div>
 
                         <button
-                          onClick={() => handleRestGoal(goal.id)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleRestGoal(goal.id)
+                          }}
                           disabled={submittingId === goal.id}
                           className="text-[9px] text-plum-light/50 hover:text-plum-main transition-colors font-medium border border-plum-main/10 hover:border-plum-main/35 px-2.5 py-1 rounded-xl cursor-pointer disabled:opacity-50"
                         >
@@ -170,6 +216,53 @@ export default function Goals() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Resting Goals Section */}
+              {restingGoals.length > 0 && (
+                <div className="mt-6 pt-4 border-t border-plum-main/10 text-left animate-fadeIn">
+                  <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-plum-light/50 ml-1 mb-3 select-none">
+                    Resting Focuses
+                  </h3>
+                  <div className="flex flex-col gap-3 max-h-[160px] overflow-y-auto pr-1 scrollbar-thin">
+                    {restingGoals.map((goal) => (
+                      <div
+                        key={goal.id}
+                        onClick={() => navigate(`/goals/${goal.id}/edit`)}
+                        className="bg-cream-dark/5 border border-plum-main/5 rounded-2xl p-4 flex flex-col transition-all hover:border-plum-main/15 cursor-pointer opacity-70 hover:opacity-100"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light bg-cream-dark/20 px-1.5 py-0.5 rounded border border-plum-main/5">
+                              {goal.area}
+                            </span>
+                            {goal.why && (
+                              <p className="text-[10px] text-plum-light italic font-serif leading-relaxed mt-2 pl-1 border-l-2 border-plum-light/20">
+                                "{goal.why}"
+                              </p>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleReviveGoal(goal.id)
+                            }}
+                            disabled={submittingId === goal.id}
+                            className="text-[9px] text-sunset-end hover:text-plum-main transition-colors font-medium border border-sunset-end/20 hover:border-plum-main/35 px-2.5 py-1 rounded-xl cursor-pointer disabled:opacity-50"
+                          >
+                            {submittingId === goal.id ? 'Reviving...' : 'Bring back'}
+                          </button>
+                        </div>
+
+                        <div className="flex gap-4 mt-2 text-[9px] text-plum-light/50 font-semibold select-none border-t border-plum-main/5 pt-2">
+                          <span>⏱️ {goal.available_time}</span>
+                          <span>🌅 {goal.preferred_time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

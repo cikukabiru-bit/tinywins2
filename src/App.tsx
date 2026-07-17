@@ -14,6 +14,7 @@ import Timeline from './pages/Timeline'
 import Coach from './pages/Coach'
 import Goals from './pages/Goals'
 import NewGoal from './pages/NewGoal'
+import EditGoal from './pages/EditGoal'
 
 function App() {
   return (
@@ -100,6 +101,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <NewGoal />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/goals/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditGoal />
               </ProtectedRoute>
             }
           />
