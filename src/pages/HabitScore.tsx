@@ -15,6 +15,7 @@ export default function HabitScore() {
   // Existing habit scores loaded from database
   const [existingHabits, setExistingHabits] = useState<any[]>([])
   const [loadingExisting, setLoadingExisting] = useState<boolean>(true)
+  const [userHabits, setUserHabits] = useState<any[]>([])
 
   // List of locally added habits (for creation mode during onboarding)
   const [habitsList, setHabitsList] = useState<any[]>([])
@@ -89,8 +90,26 @@ export default function HabitScore() {
       }
     }
 
+    const fetchUserHabits = async () => {
+      if (!user) return
+      try {
+        const { data, error } = await supabase
+          .from('habits')
+          .select('id, name')
+          .eq('user_id', user.id)
+          .eq('active', true)
+        if (error) throw error
+        if (data) {
+          setUserHabits(data)
+        }
+      } catch (err) {
+        console.error('Error fetching user habits:', err)
+      }
+    }
+
     if (user && goalId) {
       fetchExistingHabitScores()
+      fetchUserHabits()
     }
   }, [user, goalId])
 
@@ -268,7 +287,7 @@ export default function HabitScore() {
                       </div>
 
                       {/* Convert Action */}
-                      {!habit.converted_to_habit ? (
+                      {!habit.converted_to_habit && !userHabits.some(h => h.name.toLowerCase().trim() === habit.habit_name.toLowerCase().trim()) ? (
                         <Link
                           to={`/habits/new?name=${encodeURIComponent(habit.habit_name)}&category=${encodeURIComponent(habit.category)}&goalId=${goalId}&habitScoreId=${habit.id}`}
                           className="mt-3 w-full bg-plum-main hover:bg-plum-dark text-cream-light py-2 px-3 rounded-xl font-medium text-xs text-center inline-block transition-colors shadow-sm shadow-plum-main/10"

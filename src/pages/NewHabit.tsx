@@ -22,6 +22,11 @@ export default function NewHabit() {
   // Goals list for dropdown
   const [goals, setGoals] = useState<Goal[]>([])
   const [loadingGoals, setLoadingGoals] = useState<boolean>(true)
+  const [activeHabits, setActiveHabits] = useState<any[]>([])
+
+  // Duplicate checks
+  const [duplicateHabit, setDuplicateHabit] = useState<any | null>(null)
+  const [dismissDuplicateAlert, setDismissDuplicateAlert] = useState(false)
 
   // Form states
   const [name, setName] = useState(preName)
@@ -37,9 +42,9 @@ export default function NewHabit() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch active goals for dropdown
+  // Fetch active goals and active habits for dropdown/checks
   useEffect(() => {
-    const fetchGoals = async () => {
+    const fetchSetupData = async () => {
       if (!user) return
 
       try {
@@ -52,21 +57,81 @@ export default function NewHabit() {
         if (fetchError) throw fetchError
         setGoals(data || [])
 
+        // Fetch active habits
+        const { data: habitsData, error: habitsError } = await supabase
+          .from('habits')
+          .select('id, name, goal_id, goals(area)')
+          .eq('user_id', user.id)
+          .eq('active', true)
+
+        if (habitsError) throw habitsError
+        setActiveHabits(habitsData || [])
+
         // If no goalId pre-filled, default to first active goal
         if (!preGoalId && data && data.length > 0) {
           setGoalId(data[0].id)
         }
       } catch (err) {
-        console.error('Error fetching goals:', err)
-        setError('Could not load your active goals. Please try again.')
+        console.error('Error fetching setup data:', err)
+        setError('Could not load setup data. Please try again.')
       } finally {
         setLoadingGoals(false)
       }
     }
 
-    fetchGoals()
+    fetchSetupData()
   }, [user, preGoalId])
+  const handleNameChange = (val: string) => {
+    setName(val)
+    setDismissDuplicateAlert(false)
 
+    if (!val.trim()) {
+      setDuplicateHabit(null)
+      return
+    }
+
+    const cleanInput = val.toLowerCase().trim()
+    const match = activeHabits.find(h => h.name.toLowerCase().trim() === cleanInput)
+    if (match) {
+      setDuplicateHabit(match)
+    } else {
+      setDuplicateHabit(null)
+    }
+  }
+
+  const handleMoveExistingHabit = async (habitId: string) => {
+    if (!user || !goalId) return
+    const habit = activeHabits.find((h) => h.id === habitId)
+    if (!habit) return
+
+    const selectedGoal = goals.find((g) => g.id === goalId)
+    const targetArea = selectedGoal?.area || 'this goal'
+    const currentArea = habit.goals?.area || 'General'
+
+    const confirm = window.confirm(
+      `This will move '${habit.name}' from ${currentArea} to ${targetArea}. That's okay?`
+    )
+    if (!confirm) return
+
+    setSubmitting(true)
+    setError(null)
+
+    try {
+      const { error: updateError } = await supabase
+        .from('habits')
+        .update({ goal_id: goalId, updated_at: new Date().toISOString() })
+        .eq('id', habitId)
+        .eq('user_id', user.id)
+
+      if (updateError) throw updateError
+      navigate('/habits')
+    } catch (err: any) {
+      console.error(err)
+      setError('Could not move habit. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
   const handleToggleCustomDay = (dayIdx: number) => {
     setCustomDays((prev) =>
       prev.includes(dayIdx) ? prev.filter((d) => d !== dayIdx) : [...prev, dayIdx].sort()
@@ -199,13 +264,37 @@ export default function NewHabit() {
                     <input
                       type="text"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => handleNameChange(e.target.value)}
                       className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
                       placeholder="e.g. morning stretch"
                       required
                       disabled={submitting}
                     />
                   </div>
+
+                  {duplicateHabit && !dismissDuplicateAlert && (
+                    <div className="bg-cream-dark/10 border border-plum-main/5 p-4 rounded-2xl mb-4 text-left animate-fadeIn select-none">
+                      <p className="text-[10px] text-plum-dark leading-relaxed font-medium mb-2.5">
+                        You already have "{duplicateHabit.name}" in {duplicateHabit.goals?.area || 'General'}. Add it to this goal instead, or keep them separate?
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleMoveExistingHabit(duplicateHabit.id)}
+                          className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3 rounded-xl font-medium text-[10px] cursor-pointer"
+                        >
+                          Use existing one
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDismissDuplicateAlert(true)}
+                          className="border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-1.5 px-3 rounded-xl font-medium text-[10px] cursor-pointer bg-cream-light"
+                        >
+                          Keep separate
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Tiny Goal */}
                   <div>
@@ -259,6 +348,31 @@ export default function NewHabit() {
                       </select>
                     </div>
                   </div>
+
+                  {/* Add existing habit option */}
+                  {activeHabits.filter(h => h.goal_id !== goalId).length > 0 && (
+                    <div className="bg-cream-dark/15 border border-plum-main/5 p-4 rounded-2xl select-none my-1 animate-fadeIn">
+                      <label className="block text-[9px] uppercase tracking-wider text-plum-light/55 font-bold mb-1.5 ml-1">
+                        Or, move an existing habit to this goal
+                      </label>
+                      <select
+                        onChange={(e) => handleMoveExistingHabit(e.target.value)}
+                        value=""
+                        className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 cursor-pointer"
+                      >
+                        <option value="" disabled>Choose a habit to move...</option>
+                        {activeHabits.filter(h => h.goal_id !== goalId).map((h) => {
+                          const currentGoalObj = goals.find(g => g.id === h.goal_id)
+                          const currentArea = currentGoalObj?.area || 'General'
+                          return (
+                            <option key={h.id} value={h.id}>
+                              {h.name} (currently in {currentArea})
+                            </option>
+                          )
+                        })}
+                      </select>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-2 gap-3">
                     {/* Frequency */}

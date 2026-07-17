@@ -37,6 +37,7 @@ export default function EditGoal() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [habits, setHabits] = useState<Habit[]>([])
+  const [otherHabits, setOtherHabits] = useState<any[]>([])
 
   // Form states
   const [area, setArea] = useState('')
@@ -80,6 +81,17 @@ export default function EditGoal() {
 
         if (habitsError) throw habitsError
         setHabits(habitsData || [])
+
+        // Fetch other active habits for dropdown
+        const { data: otherHabitsData, error: otherHabitsError } = await supabase
+          .from('habits')
+          .select('id, name, tiny_goal, frequency, goal_id, goals(area)')
+          .eq('user_id', user.id)
+          .eq('active', true)
+          .neq('goal_id', id)
+
+        if (otherHabitsError) throw otherHabitsError
+        setOtherHabits(otherHabitsData || [])
       } catch (err: any) {
         console.error(err)
         setError('A small issue occurred while loading details. Please try again.')
@@ -90,6 +102,46 @@ export default function EditGoal() {
 
     fetchGoalDetails()
   }, [id, user])
+
+  const handleMoveHabit = async (habitId: string) => {
+    if (!user || !id) return
+    const habit = otherHabits.find((h) => h.id === habitId)
+    if (!habit) return
+
+    const currentArea = habit.goals?.area || 'General'
+    const confirm = window.confirm(
+      `This will move '${habit.name}' from ${currentArea} to ${area}. That's okay?`
+    )
+    if (!confirm) return
+
+    setSaving(true)
+    setError(null)
+
+    try {
+      const { error: updateError } = await supabase
+        .from('habits')
+        .update({ goal_id: id, updated_at: new Date().toISOString() })
+        .eq('id', habitId)
+        .eq('user_id', user.id)
+
+      if (updateError) throw updateError
+
+      // Refresh list
+      const movedHabit = {
+        id: habit.id,
+        name: habit.name,
+        tiny_goal: habit.tiny_goal || '',
+        frequency: habit.frequency || 'daily'
+      }
+      setHabits((prev) => [...prev, movedHabit])
+      setOtherHabits((prev) => prev.filter((h) => h.id !== habitId))
+    } catch (err: any) {
+      console.error(err)
+      setError('Could not move habit. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -284,6 +336,30 @@ export default function EditGoal() {
                   maxLength={400}
                 />
               </div>
+
+              {/* Add existing habit dropdown */}
+              {otherHabits.length > 0 && (
+                <div className="bg-cream-dark/10 border border-plum-main/5 p-4 rounded-2xl mb-4 select-none animate-fadeIn">
+                  <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                    Add an existing habit to this goal
+                  </label>
+                  <select
+                    onChange={(e) => handleMoveHabit(e.target.value)}
+                    value=""
+                    className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 cursor-pointer"
+                  >
+                    <option value="" disabled>Choose a habit to move...</option>
+                    {otherHabits.map((h) => {
+                      const currentArea = h.goals?.area || 'General'
+                      return (
+                        <option key={h.id} value={h.id}>
+                          {h.name} (currently in {currentArea})
+                        </option>
+                      )
+                    })}
+                  </select>
+                </div>
+              )}
 
               {/* Active habits under this goal */}
               <div className="border-t border-plum-main/5 pt-3">
