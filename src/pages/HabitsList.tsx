@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { calculateStreaks, getLocalDateString } from '../lib/streaks'
@@ -46,6 +46,16 @@ export default function HabitsList() {
   const [habits, setHabits] = useState<Habit[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  
+  const location = useLocation()
+  const [infoMessage, setInfoMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (location.state?.infoMessage) {
+      setInfoMessage(location.state.infoMessage)
+      window.history.replaceState({}, document.title)
+    }
+  }, [location])
 
   // Reflection modal states
   const [activeReflectionLogId, setActiveReflectionLogId] = useState<string | null>(null)
@@ -287,6 +297,12 @@ export default function HabitsList() {
         ) : (
           <div className="flex-1 flex flex-col justify-between">
             <div>
+              {infoMessage && (
+                <div className="bg-green-50/15 border border-green-600/10 rounded-2xl p-4 mb-4 text-xs text-green-800 text-left leading-relaxed animate-fadeIn">
+                  {infoMessage}
+                </div>
+              )}
+
               {error && (
                 <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-4 text-xs text-plum-light text-left leading-relaxed animate-fadeIn">
                   {error}

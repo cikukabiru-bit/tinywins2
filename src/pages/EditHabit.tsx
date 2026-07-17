@@ -363,6 +363,60 @@ export default function EditHabit() {
     }
   }
 
+  const handleDeleteHabit = async () => {
+    if (!user || !id) return
+    
+    const confirm = window.confirm(
+      `Delete '${name}' for good? This removes it and its check-in history and can't be undone.`
+    )
+    if (!confirm) return
+
+    setSubmitting(true)
+    setError(null)
+
+    try {
+      // 1. Delete associated reminders
+      await supabase
+        .from('reminders')
+        .delete()
+        .eq('habit_id', id)
+        .eq('user_id', user.id)
+
+      // 2. Delete associated logs manually
+      const { error: logsError } = await supabase
+        .from('habit_logs')
+        .delete()
+        .eq('habit_id', id)
+        .eq('user_id', user.id)
+
+      if (logsError) throw logsError
+
+      // 3. Delete the habit
+      const { error: habitError } = await supabase
+        .from('habits')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id)
+
+      if (habitError) throw habitError
+
+      // 4. Log security audit event
+      await supabase.from('security_audit_logs').insert({
+        user_id: user.id,
+        action: `delete_habit_${id}`,
+        user_agent: navigator.userAgent
+      })
+
+      // Go back with confirmation state
+      navigate('/habits', { state: { infoMessage: 'Habit removed.' } })
+    } catch (err: any) {
+      console.error('Delete habit error:', err)
+      setError(err?.message || 'Could not delete this habit. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const isNextDisabled = frequency === 'custom' && customDays.length === 0
 
   return (
@@ -721,6 +775,15 @@ export default function EditHabit() {
                     className="w-full border border-plum-main/15 text-red-500 hover:bg-red-50 py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 text-sm cursor-pointer disabled:opacity-50"
                   >
                     Rest this habit
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleDeleteHabit}
+                    disabled={submitting}
+                    className="text-plum-light/50 hover:text-red-500 text-[10px] font-medium tracking-wider uppercase transition-colors duration-200 cursor-pointer self-center mt-1 select-none"
+                  >
+                    Delete habit permanently
                   </button>
                 </div>
 
