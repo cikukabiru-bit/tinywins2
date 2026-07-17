@@ -45,16 +45,16 @@ export default function Login() {
         } else if (message.includes('too many requests')) {
           setError('We have received too many requests. Please take a short break and try again.')
         } else {
-          setError("We couldn't sign you in just now. Please check your connection and try again.")
+          setError(`We couldn't sign you in: ${signInError.message}`)
         }
         return
       }
 
       // On success, redirect to today dashboard
       navigate('/today')
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      setError('A small hiccup occurred. Let’s try again.')
+      setError(err?.message ? `Login failed: ${err.message}` : 'A small hiccup occurred. Let’s try again.')
     } finally {
       setLoading(false)
     }
