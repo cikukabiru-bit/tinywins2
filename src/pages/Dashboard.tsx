@@ -59,6 +59,10 @@ export default function Dashboard() {
   const [inspiration, setInspiration] = useState<any | null>(null)
   const [reflectionInspiration, setReflectionInspiration] = useState<any | null>(null)
 
+  // PWA Install state
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false)
+
   // Reminders & PWA Push
   const [reminders, setReminders] = useState<Reminder[]>([])
   const [notificationPermissionStatus, setNotificationPermissionStatus] = useState<string>(() => {
@@ -194,6 +198,33 @@ export default function Dashboard() {
       setCoachSuggestion(null)
     }
   }, [habits, coachTone, user, loadingData])
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+      setShowInstallPrompt(true)
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setShowInstallPrompt(false)
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    }
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    console.log(`PWA install response: ${outcome}`)
+    setDeferredPrompt(null)
+    setShowInstallPrompt(false)
+  }
 
   const handleLogout = async () => {
     try {
@@ -520,6 +551,40 @@ export default function Dashboard() {
                     </span>
                   )}
                 </p>
+              </div>
+            )}
+
+            {/* Gentle PWA Install Banner */}
+            {showInstallPrompt && (
+              <div className="bg-sunset-start border border-sunset-end/20 rounded-2xl p-4 mb-4 text-left animate-fadeIn flex justify-between items-center gap-4 relative">
+                <div className="min-w-0 flex-1 select-none">
+                  <span className="block text-[8px] uppercase tracking-wider text-sunset-end font-bold mb-1">
+                    ✨ TinyWins App
+                  </span>
+                  <p className="text-xs text-plum-dark font-medium">
+                    Install TinyWins on your screen
+                  </p>
+                  <p className="text-[10px] text-plum-light font-light leading-relaxed mt-0.5">
+                    Access your daily wins quickly as a standalone app.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleInstallClick}
+                    className="bg-sunset-end hover:bg-sunset-end/90 text-cream-light py-1.5 px-3 rounded-xl text-[9px] font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    Install
+                  </button>
+                  <button
+                    onClick={() => setShowInstallPrompt(false)}
+                    className="text-plum-light/50 hover:text-plum-main p-1.5 cursor-pointer"
+                    aria-label="Dismiss prompt"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             )}
 
