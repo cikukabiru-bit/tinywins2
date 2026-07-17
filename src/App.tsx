@@ -18,6 +18,9 @@ import EditGoal from './pages/EditGoal'
 import Library from './pages/Library'
 import NewLibraryItem from './pages/NewLibraryItem'
 import EditLibraryItem from './pages/EditLibraryItem'
+import Inspiration from './pages/Inspiration'
+import NewInspiration from './pages/NewInspiration'
+import EditInspiration from './pages/EditInspiration'
 
 function App() {
   return (
@@ -136,6 +139,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditLibraryItem />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/library/inspiration"
+            element={
+              <ProtectedRoute>
+                <Inspiration />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/library/inspiration/new"
+            element={
+              <ProtectedRoute>
+                <NewInspiration />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/library/inspiration/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditInspiration />
               </ProtectedRoute>
             }
           />

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { calculateStreaks, getLocalDateString, isScheduledDay } from '../lib/streaks'
 import { generateGeneralSuggestion, getSuggestionWithFallback, type CoachSuggestion } from '../lib/coach'
+import { getInspiration } from '../lib/inspiration'
 
 interface Habit {
   id: string
@@ -31,13 +32,7 @@ interface Habit {
   }[]
 }
 
-const ENCOURAGEMENTS = [
-  "Quiet progress is still progress.",
-  "Be gentle with yourself. Growth is a slow, steady tide.",
-  "Tiny steps create lasting paths. Take it one breath at a time.",
-  "Your effort today, however small, is enough.",
-  "Every tiny choice is a seed for tomorrow's ease."
-]
+
 
 export default function Dashboard() {
   const { user, name, signOut } = useAuth()
@@ -58,6 +53,10 @@ export default function Dashboard() {
   const [selectedMood, setSelectedMood] = useState('neutral')
   const [selectedEffort, setSelectedEffort] = useState('okay')
   const [submittingReflection, setSubmittingReflection] = useState(false)
+
+  // Inspirations
+  const [inspiration, setInspiration] = useState<any | null>(null)
+  const [reflectionInspiration, setReflectionInspiration] = useState<any | null>(null)
 
   const todayStr = getLocalDateString()
   const yesterdayStr = getLocalDateString(new Date(Date.now() - 86400000))
@@ -106,6 +105,8 @@ export default function Dashboard() {
 
     checkOnboardingStatus()
   }, [user, navigate])
+
+
 
   // 2. Fetch habits and logs
   const fetchDashboardData = async () => {
@@ -327,11 +328,7 @@ export default function Dashboard() {
     }
   })
 
-  // Select encouragement quote
-  const dayIndex = new Date().getDate() % ENCOURAGEMENTS.length
-  const encouragement = missedYesterday
-    ? 'Each day is a fresh starting line. Begin again, gently.'
-    : ENCOURAGEMENTS[dayIndex]
+
 
   // Calculate best current streak and best longest streak across all habits
   let bestCurrentStreak = 0
@@ -345,6 +342,46 @@ export default function Dashboard() {
       bestLongestStreak = stats.longest_streak
     }
   })
+
+  // Fetch real-time inspirations
+  useEffect(() => {
+    const fetchDashboardInspirations = async () => {
+      if (!user || loadingData) return
+
+      try {
+        // Fetch profile preferences
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('inspiration_preferences, coach_tone')
+          .eq('user_id', user.id)
+          .maybeSingle()
+
+        const preferences = profileData?.inspiration_preferences || []
+        const tone = profileData?.coach_tone || 'calm'
+
+        // Determine if they missed habits yesterday (soft return context)
+        const isSoftReturn = missedYesterday
+        // Determine if they have a strong streak
+        const isStrongStreak = bestCurrentStreak >= 3
+
+        const mainIns = await getInspiration(user.id, preferences, {
+          isSoftReturn,
+          isStrongStreak,
+          tone
+        })
+        setInspiration(mainIns)
+
+        const refIns = await getInspiration(user.id, preferences, {
+          tone
+        })
+        setReflectionInspiration(refIns)
+      } catch (err) {
+        console.error('Error fetching dashboard inspirations:', err)
+      }
+    }
+
+    fetchDashboardInspirations()
+  }, [user, loadingData, missedYesterday, bestCurrentStreak])
 
   if (checkingOnboarding || loadingData) {
     return (
@@ -402,11 +439,21 @@ export default function Dashboard() {
         <div className="flex-1 flex flex-col justify-between">
           <div>
             {/* Encouragement note */}
-            <div className="text-left py-2 px-1 mb-4 select-none">
-              <p className="text-xs font-serif italic text-plum-light/80 leading-relaxed font-light">
-                "{encouragement}"
-              </p>
-            </div>
+            {inspiration && (
+              <div className="text-left py-2 px-1 mb-4 select-none">
+                <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-0.5">
+                  Today's encouragement
+                </span>
+                <p className="text-xs font-serif italic text-plum-light/85 leading-relaxed font-light">
+                  "{inspiration.text}"
+                  {inspiration.author && (
+                    <span className="block text-[8px] text-plum-light/50 font-normal font-sans mt-0.5">
+                      — {inspiration.author}
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
 
             {/* Wins progress bar */}
             {scheduledToday.length > 0 && (
@@ -439,13 +486,7 @@ export default function Dashboard() {
                   const isSavedByFreeze = stats.freeze_used_dates.includes(yesterdayStr)
                   
                   // Setup nudge rotation
-                  const nudgeMessages = [
-                    "It's been a little while. Want to begin again today?",
-                    "No pressure at all — shall we start this one gently again?",
-                    "Ready to return? We can make this habit even smaller so it's easier to come back to."
-                  ]
-                  const charCodeSum = habit.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-                  const nudgeText = nudgeMessages[charCodeSum % nudgeMessages.length]
+                  const nudgeText = (inspiration?.type === 'restart' ? inspiration.text : null) || 'Begin again, without punishment. A soft reset is still progress.'
                   const showNudge = stats.consecutive_missed >= 3 && !isCompleted && !dismissedNudges.includes(habit.id)
 
                   return (
@@ -641,9 +682,20 @@ export default function Dashboard() {
             <h3 className="font-serif text-2xl font-normal text-plum-dark italic leading-tight mb-2">
               You showed up! ✨
             </h3>
-            <p className="text-xs text-plum-light/70 mb-4 leading-relaxed">
+            <p className="text-xs text-plum-light/70 mb-4 leading-relaxed font-sans">
               Take a moment to check in with yourself. This is entirely optional.
             </p>
+
+            {reflectionInspiration && (
+              <div className="bg-cream-dark/15 border border-plum-main/5 p-3 rounded-2xl mb-4 select-none">
+                <span className="block text-[7px] uppercase tracking-wider text-plum-light/55 font-bold mb-1">
+                  A small thought for today
+                </span>
+                <p className="text-[10px] font-serif italic text-plum-dark leading-relaxed font-light">
+                  "{reflectionInspiration.text}"
+                </p>
+              </div>
+            )}
 
             <div className="flex flex-col gap-4">
               {/* Note */}
