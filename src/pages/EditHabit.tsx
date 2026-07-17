@@ -8,6 +8,74 @@ interface Goal {
   area: string
 }
 
+// Client-side default seeds in case database lacks them on cold boot
+const DEFAULT_SEEDS = [
+  {
+    id: 'seed-1',
+    user_id: null,
+    title: 'Gentle 10-Minute Morning Stretch',
+    category: 'Physical',
+    type: 'video',
+    url: 'https://www.youtube.com/watch?v=g_tea8ZNk5A',
+    platform: 'YouTube',
+    short_description: 'A calm, slow morning stretch routine to wake up your muscles.',
+    tags: ['stretch', 'morning', 'fitness'],
+    estimated_duration: '10 mins',
+    mood: 'calm',
+    is_user_added: false,
+    is_default: true,
+    is_favourite: false
+  },
+  {
+    id: 'seed-2',
+    user_id: null,
+    title: 'Calm Ambient Rain Music',
+    category: 'Mental',
+    type: 'music',
+    url: 'https://www.youtube.com/watch?v=q76bN0Gy6zo',
+    platform: 'YouTube',
+    short_description: 'Deep ambient sounds of rain falling on leaves for focusing or resting.',
+    tags: ['rain', 'ambient', 'focus', 'sleep'],
+    estimated_duration: 'flexible',
+    mood: 'focus',
+    is_user_added: false,
+    is_default: true,
+    is_favourite: false
+  },
+  {
+    id: 'seed-3',
+    user_id: null,
+    title: 'Daily Breathing Exercise',
+    category: 'Self-care',
+    type: 'video',
+    url: 'https://www.youtube.com/watch?v=5DqTuWve9t8',
+    platform: 'YouTube',
+    short_description: 'Box breathing exercise to reduce anxiety and anchor your day.',
+    tags: ['breathing', 'self-care', 'calm'],
+    estimated_duration: '3 mins',
+    mood: 'anxious',
+    is_user_added: false,
+    is_default: true,
+    is_favourite: false
+  },
+  {
+    id: 'seed-4',
+    user_id: null,
+    title: 'The Quiet Mind Meditation',
+    category: 'Spiritual',
+    type: 'prayer',
+    url: 'https://www.youtube.com/watch?v=ZToicYcHIOU',
+    platform: 'YouTube',
+    short_description: 'A short, gentle guidance to calm the mind and find spiritual presence.',
+    tags: ['prayer', 'spiritual', 'calm'],
+    estimated_duration: '5 mins',
+    mood: 'calm',
+    is_user_added: false,
+    is_default: true,
+    is_favourite: false
+  }
+]
+
 export default function EditHabit() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuth()
@@ -19,6 +87,8 @@ export default function EditHabit() {
   const [goals, setGoals] = useState<Goal[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [recommendedLinks, setRecommendedLinks] = useState<any[]>([])
+  const [supportLinksEnabled, setSupportLinksEnabled] = useState(true)
   
   // Custom rest confirmation overlay state
   const [showRestConfirm, setShowRestConfirm] = useState(false)
@@ -85,6 +155,50 @@ export default function EditHabit() {
         setPreferredTime(habitData.preferred_time || '')
         setReminderEnabled(habitData.reminder_enabled)
         setGrowthMode(habitData.growth_mode || 'Increase slowly')
+
+        // 4. Fetch Support links & user preferences
+        const isEnabled = localStorage.getItem(`support_links_enabled_${user.id}`) !== 'false'
+        setSupportLinksEnabled(isEnabled)
+
+        if (isEnabled) {
+          // Fetch user profile for preferred formats (support_style)
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('support_style')
+            .eq('user_id', user.id)
+            .maybeSingle()
+
+          const preferredFormats = profileData?.support_style || []
+
+          // Fetch all content items
+          const { data: contentData } = await supabase
+            .from('content_items')
+            .select('*')
+            .or(`user_id.eq.${user.id},is_default.eq.true`)
+
+          let allItems = contentData || []
+          const hasDefaults = allItems.some((i) => i.is_default)
+          if (!hasDefaults) {
+            allItems = [...allItems, ...DEFAULT_SEEDS]
+          }
+
+          // Simple rule-based match on category/tags/type
+          const habitCategory = habitData.category || 'Physical'
+          
+          let matched = allItems.filter((item) => {
+            // If preferredFormats is specified, filter by it
+            if (preferredFormats.length > 0 && !preferredFormats.includes(item.type)) {
+              return false
+            }
+
+            const catMatch = item.category?.toLowerCase() === habitCategory.toLowerCase()
+            const tagMatch = item.tags?.some((t: string) => t.toLowerCase() === habitCategory.toLowerCase())
+            const typeMatch = item.type?.toLowerCase() === habitCategory.toLowerCase()
+            return catMatch || tagMatch || typeMatch
+          })
+
+          setRecommendedLinks(matched.slice(0, 3))
+        }
 
       } catch (err) {
         console.error('Error fetching edit data:', err)
@@ -411,6 +525,37 @@ export default function EditHabit() {
                     Enable daily reminder (placeholder)
                   </label>
                 </div>
+
+                {/* Recommended Support Links */}
+                {supportLinksEnabled && recommendedLinks.length > 0 && (
+                  <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 mt-4 text-left select-none animate-fadeIn">
+                    <h4 className="text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-2 ml-0.5">
+                      Recommended Support Links
+                    </h4>
+                    <div className="flex flex-col gap-2">
+                      {recommendedLinks.map((link) => (
+                        <div key={link.id} className="bg-cream-light border border-plum-main/5 p-2.5 rounded-xl flex items-center justify-between gap-3 hover:border-plum-main/20 transition-all duration-200">
+                          <div className="min-w-0 flex-1">
+                            <h5 className="font-semibold text-plum-dark text-[10px] truncate">{link.title}</h5>
+                            <span className="text-[8px] text-plum-light/50 font-normal">⏱️ {link.estimated_duration || 'flexible'}</span>
+                          </div>
+                          <a
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-plum-main hover:bg-plum-dark text-cream-light py-1 px-3 rounded-lg text-[9px] font-semibold transition-colors cursor-pointer"
+                          >
+                            Open
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Disclaimer */}
+                    <p className="text-[7px] text-plum-light/50 mt-2 leading-normal select-none italic text-center">
+                      "Support links open outside TinyWins."
+                    </p>
+                  </div>
+                )}
 
                 {/* Form Actions */}
                 <div className="flex flex-col gap-3 mt-4 pt-3 border-t border-plum-main/10">

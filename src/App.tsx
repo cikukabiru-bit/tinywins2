@@ -15,6 +15,9 @@ import Coach from './pages/Coach'
 import Goals from './pages/Goals'
 import NewGoal from './pages/NewGoal'
 import EditGoal from './pages/EditGoal'
+import Library from './pages/Library'
+import NewLibraryItem from './pages/NewLibraryItem'
+import EditLibraryItem from './pages/EditLibraryItem'
 
 function App() {
   return (
@@ -109,6 +112,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditGoal />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/library"
+            element={
+              <ProtectedRoute>
+                <Library />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/library/new"
+            element={
+              <ProtectedRoute>
+                <NewLibraryItem />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/library/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditLibraryItem />
               </ProtectedRoute>
             }
           />
