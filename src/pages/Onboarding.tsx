@@ -238,6 +238,19 @@ export default function Onboarding() {
         return
       }
 
+      // Insert default consents (silent fallback if exists)
+      await supabase
+        .from('user_consents')
+        .insert({
+          user_id: user.id,
+          data_storage_consent: true,
+          ai_personalization_consent: false,
+          support_content_consent: false,
+          habit_score_personalization_consent: false,
+          inspiration_personalization_consent: false,
+          consent_version: '1.0'
+        })
+
       // Redirect to /habit-score with the new goal id
       navigate(`/habit-score?goalId=${goalData.id}`)
     } catch (err) {
