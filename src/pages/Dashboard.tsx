@@ -512,9 +512,11 @@ export default function Dashboard() {
                 </span>
                 <p className="text-xs font-serif italic text-plum-light/85 leading-relaxed font-light">
                   "{inspiration.text}"
-                  {inspiration.author && (
+                  {(inspiration.author || inspiration.source) && (
                     <span className="block text-[8px] text-plum-light/50 font-normal font-sans mt-0.5">
-                      — {inspiration.author}
+                      — {inspiration.author && inspiration.source 
+                          ? `${inspiration.author}, ${inspiration.source}` 
+                          : (inspiration.author || inspiration.source)}
                     </span>
                   )}
                 </p>
@@ -820,6 +822,13 @@ export default function Dashboard() {
                 </span>
                 <p className="text-[10px] font-serif italic text-plum-dark leading-relaxed font-light">
                   "{reflectionInspiration.text}"
+                  {(reflectionInspiration.author || reflectionInspiration.source) && (
+                    <span className="block text-[8px] text-plum-light/50 font-normal font-sans mt-0.5">
+                      — {reflectionInspiration.author && reflectionInspiration.source 
+                          ? `${reflectionInspiration.author}, ${reflectionInspiration.source}` 
+                          : (reflectionInspiration.author || reflectionInspiration.source)}
+                    </span>
+                  )}
                 </p>
               </div>
             )}
