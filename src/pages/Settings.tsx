@@ -19,6 +19,7 @@ export default function Settings() {
   const [supportConsent, setSupportConsent] = useState(false)
   const [scoreConsent, setScoreConsent] = useState(false)
   const [inspirationConsent, setInspirationConsent] = useState(false)
+  const [journalConsent, setJournalConsent] = useState(false)
 
   // Password fields
   const [newPassword, setNewPassword] = useState('')
@@ -58,6 +59,7 @@ export default function Settings() {
               support_content_consent: false,
               habit_score_personalization_consent: false,
               inspiration_personalization_consent: false,
+              journal_ai_consent: false,
               consent_version: '1.0'
             })
             .select()
@@ -72,6 +74,7 @@ export default function Settings() {
           setSupportConsent(consentData.support_content_consent)
           setScoreConsent(consentData.habit_score_personalization_consent)
           setInspirationConsent(consentData.inspiration_personalization_consent)
+          setJournalConsent(consentData.journal_ai_consent || false)
         }
 
         // Fetch user phone from metadata
@@ -114,6 +117,7 @@ export default function Settings() {
       if (type === 'support') updates.support_content_consent = value
       if (type === 'score') updates.habit_score_personalization_consent = value
       if (type === 'inspiration') updates.inspiration_personalization_consent = value
+      if (type === 'journal') updates.journal_ai_consent = value
 
       const { error: updateError } = await supabase
         .from('user_consents')
@@ -133,6 +137,7 @@ export default function Settings() {
       if (type === 'support') setSupportConsent(value)
       if (type === 'score') setScoreConsent(value)
       if (type === 'inspiration') setInspirationConsent(value)
+      if (type === 'journal') setJournalConsent(value)
 
       setSuccess('Privacy preferences updated.')
     } catch (err) {
@@ -216,16 +221,7 @@ export default function Settings() {
 
     try {
       // Gather all tables
-      const [
-        { data: profile },
-        { data: goals },
-        { data: habits },
-        { data: logs },
-        { data: scores },
-        { data: reminders },
-        { data: inspiration },
-        { data: content }
-      ] = await Promise.all([
+      const results = await Promise.all([
         supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle(),
         supabase.from('goals').select('*').eq('user_id', user.id),
         supabase.from('habits').select('*').eq('user_id', user.id),
@@ -233,8 +229,19 @@ export default function Settings() {
         supabase.from('habit_scores').select('*').eq('user_id', user.id),
         supabase.from('reminders').select('*').eq('user_id', user.id),
         supabase.from('inspiration_items').select('*').eq('user_id', user.id),
-        supabase.from('content_items').select('*').eq('user_id', user.id)
+        supabase.from('content_items').select('*').eq('user_id', user.id),
+        supabase.from('journal_entries').select('*').eq('user_id', user.id)
       ])
+
+      const profile = results[0].data
+      const goals = results[1].data
+      const habits = results[2].data
+      const logs = results[3].data
+      const scores = results[4].data
+      const reminders = results[5].data
+      const inspiration = results[6].data
+      const content = results[7].data
+      const journal = results[8].data
 
       const dataBundle = {
         profile,
@@ -244,7 +251,8 @@ export default function Settings() {
         habit_scores: scores || [],
         reminders: reminders || [],
         custom_inspirations: inspiration || [],
-        custom_support_links: content || []
+        custom_support_links: content || [],
+        journal_entries: journal || []
       }
 
       // 1. Export JSON
@@ -271,6 +279,9 @@ export default function Settings() {
       ;(logs || []).forEach(l => {
         csvContent += `Habit Log,Status: ${l.status},Mood: ${l.mood || ''},${l.log_date},"${l.reflection || ''}"\n`
       })
+      ;(journal || []).forEach((j: any) => {
+        csvContent += `Journal,${j.title || 'Untitled'},"${j.body ? j.body.replace(/"/g, '""') : ''}",${j.entry_date},Mood: ${j.mood || ''}\n`
+      })
 
       const csvBlob = new Blob([csvContent], { type: 'text/csv' })
       const csvUrl = URL.createObjectURL(csvBlob)
@@ -296,7 +307,8 @@ export default function Settings() {
     const messages: any = {
       reflections: "Clear all reflections? Your habit scores and streaks will remain, but reflection descriptions will be emptied. This cannot be undone.",
       logs: "Delete all habit history logs? This resets all your streaks and completion rates to zero. This cannot be undone.",
-      reminders: "Delete all scheduled reminders? This cannot be undone."
+      reminders: "Delete all scheduled reminders? This cannot be undone.",
+      journal: "Delete all journal entries? This cannot be undone."
     }
 
     const confirm = window.confirm(messages[type])
@@ -321,6 +333,12 @@ export default function Settings() {
       } else if (type === 'reminders') {
         const { error: delError } = await supabase
           .from('reminders')
+          .delete()
+          .eq('user_id', user.id)
+        if (delError) throw delError
+      } else if (type === 'journal') {
+        const { error: delError } = await supabase
+          .from('journal_entries')
           .delete()
           .eq('user_id', user.id)
         if (delError) throw delError
@@ -423,6 +441,12 @@ export default function Settings() {
               >
                 Edit my onboarding answers →
               </Link>
+              <Link
+                to="/journal"
+                className="inline-block text-[10px] text-sunset-end hover:text-plum-main font-semibold mt-1.5 transition-colors underline decoration-dotted cursor-pointer"
+              >
+                My Private Journal →
+              </Link>
             </div>
 
             {/* CONSENTS SECTION */}
@@ -482,6 +506,20 @@ export default function Settings() {
                   <div className="flex-1">
                     <span className="text-xs font-semibold text-plum-dark block">Inspiration Settings Sharing</span>
                     <span className="text-[9px] text-plum-light/60 leading-normal block mt-0.5">Use quote categories (e.g. spiritual) to curate your Today dashboard encouragement.</span>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={journalConsent}
+                    onChange={(e) => handleToggleConsent('journal', e.target.checked)}
+                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                    disabled={submittingConsent}
+                  />
+                  <div className="flex-1">
+                    <span className="text-xs font-semibold text-plum-dark block">Let Tiny Coach read my journal entries</span>
+                    <span className="text-[9px] text-plum-light/60 leading-normal block mt-0.5">Used ONLY locally/AI (default off). Journals will never be sent anywhere without your explicit permission.</span>
                   </div>
                 </label>
               </div>
@@ -583,7 +621,13 @@ export default function Settings() {
                     onClick={() => handleDeleteSpecificData('reminders')}
                     className="w-full border border-plum-main/20 hover:bg-plum-main/5 text-plum-main py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
                   >
-                    🗑️ Clear All Reminders
+                    🗑️ Clear Scheduled Reminders
+                  </button>
+                  <button
+                    onClick={() => handleDeleteSpecificData('journal')}
+                    className="w-full border border-plum-main/20 hover:bg-plum-main/5 text-plum-main py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
+                  >
+                    🗑️ Clear Journal Entries
                   </button>
                 </div>
 

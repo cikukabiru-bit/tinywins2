@@ -52,6 +52,7 @@ export default function Preferences() {
   const [coachTone, setCoachTone] = useState('Gentle')
   const [supportStyle, setSupportStyle] = useState<string[]>([])
   const [inspirationPreferences, setInspirationPreferences] = useState<string[]>([])
+  const [eveningHour, setEveningHour] = useState(20)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -60,7 +61,7 @@ export default function Preferences() {
       try {
         const { data, error: profileError } = await supabase
           .from('profiles')
-          .select('consistency_blocker, coach_tone, support_style, inspiration_preferences')
+          .select('consistency_blocker, coach_tone, support_style, inspiration_preferences, evening_reflection_hour')
           .eq('user_id', user.id)
           .maybeSingle()
 
@@ -71,6 +72,7 @@ export default function Preferences() {
           setCoachTone(data.coach_tone || 'Gentle')
           setSupportStyle(data.support_style || [])
           setInspirationPreferences(data.inspiration_preferences || [])
+          setEveningHour(data.evening_reflection_hour ?? 20)
         }
       } catch (err) {
         console.error('Error fetching preferences:', err)
@@ -111,6 +113,7 @@ export default function Preferences() {
           coach_tone: coachTone,
           support_style: supportStyle,
           inspiration_preferences: inspirationPreferences,
+          evening_reflection_hour: eveningHour,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', user.id)
@@ -201,6 +204,29 @@ export default function Preferences() {
                   {TONES.map((t) => (
                     <option key={t} value={t}>{t}</option>
                   ))}
+                </select>
+              </div>
+
+              {/* Evening reflection hour */}
+              <div>
+                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1.5 ml-1">
+                  Evening Reflection Time
+                </label>
+                <select
+                  value={eveningHour}
+                  onChange={(e) => setEveningHour(parseInt(e.target.value))}
+                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                  disabled={submitting}
+                >
+                  {[17, 18, 19, 20, 21, 22, 23].map((hr) => {
+                    const ampm = hr >= 12 ? 'PM' : 'AM';
+                    const displayHr = hr > 12 ? hr - 12 : hr;
+                    return (
+                      <option key={hr} value={hr}>
+                        {displayHr}:00 {ampm}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 

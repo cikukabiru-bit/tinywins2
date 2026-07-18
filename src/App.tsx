@@ -23,6 +23,7 @@ import NewInspiration from './pages/NewInspiration'
 import EditInspiration from './pages/EditInspiration'
 import Settings from './pages/Settings'
 import Preferences from './pages/Preferences'
+import Journal from './pages/Journal'
 
 function App() {
   return (
@@ -181,6 +182,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Preferences />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/journal"
+            element={
+              <ProtectedRoute>
+                <Journal />
               </ProtectedRoute>
             }
           />

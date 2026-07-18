@@ -63,6 +63,17 @@ export default function Dashboard() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [showInstallPrompt, setShowInstallPrompt] = useState(false)
 
+  // Evening Encouragement states
+  const [eveningHour, setEveningHour] = useState(20)
+  const [dismissedEveningEncouragement, setDismissedEveningEncouragement] = useState(() => {
+    const today = getLocalDateString()
+    return localStorage.getItem(`dismissed_evening_${today}`) === 'true'
+  })
+  const [eveningInspiration, setEveningInspiration] = useState<any | null>(null)
+
+  // Habit Log Status states
+  const [selectedStatus, setSelectedStatus] = useState<'completed' | 'partial' | 'not_done'>('completed')
+
   // Reminders & PWA Push
   const [reminders, setReminders] = useState<Reminder[]>([])
   const [notificationPermissionStatus, setNotificationPermissionStatus] = useState<string>(() => {
@@ -97,7 +108,7 @@ export default function Dashboard() {
       try {
         const { data, error: profileError } = await supabase
           .from('profiles')
-          .select('onboarding_completed, coach_tone')
+          .select('onboarding_completed, coach_tone, evening_reflection_hour')
           .eq('user_id', user.id)
           .maybeSingle()
 
@@ -108,6 +119,9 @@ export default function Dashboard() {
         } else {
           if (data.coach_tone) {
             setCoachTone(data.coach_tone)
+          }
+          if (data.evening_reflection_hour !== undefined && data.evening_reflection_hour !== null) {
+            setEveningHour(data.evening_reflection_hour)
           }
           setCheckingOnboarding(false)
         }
@@ -284,6 +298,7 @@ export default function Dashboard() {
         setReflectionText('')
         setSelectedMood('neutral')
         setSelectedEffort('okay')
+        setSelectedStatus('completed')
       }
     } catch (err) {
       console.error('Check-in error:', err)
@@ -301,7 +316,8 @@ export default function Dashboard() {
         .update({
           reflection: reflectionText.trim(),
           mood: selectedMood,
-          effort_level: selectedEffort
+          effort_level: selectedEffort,
+          status: selectedStatus
         })
         .eq('id', activeReflectionLogId)
 
@@ -319,7 +335,8 @@ export default function Dashboard() {
                     ...log,
                     reflection: reflectionText.trim(),
                     mood: selectedMood,
-                    effort_level: selectedEffort
+                    effort_level: selectedEffort,
+                    status: selectedStatus
                   }
                 }
                 return log
@@ -360,7 +377,7 @@ export default function Dashboard() {
   
   // Calculate completed count
   const completedTodayCount = scheduledToday.filter((h) =>
-    h.habit_logs.some((l) => l.log_date === todayStr)
+    h.habit_logs.some((l) => l.log_date === todayStr && l.status !== 'not_done')
   ).length
 
   // Check if any habit scheduled yesterday was missed
@@ -420,6 +437,11 @@ export default function Dashboard() {
           tone
         })
         setReflectionInspiration(refIns)
+
+        const eveIns = await getInspiration(user.id, preferences, {
+          tone
+        })
+        setEveningInspiration(eveIns)
       } catch (err) {
         console.error('Error fetching dashboard inspirations:', err)
       }
@@ -551,6 +573,72 @@ export default function Dashboard() {
                     </span>
                   )}
                 </p>
+              </div>
+            )}
+
+            {/* Evening Reflection Card */}
+            {(new Date().getHours() >= eveningHour) && !dismissedEveningEncouragement && (
+              <div className="bg-plum-main text-cream-light border border-plum-light/20 rounded-3xl p-5 mb-5 text-left animate-fadeIn relative">
+                <button
+                  onClick={() => {
+                    localStorage.setItem(`dismissed_evening_${todayStr}`, 'true')
+                    setDismissedEveningEncouragement(true)
+                  }}
+                  className="absolute right-3 top-3 text-cream-light/40 hover:text-cream-light p-1 cursor-pointer"
+                  aria-label="Dismiss evening encouragement"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                
+                <span className="block text-[8px] uppercase tracking-wider text-sunset-mid font-bold mb-1.5">
+                  🌙 Evening Reflection
+                </span>
+                
+                <p className="text-sm font-serif italic text-cream-light leading-relaxed mb-3">
+                  "{
+                    (() => {
+                      if (scheduledToday.length === 0) {
+                        return "Today was a rest day. Resting is part of growing. Rest well."
+                      }
+                      const logsToday = scheduledToday.map(h => 
+                        h.habit_logs.find(l => l.log_date === todayStr) || null
+                      ).filter(l => l !== null);
+
+                      if (logsToday.length === 0) {
+                        return "Today was quiet. That's okay. Tomorrow is still yours."
+                      }
+                      const completedCount = logsToday.filter(l => l.status === 'completed').length;
+                      const partialCount = logsToday.filter(l => l.status === 'partial').length;
+                      if (logsToday.length === scheduledToday.length && completedCount >= scheduledToday.length * 0.5) {
+                        return "You did it! You showed up fully for your intentions today. Rest well."
+                      }
+                      if (completedCount > 0 || partialCount > 0) {
+                        return "You showed up today, and that counts."
+                      }
+                      return "Today was quiet. That's okay. Tomorrow is still yours."
+                    })()
+                  }"
+                </p>
+
+                {eveningInspiration && (
+                  <div className="border-t border-cream-light/10 pt-3 select-none">
+                    <span className="block text-[7px] uppercase tracking-wider text-sunset-mid/80 font-bold mb-1">
+                      A small thought for tonight
+                    </span>
+                    <p className="text-[10px] font-serif italic text-cream-light/80 leading-relaxed font-light">
+                      "{eveningInspiration.text}"
+                      {(eveningInspiration.author || eveningInspiration.source) && (
+                        <span className="block text-[8px] text-cream-light/40 font-normal font-sans mt-0.5">
+                          — {eveningInspiration.author && eveningInspiration.source 
+                              ? `${eveningInspiration.author}, ${eveningInspiration.source}` 
+                              : (eveningInspiration.author || eveningInspiration.source)}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -899,6 +987,37 @@ export default function Dashboard() {
             )}
 
             <div className="flex flex-col gap-4">
+              {/* Status picker */}
+              <div>
+                <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-2 ml-1">
+                  Status
+                </label>
+                <div className="flex gap-2">
+                  {[
+                    { value: 'completed', label: 'Completed' },
+                    { value: 'partial', label: 'Partial' },
+                    { value: 'not_done', label: 'Not Done' }
+                  ].map((statusOpt) => {
+                    const isSelected = selectedStatus === statusOpt.value
+                    return (
+                      <button
+                        key={statusOpt.value}
+                        type="button"
+                        onClick={() => setSelectedStatus(statusOpt.value as any)}
+                        className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-200 border cursor-pointer select-none text-center ${
+                          isSelected
+                            ? 'bg-plum-main text-cream-light border-plum-main'
+                            : 'bg-cream-dark/15 text-plum-main border-plum-main/10 hover:bg-cream-dark/30'
+                        }`}
+                        disabled={submittingReflection}
+                      >
+                        {statusOpt.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
               {/* Note */}
               <div>
                 <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">

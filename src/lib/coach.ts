@@ -27,6 +27,171 @@ export function generateHabitSuggestion(
   tone: string = 'Gentle',
   todayStr: string = getLocalDateString()
 ): CoachSuggestion {
+  const cleanTone = tone.trim().toLowerCase();
+
+  // Analyze statuses for Part 1 check-in states
+  const totalLogs = logs.length;
+  const completedLogsCount = logs.filter(l => l.status === 'completed').length;
+  const partialLogsCount = logs.filter(l => l.status === 'partial').length;
+  const notDoneLogsCount = logs.filter(l => l.status === 'not_done').length;
+
+  let statusAnalysis: 'completed' | 'partial' | 'not_done' | 'mix' | null = null;
+  if (totalLogs >= 3) {
+    if (completedLogsCount / totalLogs >= 0.6) {
+      statusAnalysis = 'completed';
+    } else if (partialLogsCount / totalLogs >= 0.4) {
+      statusAnalysis = 'partial';
+    } else if (notDoneLogsCount / totalLogs >= 0.4) {
+      statusAnalysis = 'not_done';
+    } else {
+      statusAnalysis = 'mix';
+    }
+  }
+
+  if (statusAnalysis === 'partial') {
+    switch (cleanTone) {
+      case 'motivational':
+        return {
+          message: `Partly is still showing up! That's progress, but let's make this smaller so you can crush it completely!`,
+          actionLabel: "Make smaller",
+          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
+        };
+      case 'spiritual':
+        return {
+          message: "Showing up partly is a sacred step. If it feels heavy, consider making this practice smaller to honor your capacity.",
+          actionLabel: "Make it smaller",
+          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
+        };
+      case 'practical':
+        return {
+          message: "Partial completions suggest friction. We recommend reducing the tiny goal to make finishing frictionless.",
+          actionLabel: "Reduce target",
+          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
+        };
+      case 'playful':
+        return {
+          message: "Woohoo, partly is still a win! Let's shrink it down a bit to make crossing it off super easy-peasy!",
+          actionLabel: "Make smaller",
+          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
+        };
+      case 'firm but kind':
+        return {
+          message: "You are showing up, but the target is slightly too large. Shrink the habit goal for a consistent streak.",
+          actionLabel: "Adjust goal",
+          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
+        };
+      case 'calm':
+        return {
+          message: "Even a partial step invites peace. Simplify this goal to let yourself finish with ease.",
+          actionLabel: "Simplify",
+          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
+        };
+      case 'gentle':
+      default:
+        return {
+          message: "Partly is still showing up. Would you like to make this smaller so it's easier to finish?",
+          actionLabel: "Make it smaller",
+          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
+        };
+    }
+  }
+
+  if (statusAnalysis === 'not_done') {
+    switch (cleanTone) {
+      case 'motivational':
+        return {
+          message: "Love the honest log! That's step one. Let's adjust this habit's size, time, or days to get back in the winning zone!",
+          actionLabel: "Adjust habit",
+          actionPath: `/habits/${habit.id}/edit`
+        };
+      case 'spiritual':
+        return {
+          message: "Honesty is its own form of presence. No guilt. Let's gently adjust this practice's time, days, or size to match your path.",
+          actionLabel: "Adjust path",
+          actionPath: `/habits/${habit.id}/edit`
+        };
+      case 'practical':
+        return {
+          message: "Honest logs are great data. The habit is currently too large or scheduled at a high-friction time. Modify its days, time, or size.",
+          actionLabel: "Modify habit",
+          actionPath: `/habits/${habit.id}/edit`
+        };
+      case 'playful':
+        return {
+          message: "High-five for keeping it real! No worries at all. Want to tweak the size, days, or time to make it play better with your schedule?",
+          actionLabel: "Tweak habit",
+          actionPath: `/habits/${habit.id}/edit`
+        };
+      case 'firm but kind':
+        return {
+          message: "Acknowledge the honest log. A reset is part of the process. Adjust the time, days, or size to rebuild the routine.",
+          actionLabel: "Fix habit",
+          actionPath: `/habits/${habit.id}/edit`
+        };
+      case 'calm':
+        return {
+          message: "A quiet space is an honest one. Rest without guilt. You can adjust the time, days, or size whenever you are ready.",
+          actionLabel: "Adjust setting",
+          actionPath: `/habits/${habit.id}/edit`
+        };
+      case 'gentle':
+      default:
+        return {
+          message: "Thank you for logging honestly. There is no pressure here. Would you like to make this goal smaller, or try changing its time or days?",
+          actionLabel: "Adjust habit",
+          actionPath: `/habits/${habit.id}/edit`
+        };
+    }
+  }
+
+  if (statusAnalysis === 'mix') {
+    switch (cleanTone) {
+      case 'motivational':
+        return {
+          message: "A mix of wins and tries is how we grow! Keep up the consistency of checking in — you are doing awesome!",
+          actionLabel: "Keep going",
+          actionPath: "/today"
+        };
+      case 'spiritual':
+        return {
+          message: "Every checked-in day is a thread in your tapestry. Praise the simple act of showing up at all.",
+          actionLabel: "Mindful rest",
+          actionPath: "/today"
+        };
+      case 'practical':
+        return {
+          message: "A variable completion pattern is normal. Focus on the habit loop: trigger and perform. Keep checking in.",
+          actionLabel: "View dashboard",
+          actionPath: "/today"
+        };
+      case 'playful':
+        return {
+          message: "Check-ins of all shapes and sizes! You're keeping the habit alive by showing up. Keep rocking!",
+          actionLabel: "Keep it up",
+          actionPath: "/today"
+        };
+      case 'firm but kind':
+        return {
+          message: "You are maintaining the routine by logging. Focus on turning those partials and tries into complete wins.",
+          actionLabel: "Stay steady",
+          actionPath: "/today"
+        };
+      case 'calm':
+        return {
+          message: "A natural rhythm has peaks and valleys. Welcome the consistency of just checking in with yourself.",
+          actionLabel: "Pause here",
+          actionPath: "/today"
+        };
+      case 'gentle':
+      default:
+        return {
+          message: "You are showing up in different ways, and every bit of showing up counts. Keep celebrating your consistency!",
+          actionLabel: "View habits",
+          actionPath: "/today"
+        };
+    }
+  }
+
   const completedLogs = logs.filter((l) => l.status === 'completed');
   const completedDates = new Set(completedLogs.map((l) => l.log_date));
   const isCompletedToday = completedDates.has(todayStr);
@@ -132,9 +297,6 @@ export function generateHabitSuggestion(
   // 3. Check completions in the last 7 days
   const sevenDaysAgo = new Date(today.getTime() - 7 * 86400000);
   const completionsThisWeek = completedLogs.filter((l) => new Date(l.log_date) >= sevenDaysAgo).length;
-
-  // Clean Tone names
-  const cleanTone = tone.trim().toLowerCase();
 
   // Suggestion mappings
   if (isRecentReturn) {
@@ -613,13 +775,23 @@ export async function getSuggestionWithFallback(
       reflectionSummary = sortedLogs[0].reflection;
     }
 
+    const completedLogsCount = logs.filter(l => l.status === 'completed').length;
+    const partialLogsCount = logs.filter(l => l.status === 'partial').length;
+    const notDoneLogsCount = logs.filter(l => l.status === 'not_done').length;
+
     const payload = {
       category,
       completion_pattern: completionPattern,
       current_streak: stats.current_streak,
       consecutive_missed: stats.consecutive_missed,
       coach_tone: tone,
-      reflection_summary: reflectionSummary || undefined
+      reflection_summary: reflectionSummary || undefined,
+      logs_summary: {
+        total: logs.length,
+        completed: completedLogsCount,
+        partial: partialLogsCount,
+        not_done: notDoneLogsCount
+      }
     };
 
     // Call Supabase Edge Function with a timeout

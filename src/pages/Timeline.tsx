@@ -4,23 +4,26 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { getLocalDateString } from '../lib/streaks'
 
-interface LogEntry {
+interface TimelineItem {
   id: string
-  log_date: string
-  status: string
-  reflection: string | null
+  date: string
+  type: 'habit_log' | 'journal'
+  status?: string
+  reflection?: string | null
   mood: string | null
-  effort_level: string | null
-  habit_name: string
-  tiny_goal: string
-  goal_area: string
+  effort_level?: string | null
+  habit_name?: string
+  tiny_goal?: string
+  goal_area?: string
+  title?: string | null
+  body?: string
 }
 
 export default function Timeline() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
 
-  const [logs, setLogs] = useState<LogEntry[]>([])
+  const [items, setItems] = useState<TimelineItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -32,15 +35,23 @@ export default function Timeline() {
       if (!user) return
 
       try {
-        // Fetch completed logs
+        // Fetch all habit logs (any status)
         const { data: logsData, error: logsError } = await supabase
           .from('habit_logs')
           .select('*')
           .eq('user_id', user.id)
-          .eq('status', 'completed')
           .order('log_date', { ascending: false })
 
         if (logsError) throw logsError
+
+        // Fetch journal entries
+        const { data: journalData, error: journalError } = await supabase
+          .from('journal_entries')
+          .select('*, goals:goals(area)')
+          .eq('user_id', user.id)
+          .order('entry_date', { ascending: false })
+
+        if (journalError) throw journalError
 
         // Fetch habits
         const { data: habitsData, error: habitsError } = await supabase
@@ -58,13 +69,14 @@ export default function Timeline() {
 
         if (goalsError) throw goalsError
 
-        // Combine and join in memory
-        const combined: LogEntry[] = (logsData || []).map((log) => {
+        // Map habit logs
+        const mappedLogs: TimelineItem[] = (logsData || []).map((log) => {
           const habit = habitsData?.find((h) => h.id === log.habit_id) || null
           const goal = goalsData?.find((g) => g.id === habit?.goal_id) || null
           return {
             id: log.id,
-            log_date: log.log_date,
+            date: log.log_date,
+            type: 'habit_log',
             status: log.status,
             reflection: log.reflection,
             mood: log.mood,
@@ -75,10 +87,34 @@ export default function Timeline() {
           }
         })
 
-        setLogs(combined)
+        // Map journal entries
+        const mappedJournal: TimelineItem[] = (journalData || []).map((j) => {
+          return {
+            id: j.id,
+            date: j.entry_date,
+            type: 'journal',
+            mood: j.mood,
+            title: j.title,
+            body: j.body,
+            goal_area: j.goals?.area || undefined
+          }
+        })
+
+        // Combine and sort newest first
+        const combined = [...mappedLogs, ...mappedJournal].sort((a, b) => {
+          if (a.date !== b.date) {
+            return b.date.localeCompare(a.date)
+          }
+          if (a.type !== b.type) {
+            return a.type === 'journal' ? -1 : 1
+          }
+          return 0
+        })
+
+        setItems(combined)
       } catch (err) {
         console.error('Error fetching timeline data:', err)
-        setError('Could not load your journal timeline. Please try again.')
+        setError('Could not load your activity timeline. Please try again.')
       } finally {
         setLoading(false)
       }
@@ -106,16 +142,16 @@ export default function Timeline() {
     return date.toLocaleDateString('en-US', options)
   }
 
-  // Group logs by date
-  const groupedLogs: Record<string, LogEntry[]> = {}
-  logs.forEach((log) => {
-    if (!groupedLogs[log.log_date]) {
-      groupedLogs[log.log_date] = []
+  // Group items by date
+  const groupedItems: Record<string, TimelineItem[]> = {}
+  items.forEach((item) => {
+    if (!groupedItems[item.date]) {
+      groupedItems[item.date] = []
     }
-    groupedLogs[log.log_date].push(log)
+    groupedItems[item.date].push(item)
   })
 
-  const logDates = Object.keys(groupedLogs)
+  const itemDates = Object.keys(groupedItems)
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
@@ -133,6 +169,15 @@ export default function Timeline() {
             <p className="text-xs text-plum-light/70 font-light">A record of showing up.</p>
           </div>
           <div className="flex gap-1.5">
+            <Link
+              to="/journal"
+              className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 transition-colors cursor-pointer"
+              title="Private Journal"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+              </svg>
+            </Link>
             <Link
               to="/settings"
               className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 transition-colors cursor-pointer"
@@ -169,7 +214,7 @@ export default function Timeline() {
               )}
 
               {/* EMPTY STATE */}
-              {logs.length === 0 ? (
+              {items.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-16 text-center select-none">
                   <svg 
                     className="w-12 h-12 text-plum-main/30 mb-4" 
@@ -182,51 +227,93 @@ export default function Timeline() {
                   </svg>
                   <p className="text-sm font-medium text-plum-dark/60 mb-2">Your story starts with one small win.</p>
                   <p className="text-xs text-plum-light/60 max-w-[220px] leading-normal">
-                    When you check in a habit, your journal logs will appear here.
+                    When you check in a habit or write in your journal, entries will appear here.
                   </p>
                 </div>
               ) : (
-                /* JOURNAL TIMELINE */
+                /* MERGED TIMELINE */
                 <div className="flex flex-col gap-5 max-h-[320px] overflow-y-auto pr-1 text-left scrollbar-thin my-2">
-                  {logDates.map((dateStr) => (
-                    <div key={dateStr} className="flex flex-col gap-2">
+                  {itemDates.map((dateStr) => (
+                    <div key={dateStr} className="flex flex-col gap-2.5">
                       <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-sunset-end ml-1 mb-1">
                         {formatHeadingDate(dateStr)}
                       </h3>
 
-                      {groupedLogs[dateStr].map((log) => (
-                        <div 
-                          key={log.id} 
-                          className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-plum-main/20"
-                        >
-                          <div>
-                            <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                              <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
-                                {log.goal_area}
+                      {groupedItems[dateStr].map((item) => (
+                        item.type === 'journal' ? (
+                          /* Journal Entry Card */
+                          <div 
+                            key={item.id} 
+                            onClick={() => navigate('/journal')}
+                            className="bg-sunset-start/35 border border-sunset-end/20 rounded-2xl p-4 flex flex-col gap-1.5 transition-all hover:border-sunset-end/40 cursor-pointer"
+                          >
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-[7.5px] font-bold uppercase tracking-wider text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded">
+                                📝 Journal Note
                               </span>
-                              {log.mood && (
-                                <span className="text-[8px] font-bold text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                                  {log.mood}
+                              {item.goal_area && (
+                                <span className="text-[7.5px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                                  {item.goal_area}
                                 </span>
                               )}
-                              {log.effort_level && (
-                                <span className="text-[8px] font-semibold text-plum-light/60 bg-plum-main/5 px-1.5 py-0.5 rounded">
-                                  Effort: {log.effort_level}
+                              {item.mood && (
+                                <span className="text-[7.5px] font-bold text-sunset-end bg-sunset-end/15 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                  {item.mood}
                                 </span>
                               )}
                             </div>
-                            
-                            <p className="text-xs text-plum-dark leading-relaxed font-light">
-                              Small win — completed <span className="font-semibold">{log.tiny_goal || log.habit_name}</span>
+                            {item.title && (
+                              <h4 className="font-semibold text-plum-dark text-xs mb-0.5">{item.title}</h4>
+                            )}
+                            <p className="text-[11px] text-plum-dark font-sans font-light leading-relaxed whitespace-pre-wrap">
+                              {item.body}
                             </p>
                           </div>
+                        ) : (
+                          /* Habit Log Card */
+                          <div 
+                            key={item.id} 
+                            className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-plum-main/20"
+                          >
+                            <div>
+                              <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                                <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                                  {item.goal_area}
+                                </span>
+                                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                                  item.status === 'completed'
+                                    ? 'text-green-700 bg-green-50/15'
+                                    : item.status === 'partial'
+                                      ? 'text-orange-700 bg-orange-50/15'
+                                      : 'text-plum-light/60 bg-plum-main/5'
+                                }`}>
+                                  {item.status || 'completed'}
+                                </span>
+                                {item.mood && (
+                                  <span className="text-[8px] font-bold text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                    {item.mood}
+                                  </span>
+                                )}
+                                {item.effort_level && (
+                                  <span className="text-[8px] font-semibold text-plum-light/60 bg-plum-main/5 px-1.5 py-0.5 rounded">
+                                    Effort: {item.effort_level}
+                                  </span>
+                                )}
+                              </div>
+                              
+                              <p className="text-xs text-plum-dark leading-relaxed font-light">
+                                {item.status === 'not_done' ? 'Honest log — ' : 'Small win — '}
+                                <span className="font-semibold">{item.tiny_goal || item.habit_name}</span>
+                              </p>
+                            </div>
 
-                          {log.reflection && (
-                            <p className="text-xs text-plum-light/85 italic font-light pl-2 border-l border-plum-main/10 leading-relaxed">
-                              "{log.reflection}"
-                            </p>
-                          )}
-                        </div>
+                            {item.reflection && (
+                              <p className="text-xs text-plum-light/85 italic font-light pl-2 border-l border-plum-main/10 leading-relaxed">
+                                "{item.reflection}"
+                              </p>
+                            )}
+                          </div>
+                        )
                       ))}
                     </div>
                   ))}

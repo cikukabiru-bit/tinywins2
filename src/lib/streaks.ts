@@ -63,7 +63,7 @@ export function calculateStreaks(
 ) {
   const completedDates = new Set(
     logs
-      .filter((l) => l.status === 'completed')
+      .filter((l) => l.status === 'completed' || l.status === 'partial')
       .map((l) => l.log_date)
   );
 
