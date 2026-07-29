@@ -51,8 +51,9 @@ export function generateHabitSuggestion(
   if (statusAnalysis === 'partial') {
     switch (cleanTone) {
       case 'motivational':
+      case 'firm but kind':
         return {
-          message: `Partly is still showing up! That's progress, but let's make this smaller so you can crush it completely!`,
+          message: "Partial completions won't build the streak you want. Simplify the target and crush it 100%.",
           actionLabel: "Make smaller",
           actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
         };
@@ -64,7 +65,7 @@ export function generateHabitSuggestion(
         };
       case 'practical':
         return {
-          message: "Partial completions suggest friction. We recommend reducing the tiny goal to make finishing frictionless.",
+          message: "Partial completions indicate friction. Reduce target size to minimize execution friction.",
           actionLabel: "Reduce target",
           actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
         };
@@ -74,23 +75,12 @@ export function generateHabitSuggestion(
           actionLabel: "Make smaller",
           actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
         };
-      case 'firm but kind':
-        return {
-          message: "You are showing up, but the target is slightly too large. Shrink the habit goal for a consistent streak.",
-          actionLabel: "Adjust goal",
-          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
-        };
       case 'calm':
-        return {
-          message: "Even a partial step invites peace. Simplify this goal to let yourself finish with ease.",
-          actionLabel: "Simplify",
-          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
-        };
       case 'gentle':
       default:
         return {
-          message: "Partly is still showing up. Would you like to make this smaller so it's easier to finish?",
-          actionLabel: "Make it smaller",
+          message: "A partial step is still progress. Be gentle with your pace and simplify the goal whenever you're ready.",
+          actionLabel: "Simplify",
           actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
         };
     }
@@ -99,8 +89,9 @@ export function generateHabitSuggestion(
   if (statusAnalysis === 'not_done') {
     switch (cleanTone) {
       case 'motivational':
+      case 'firm but kind':
         return {
-          message: "Love the honest log! That's step one. Let's adjust this habit's size, time, or days to get back in the winning zone!",
+          message: "Zero completions. That's a gap. Modify the day or time now, and show up tomorrow. You are capable of more.",
           actionLabel: "Adjust habit",
           actionPath: `/habits/${habit.id}/edit`
         };
@@ -112,7 +103,7 @@ export function generateHabitSuggestion(
         };
       case 'practical':
         return {
-          message: "Honest logs are great data. The habit is currently too large or scheduled at a high-friction time. Modify its days, time, or size.",
+          message: "No completions logged. The habit is currently too large or incorrectly scheduled. Modify days, time, or size.",
           actionLabel: "Modify habit",
           actionPath: `/habits/${habit.id}/edit`
         };
@@ -122,23 +113,12 @@ export function generateHabitSuggestion(
           actionLabel: "Tweak habit",
           actionPath: `/habits/${habit.id}/edit`
         };
-      case 'firm but kind':
-        return {
-          message: "Acknowledge the honest log. A reset is part of the process. Adjust the time, days, or size to rebuild the routine.",
-          actionLabel: "Fix habit",
-          actionPath: `/habits/${habit.id}/edit`
-        };
       case 'calm':
-        return {
-          message: "A quiet space is an honest one. Rest without guilt. You can adjust the time, days, or size whenever you are ready.",
-          actionLabel: "Adjust setting",
-          actionPath: `/habits/${habit.id}/edit`
-        };
       case 'gentle':
       default:
         return {
-          message: "Thank you for logging honestly. There is no pressure here. Would you like to make this goal smaller, or try changing its time or days?",
-          actionLabel: "Adjust habit",
+          message: "A quiet space is an honest one. Rest without guilt. You can adjust the time, days, or size whenever you are ready.",
+          actionLabel: "Adjust setting",
           actionPath: `/habits/${habit.id}/edit`
         };
     }
@@ -147,8 +127,9 @@ export function generateHabitSuggestion(
   if (statusAnalysis === 'mix') {
     switch (cleanTone) {
       case 'motivational':
+      case 'firm but kind':
         return {
-          message: "A mix of wins and tries is how we grow! Keep up the consistency of checking in — you are doing awesome!",
+          message: "You are maintaining the routine by logging, but you can turn these tries into clean wins. Stay focused.",
           actionLabel: "Keep going",
           actionPath: "/today"
         };
@@ -160,7 +141,7 @@ export function generateHabitSuggestion(
         };
       case 'practical':
         return {
-          message: "A variable completion pattern is normal. Focus on the habit loop: trigger and perform. Keep checking in.",
+          message: "Variable completion pattern. Focus on performing the trigger. Keep checking in.",
           actionLabel: "View dashboard",
           actionPath: "/today"
         };
@@ -170,22 +151,11 @@ export function generateHabitSuggestion(
           actionLabel: "Keep it up",
           actionPath: "/today"
         };
-      case 'firm but kind':
-        return {
-          message: "You are maintaining the routine by logging. Focus on turning those partials and tries into complete wins.",
-          actionLabel: "Stay steady",
-          actionPath: "/today"
-        };
       case 'calm':
-        return {
-          message: "A natural rhythm has peaks and valleys. Welcome the consistency of just checking in with yourself.",
-          actionLabel: "Pause here",
-          actionPath: "/today"
-        };
       case 'gentle':
       default:
         return {
-          message: "You are showing up in different ways, and every bit of showing up counts. Keep celebrating your consistency!",
+          message: "You are showing up in different ways, and every bit counts. Be gentle with your pace.",
           actionLabel: "View habits",
           actionPath: "/today"
         };
@@ -302,8 +272,9 @@ export function generateHabitSuggestion(
   if (isRecentReturn) {
     switch (cleanTone) {
       case 'motivational':
+      case 'firm but kind':
         return {
-          message: "Welcome back! Taking that first step again is a massive win. Let's keep this momentum rolling!",
+          message: "You're back. Good. Now make it stick. Let's build a real streak starting today.",
           actionLabel: "Keep going",
           actionPath: "/today"
         };
@@ -315,7 +286,7 @@ export function generateHabitSuggestion(
         };
       case 'practical':
         return {
-          message: "Good to see you checked in. Focus solely on completing today's win and let tomorrow take care of itself.",
+          message: "Check-in logged. Gap completed. Resume standard routine.",
           actionLabel: "View dashboard",
           actionPath: "/today"
         };
@@ -325,22 +296,11 @@ export function generateHabitSuggestion(
           actionLabel: "Awesome",
           actionPath: "/today"
         };
-      case 'firm but kind':
-        return {
-          message: "You have returned to your routine. Acknowledge this win, and commit to showing up again tomorrow.",
-          actionLabel: "My habits",
-          actionPath: "/habits"
-        };
       case 'calm':
-        return {
-          message: "Welcome back to this quiet space. One simple win is everything. Let yourself rest in this completion.",
-          actionLabel: "Pause here",
-          actionPath: "/today"
-        };
       case 'gentle':
       default:
         return {
-          message: "It is so wonderful to see you back. One tiny moment of showing up today is more than enough.",
+          message: "Welcome back. Showing up today is more than enough. Rest when you need to.",
           actionLabel: "Take it easy",
           actionPath: "/today"
         };
@@ -358,8 +318,9 @@ export function generateHabitSuggestion(
 
     switch (cleanTone) {
       case 'motivational':
+      case 'firm but kind':
         return {
-          message: `You've got a power hour! You consistently show up in the ${target.name}. Let's lock it in for ${target.time} to make it stick!`,
+          message: `${target.name.charAt(0).toUpperCase() + target.name.slice(1)} is your power hour. You've proved it. Lock it in for ${target.time} and make it non-negotiable.`,
           actionLabel: "Adjust time",
           actionPath: `/habits/${habit.id}/edit`
         };
@@ -371,7 +332,7 @@ export function generateHabitSuggestion(
         };
       case 'practical':
         return {
-          message: `Your check-ins cluster in the ${target.name}. Set your preferred time to ${target.time} to match your existing behavior.`,
+          message: `Check-ins cluster in the ${target.name}. Setting reminder to ${target.time} aligns with your active window.`,
           actionLabel: "Set time",
           actionPath: `/habits/${habit.id}/edit`
         };
@@ -381,22 +342,11 @@ export function generateHabitSuggestion(
           actionLabel: "Lock it in",
           actionPath: `/habits/${habit.id}/edit`
         };
-      case 'firm but kind':
-        return {
-          message: `Data shows your highest consistency is in the ${target.name}. Set the preferred time to ${target.time} to solidify this.`,
-          actionLabel: "Fix time",
-          actionPath: `/habits/${habit.id}/edit`
-        };
       case 'calm':
-        return {
-          message: `A steady pattern emerges in the ${target.name}. Let your habit rest around ${target.time} in harmony with your day.`,
-          actionLabel: "Set time",
-          actionPath: `/habits/${habit.id}/edit`
-        };
       case 'gentle':
       default:
         return {
-          message: `You seem to show up naturally in the ${target.name}. Would it feel nice to officially set your time for ${target.time}?`,
+          message: `You seem to show up naturally in the ${target.name}. Setting your time to ${target.time} might help you keep this comfortable flow.`,
           actionLabel: "Set time",
           actionPath: `/habits/${habit.id}/edit`
         };
@@ -407,8 +357,9 @@ export function generateHabitSuggestion(
   if (completionRate < 0.5 && totalScheduled >= 5) {
     switch (cleanTone) {
       case 'motivational':
+      case 'firm but kind':
         return {
-          message: "When showing up feels tough, we adjust. Let's shrink this goal so it's simple to get a win today!",
+          message: "Consistency is slipping and you know it. Shrink the goal today. No excuses, just get the win.",
           actionLabel: "Shrink habit",
           actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
         };
@@ -420,7 +371,7 @@ export function generateHabitSuggestion(
         };
       case 'practical':
         return {
-          message: "Your completion rate is low, indicating friction. Reduce the target to a 1-minute version to rebuild momentum.",
+          message: "Completion rate under 50%. Adjust the target size down to rebuild consistency.",
           actionLabel: "Reduce target",
           actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
         };
@@ -430,18 +381,7 @@ export function generateHabitSuggestion(
           actionLabel: "Make smaller",
           actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
         };
-      case 'firm but kind':
-        return {
-          message: "The current target is too large for your routine. Shrink the habit goal immediately to build a stable streak.",
-          actionLabel: "Adjust goal",
-          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
-        };
       case 'calm':
-        return {
-          message: "Let go of the weight. A smaller step brings peaceful progress. Simplify your goal for now.",
-          actionLabel: "Simplify",
-          actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
-        };
       case 'gentle':
       default:
         return {
@@ -458,8 +398,9 @@ export function generateHabitSuggestion(
     if (isGrowthAllowed) {
       switch (cleanTone) {
         case 'motivational':
+        case 'firm but kind':
           return {
-            message: `You are showing incredible consistency with "${habit.name}"! Ready to level up and expand this slightly next week?`,
+            message: `Unstoppable streak. You've earned the right to level up. Grow this habit next week.`,
             actionLabel: "Grow habit",
             actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
           };
@@ -471,7 +412,7 @@ export function generateHabitSuggestion(
           };
         case 'practical':
           return {
-            message: "High consistency established. Progress the habit by increasing the tiny goal target starting next week.",
+            message: "High consistency established. Recommended to increase target starting next week.",
             actionLabel: "Grow goal",
             actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
           };
@@ -481,18 +422,7 @@ export function generateHabitSuggestion(
             actionLabel: "Level up",
             actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
           };
-        case 'firm but kind':
-          return {
-            message: "You have proven your consistency. Now, challenge yourself. Expand your target slightly starting next week.",
-            actionLabel: "Expand goal",
-            actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
-          };
         case 'calm':
-          return {
-            message: "The stream flows naturally. If you feel ready, welcome a slightly larger practice next week.",
-            actionLabel: "Grow goal",
-            actionPath: `/habits/${habit.id}/edit?focus=tiny_goal`
-          };
         case 'gentle':
         default:
           return {
@@ -505,8 +435,9 @@ export function generateHabitSuggestion(
       // Celebrating keeping it tiny
       switch (cleanTone) {
         case 'motivational':
+        case 'firm but kind':
           return {
-            message: "Outstanding consistency! Keeping your habits small is the secret to building unstoppable momentum.",
+            message: "Streak protected. Solid consistency. Never underestimate the power of keeping it tiny.",
             actionLabel: "View streaks",
             actionPath: "/today"
           };
@@ -518,7 +449,7 @@ export function generateHabitSuggestion(
           };
         case 'practical':
           return {
-            message: "Great job showing up. Keeping the habit tiny ensures high consistency. Repeat this exact step tomorrow.",
+            message: "Routine stable. Target kept small for consistency. Continue current execution schedule.",
             actionLabel: "Check today",
             actionPath: "/today"
           };
@@ -528,18 +459,7 @@ export function generateHabitSuggestion(
             actionLabel: "Celebrate",
             actionPath: "/today"
           };
-        case 'firm but kind':
-          return {
-            message: "Consistency is a strong foundation. You are doing the work. Stay with this size and protect your routine.",
-            actionLabel: "Keep steady",
-            actionPath: "/today"
-          };
         case 'calm':
-          return {
-            message: "A quiet, steady path. Keeping it small invites peace. Rest in this simple consistency today.",
-            actionLabel: "Rest here",
-            actionPath: "/today"
-          };
         case 'gentle':
         default:
           return {
@@ -553,13 +473,38 @@ export function generateHabitSuggestion(
 
   // Steady progress
   if (completionsThisWeek >= 2) {
+    let scheduledThisWeek = 0;
+    let weekIter = new Date(sevenDaysAgo.getTime());
+    while (weekIter <= today) {
+      if (isScheduledDay(weekIter, habit.frequency, habit.custom_days)) {
+        scheduledThisWeek++;
+      }
+      weekIter.setDate(weekIter.getDate() + 1);
+    }
+    if (scheduledThisWeek === 0) scheduledThisWeek = 1;
+
     switch (cleanTone) {
       case 'motivational':
-        return {
-          message: `You showed up ${completionsThisWeek} times this week! That is ${completionsThisWeek} steps in the right direction. Let's go for one more!`,
-          actionLabel: "Keep pushing",
-          actionPath: "/today"
-        };
+      case 'firm but kind':
+        if (completionsThisWeek === scheduledThisWeek) {
+          return {
+            message: `${completionsThisWeek} for ${scheduledThisWeek}. That's exactly who you're becoming. Keep it.`,
+            actionLabel: "Keep pushing",
+            actionPath: "/today"
+          };
+        } else if (completionsThisWeek === Math.round(scheduledThisWeek / 2)) {
+          return {
+            message: "Halfway. Don't coast now. Finish the week.",
+            actionLabel: "Keep pushing",
+            actionPath: "/today"
+          };
+        } else {
+          return {
+            message: `${completionsThisWeek} of ${scheduledThisWeek}. That's not your best and you know it. Go.`,
+            actionLabel: "Keep pushing",
+            actionPath: "/today"
+          };
+        }
       case 'spiritual':
         return {
           message: `You completed this ${completionsThisWeek} times this week. Honor this quiet dedication; it is a sacred thread of presence.`,
@@ -568,7 +513,7 @@ export function generateHabitSuggestion(
         };
       case 'practical':
         return {
-          message: `You completed ${completionsThisWeek} sessions this week. This is a solid baseline. Continue at this pace to build automaticity.`,
+          message: `${completionsThisWeek} of ${scheduledThisWeek} sessions. ${scheduledThisWeek - completionsThisWeek > 0 ? (scheduledThisWeek - completionsThisWeek) + ' to go this week.' : 'Target achieved.'}`,
           actionLabel: "Maintain pace",
           actionPath: "/today"
         };
@@ -578,22 +523,11 @@ export function generateHabitSuggestion(
           actionLabel: "Keep it up",
           actionPath: "/today"
         };
-      case 'firm but kind':
-        return {
-          message: `You showed up ${completionsThisWeek} times this week. That is progress. Maintain this effort and build your momentum.`,
-          actionLabel: "Show up",
-          actionPath: "/today"
-        };
       case 'calm':
-        return {
-          message: `You showed up ${completionsThisWeek} times this week. Let this quiet progress settle. You are doing well.`,
-          actionLabel: "Rest well",
-          actionPath: "/today"
-        };
       case 'gentle':
       default:
         return {
-          message: `You showed up ${completionsThisWeek} times this week. Each time was a beautiful gift of attention to yourself.`,
+          message: "Wins this week — lovely. Rest when you need to.",
           actionLabel: "Appreciate progress",
           actionPath: "/today"
         };
@@ -603,8 +537,9 @@ export function generateHabitSuggestion(
   // Default general coaching suggestion
   switch (cleanTone) {
     case 'motivational':
+    case 'firm but kind':
       return {
-        message: "Every tiny victory counts! Focus on showing up for your next scheduled habit and let the momentum build.",
+        message: "Your habits define your path. Do the work today. Go.",
         actionLabel: "Ready",
         actionPath: "/today"
       };
@@ -616,8 +551,8 @@ export function generateHabitSuggestion(
       };
     case 'practical':
       return {
-        message: "Consistency is established one session at a time. Review your dashboard and check in for today's habits.",
-        actionLabel: "View dashboard",
+        message: "0 of 1 habits checked in today. View checklist to complete action items.",
+        actionLabel: "View checklist",
         actionPath: "/today"
       };
     case 'playful':
@@ -626,22 +561,11 @@ export function generateHabitSuggestion(
         actionLabel: "Let's go",
         actionPath: "/today"
       };
-    case 'firm but kind':
-      return {
-        message: "Your habits define your path. Review today's list, perform the tiny goal, and check it off.",
-        actionLabel: "Review list",
-        actionPath: "/today"
-      };
     case 'calm':
-      return {
-        message: "No rush, no strain. Just one quiet choice to show up. Welcome this small practice today.",
-        actionLabel: "Pause here",
-        actionPath: "/today"
-      };
     case 'gentle':
     default:
       return {
-        message: "Every small step counts. Be gentle with your pace today, and remember that showing up is enough.",
+        message: "No pressure, no strain. Just one quiet choice to show up. Welcome this small practice today.",
         actionLabel: "Go to dashboard",
         actionPath: "/today"
       };
