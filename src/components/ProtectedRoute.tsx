@@ -7,8 +7,8 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end">
-        <div className="text-plum-main font-sans font-medium tracking-wide animate-pulse">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-bg-start via-bg-mid to-bg-end">
+        <div className="text-primary font-sans font-medium tracking-wide animate-pulse">
           Loading...
         </div>
       </div>

@@ -222,18 +222,18 @@ export default function EditGoal() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link to="/goals" className="text-plum-main/60 hover:text-plum-main transition-colors">
+          <Link to="/goals" className="text-primary/60 hover:text-primary transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
-          <span className="text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold">
             Edit Goal Focus
           </span>
           <div className="w-5"></div>
@@ -241,12 +241,12 @@ export default function EditGoal() {
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Loading details...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Loading details...</span>
           </div>
         ) : error && !area ? (
           <div className="flex-1 flex flex-col justify-center items-center">
-            <p className="text-xs text-plum-light/80 text-center mb-4">{error}</p>
-            <Link to="/goals" className="bg-plum-main hover:bg-plum-dark text-cream-light py-2 px-4 rounded-xl text-xs">
+            <p className="text-xs text-text-muted/80 text-center mb-4">{error}</p>
+            <Link to="/goals" className="bg-primary hover:bg-primary-strong text-on-primary py-2 px-4 rounded-xl text-xs">
               Back to Goals
             </Link>
           </div>
@@ -254,20 +254,20 @@ export default function EditGoal() {
           <div className="flex-1 flex flex-col justify-between text-left">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {error && (
-                <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-3 text-xs text-plum-light leading-relaxed">
+                <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-3 text-xs text-text-muted leading-relaxed">
                   {error}
                 </div>
               )}
 
               {/* Area select */}
               <div>
-                <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                   Focus Area
                 </label>
                 <select
                   value={area}
                   onChange={(e) => setArea(e.target.value)}
-                  className="w-full bg-cream-dark/15 border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 select-none"
+                  className="w-full bg-surface-dark/15 border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 select-none"
                 >
                   {FOCUS_AREAS.map((a) => (
                     <option key={a} value={a}>{a}</option>
@@ -278,13 +278,13 @@ export default function EditGoal() {
               {/* Timing settings row */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                  <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                     Daily Time
                   </label>
                   <select
                     value={availableTime}
                     onChange={(e) => setAvailableTime(e.target.value)}
-                    className="w-full bg-cream-dark/15 border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                    className="w-full bg-surface-dark/15 border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                   >
                     {TIME_AMOUNTS.map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -292,13 +292,13 @@ export default function EditGoal() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                  <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                     Time of Day
                   </label>
                   <select
                     value={preferredTime}
                     onChange={(e) => setPreferredTime(e.target.value)}
-                    className="w-full bg-cream-dark/15 border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                    className="w-full bg-surface-dark/15 border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                   >
                     {TIMES_OF_DAY.map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -309,13 +309,13 @@ export default function EditGoal() {
 
               {/* Growth preference */}
               <div>
-                <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                   How should it grow?
                 </label>
                 <select
                   value={growthPreference}
                   onChange={(e) => setGrowthPreference(e.target.value)}
-                  className="w-full bg-cream-dark/15 border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                  className="w-full bg-surface-dark/15 border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                 >
                   {GROWTH_PREFS.map((g) => (
                     <option key={g} value={g}>{g}</option>
@@ -325,13 +325,13 @@ export default function EditGoal() {
 
               {/* Motivation description */}
               <div>
-                <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                   Why does this matter?
                 </label>
                 <textarea
                   value={why}
                   onChange={(e) => setWhy(e.target.value)}
-                  className="w-full bg-cream-dark/15 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 h-16 resize-none"
+                  className="w-full bg-surface-dark/15 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 h-16 resize-none"
                   placeholder="Keep it brief and honest..."
                   maxLength={400}
                 />
@@ -339,14 +339,14 @@ export default function EditGoal() {
 
               {/* Add existing habit dropdown */}
               {otherHabits.length > 0 && (
-                <div className="bg-cream-dark/10 border border-plum-main/5 p-4 rounded-2xl mb-4 select-none animate-fadeIn">
-                  <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                <div className="bg-surface-dark/10 border border-border-main/5 p-4 rounded-2xl mb-4 select-none animate-fadeIn">
+                  <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                     Add an existing habit to this goal
                   </label>
                   <select
                     onChange={(e) => handleMoveHabit(e.target.value)}
                     value=""
-                    className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 cursor-pointer"
+                    className="w-full bg-surface border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 cursor-pointer"
                   >
                     <option value="" disabled>Choose a habit to move...</option>
                     {otherHabits.map((h) => {
@@ -362,21 +362,21 @@ export default function EditGoal() {
               )}
 
               {/* Active habits under this goal */}
-              <div className="border-t border-plum-main/5 pt-3">
+              <div className="border-t border-border-main/5 pt-3">
                 <div className="flex justify-between items-center mb-2 px-1">
-                  <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold">
+                  <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold">
                     Habits under this focus
                   </span>
                   <Link
                     to={`/habits/new?goalId=${id}`}
-                    className="text-[9px] text-sunset-end hover:text-plum-main transition-colors font-bold"
+                    className="text-[9px] text-accent hover:text-primary transition-colors font-bold"
                   >
                     + Add tiny habit
                   </Link>
                 </div>
 
                 {habits.length === 0 ? (
-                  <p className="text-[10px] text-plum-light/60 italic pl-1">
+                  <p className="text-[10px] text-text-muted/60 italic pl-1">
                     No active habits linked to this focus yet.
                   </p>
                 ) : (
@@ -385,10 +385,10 @@ export default function EditGoal() {
                       <Link
                         key={habit.id}
                         to={`/habits/${habit.id}/edit`}
-                        className="bg-cream-dark/10 hover:bg-cream-dark/20 border border-plum-main/5 px-2.5 py-1.5 rounded-xl flex justify-between items-center text-[10px] text-plum-dark font-medium transition-colors"
+                        className="bg-surface-dark/10 hover:bg-surface-dark/20 border border-border-main/5 px-2.5 py-1.5 rounded-xl flex justify-between items-center text-[10px] text-text-main font-medium transition-colors"
                       >
                         <span>{habit.name}</span>
-                        <span className="text-[8px] text-plum-light/60 font-normal italic">
+                        <span className="text-[8px] text-text-muted/60 font-normal italic">
                           ({habit.frequency})
                         </span>
                       </Link>
@@ -398,11 +398,11 @@ export default function EditGoal() {
               </div>
 
               {/* Form submit & Deactivate controls */}
-              <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-plum-main/10">
+              <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border-main/10">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all shadow-md shadow-plum-main/10 text-center cursor-pointer"
+                  className="w-full bg-primary hover:bg-primary-strong text-on-primary py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all shadow-md shadow-border-main/10 text-center cursor-pointer"
                 >
                   {saving ? 'Saving...' : 'Save Focus Area'}
                 </button>
@@ -412,7 +412,7 @@ export default function EditGoal() {
                     type="button"
                     onClick={handleRestGoal}
                     disabled={saving}
-                    className="w-full border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all text-center bg-cream-light cursor-pointer"
+                    className="w-full border border-border-main/20 hover:border-border-main/40 text-primary py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all text-center bg-surface cursor-pointer"
                   >
                     Rest this focus area
                   </button>
@@ -421,7 +421,7 @@ export default function EditGoal() {
                     type="button"
                     onClick={handleReviveGoal}
                     disabled={saving}
-                    className="w-full bg-sunset-end/10 hover:bg-sunset-end/20 border border-sunset-end/20 text-sunset-end py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all text-center cursor-pointer"
+                    className="w-full bg-accent/10 hover:bg-accent/20 border border-accent/20 text-accent py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all text-center cursor-pointer"
                   >
                     Bring back this focus area
                   </button>

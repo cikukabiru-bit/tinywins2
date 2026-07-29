@@ -494,8 +494,8 @@ export default function Dashboard() {
 
   if (checkingOnboarding || loadingData) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans">
-        <div className="text-plum-main font-medium tracking-wide animate-pulse">
+      <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans">
+        <div className="text-primary font-medium tracking-wide animate-pulse">
           Loading dashboard...
         </div>
       </main>
@@ -503,24 +503,24 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
       {/* Background ambient glowing effect */}
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         
         {/* Header with time-aware greeting and navigation */}
         <header className="flex justify-between items-start mb-6 select-none">
           <div className="text-left">
-            <h1 className="font-serif text-2xl font-normal text-plum-dark italic leading-tight">
+            <h1 className="font-serif text-2xl font-normal text-text-main italic leading-tight">
               {getGreeting()}, {name || 'Friend'}
             </h1>
-            <p className="text-xs text-plum-light/70 font-light">One tiny win at a time.</p>
+            <p className="text-xs text-text-muted/70 font-light">One tiny win at a time.</p>
           </div>
           <div className="flex gap-1.5">
             <Link
               to="/goals"
-              className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-surface-dark/15 border border-border-main/5 text-primary hover:bg-surface-dark/30 transition-colors cursor-pointer"
               title="My Goals"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -529,7 +529,7 @@ export default function Dashboard() {
             </Link>
             <Link
               to="/settings"
-              className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-surface-dark/15 border border-border-main/5 text-primary hover:bg-surface-dark/30 transition-colors cursor-pointer"
               title="Settings"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -539,7 +539,7 @@ export default function Dashboard() {
             </Link>
             <button
               onClick={handleLogout}
-              className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 hover:text-red-600 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-surface-dark/15 border border-border-main/5 text-primary hover:bg-surface-dark/30 hover:text-red-600 transition-colors cursor-pointer"
               title="Log Out"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -550,7 +550,7 @@ export default function Dashboard() {
         </header>
 
         {error && (
-          <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-4 text-xs text-plum-light text-left leading-relaxed">
+          <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 mb-4 text-xs text-text-muted text-left leading-relaxed">
             {error}
           </div>
         )}
@@ -560,13 +560,13 @@ export default function Dashboard() {
             {/* Encouragement note */}
             {inspiration && (
               <div className="text-left py-2 px-1 mb-4 select-none">
-                <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-0.5">
+                <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-0.5">
                   Today's encouragement
                 </span>
-                <p className="text-xs font-serif italic text-plum-light/85 leading-relaxed font-light">
+                <p className="text-xs font-serif italic text-text-muted/85 leading-relaxed font-light">
                   "{inspiration.text}"
                   {(inspiration.author || inspiration.source) && (
-                    <span className="block text-[8px] text-plum-light/50 font-normal font-sans mt-0.5">
+                    <span className="block text-[8px] text-text-muted/50 font-normal font-sans mt-0.5">
                       — {inspiration.author && inspiration.source 
                           ? `${inspiration.author}, ${inspiration.source}` 
                           : (inspiration.author || inspiration.source)}
@@ -578,13 +578,13 @@ export default function Dashboard() {
 
             {/* Evening Reflection Card */}
             {(new Date().getHours() >= eveningHour) && !dismissedEveningEncouragement && (
-              <div className="bg-plum-main text-cream-light border border-plum-light/20 rounded-3xl p-5 mb-5 text-left animate-fadeIn relative">
+              <div className="bg-primary text-on-primary border border-plum-light/20 rounded-3xl p-5 mb-5 text-left animate-fadeIn relative">
                 <button
                   onClick={() => {
                     localStorage.setItem(`dismissed_evening_${todayStr}`, 'true')
                     setDismissedEveningEncouragement(true)
                   }}
-                  className="absolute right-3 top-3 text-cream-light/40 hover:text-cream-light p-1 cursor-pointer"
+                  className="absolute right-3 top-3 text-on-primary/40 hover:text-on-primary p-1 cursor-pointer"
                   aria-label="Dismiss evening encouragement"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -592,11 +592,11 @@ export default function Dashboard() {
                   </svg>
                 </button>
                 
-                <span className="block text-[8px] uppercase tracking-wider text-sunset-mid font-bold mb-1.5">
+                <span className="block text-[8px] uppercase tracking-wider text-accent font-bold mb-1.5">
                   🌙 Evening Reflection
                 </span>
                 
-                <p className="text-sm font-serif italic text-cream-light leading-relaxed mb-3">
+                <p className="text-sm font-serif italic text-on-primary leading-relaxed mb-3">
                   "{
                     (() => {
                       if (scheduledToday.length === 0) {
@@ -624,13 +624,13 @@ export default function Dashboard() {
 
                 {eveningInspiration && (
                   <div className="border-t border-cream-light/10 pt-3 select-none">
-                    <span className="block text-[7px] uppercase tracking-wider text-sunset-mid/80 font-bold mb-1">
+                    <span className="block text-[7px] uppercase tracking-wider text-accent/80 font-bold mb-1">
                       A small thought for tonight
                     </span>
-                    <p className="text-[10px] font-serif italic text-cream-light/80 leading-relaxed font-light">
+                    <p className="text-[10px] font-serif italic text-on-primary/80 leading-relaxed font-light">
                       "{eveningInspiration.text}"
                       {(eveningInspiration.author || eveningInspiration.source) && (
-                        <span className="block text-[8px] text-cream-light/40 font-normal font-sans mt-0.5">
+                        <span className="block text-[8px] text-on-primary/40 font-normal font-sans mt-0.5">
                           — {eveningInspiration.author && eveningInspiration.source 
                               ? `${eveningInspiration.author}, ${eveningInspiration.source}` 
                               : (eveningInspiration.author || eveningInspiration.source)}
@@ -644,28 +644,28 @@ export default function Dashboard() {
 
             {/* Gentle PWA Install Banner */}
             {showInstallPrompt && (
-              <div className="bg-sunset-start border border-sunset-end/20 rounded-2xl p-4 mb-4 text-left animate-fadeIn flex justify-between items-center gap-4 relative">
+              <div className="bg-sunset-start border border-accent/20 rounded-2xl p-4 mb-4 text-left animate-fadeIn flex justify-between items-center gap-4 relative">
                 <div className="min-w-0 flex-1 select-none">
-                  <span className="block text-[8px] uppercase tracking-wider text-sunset-end font-bold mb-1">
+                  <span className="block text-[8px] uppercase tracking-wider text-accent font-bold mb-1">
                     ✨ TinyWins App
                   </span>
-                  <p className="text-xs text-plum-dark font-medium">
+                  <p className="text-xs text-text-main font-medium">
                     Install TinyWins on your screen
                   </p>
-                  <p className="text-[10px] text-plum-light font-light leading-relaxed mt-0.5">
+                  <p className="text-[10px] text-text-muted font-light leading-relaxed mt-0.5">
                     Access your daily wins quickly as a standalone app.
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={handleInstallClick}
-                    className="bg-sunset-end hover:bg-sunset-end/90 text-cream-light py-1.5 px-3 rounded-xl text-[9px] font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                    className="bg-accent hover:bg-accent/90 text-on-primary py-1.5 px-3 rounded-xl text-[9px] font-semibold transition-colors cursor-pointer whitespace-nowrap"
                   >
                     Install
                   </button>
                   <button
                     onClick={() => setShowInstallPrompt(false)}
-                    className="text-plum-light/50 hover:text-plum-main p-1.5 cursor-pointer"
+                    className="text-text-muted/50 hover:text-primary p-1.5 cursor-pointer"
                     aria-label="Dismiss prompt"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -678,26 +678,26 @@ export default function Dashboard() {
 
             {/* Notification permission opt-in card */}
             {notificationPermissionStatus === 'default' && !dismissedNotificationPromo && (
-              <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
-                <h4 className="text-[9px] uppercase tracking-wider text-plum-light/65 font-bold mb-1.5 ml-0.5">Browser Reminders</h4>
-                <p className="text-xs text-plum-dark/95 font-light leading-relaxed mb-3">
+              <div className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
+                <h4 className="text-[9px] uppercase tracking-wider text-text-muted/65 font-bold mb-1.5 ml-0.5">Browser Reminders</h4>
+                <p className="text-xs text-text-main/95 font-light leading-relaxed mb-3">
                   TinyWins can gently remind you when it's time for a small habit. You can change this anytime.
                 </p>
-                <p className="text-[7.5px] text-plum-light/50 font-light leading-relaxed mb-3">
+                <p className="text-[7.5px] text-text-muted/50 font-light leading-relaxed mb-3">
                   * Background reminders work best when TinyWins is added to your home screen. Timing can vary by device.
                 </p>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={handleRequestNotificationPermission}
-                    className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3.5 rounded-xl font-medium text-[10px] cursor-pointer"
+                    className="bg-primary hover:bg-primary-strong text-on-primary py-1.5 px-3.5 rounded-xl font-medium text-[10px] cursor-pointer"
                   >
                     Enable notifications
                   </button>
                   <button
                     type="button"
                     onClick={handleDismissNotificationPromo}
-                    className="border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-1.5 px-3.5 rounded-xl font-medium text-[10px] cursor-pointer bg-cream-light"
+                    className="border border-border-main/20 hover:border-border-main/40 text-primary py-1.5 px-3.5 rounded-xl font-medium text-[10px] cursor-pointer bg-surface"
                   >
                     Not now
                   </button>
@@ -707,8 +707,8 @@ export default function Dashboard() {
 
             {/* Active Due Reminders (Layer 1 In-App) */}
             {activeDueReminders.length > 0 && (
-              <div className="bg-sunset-end/10 border border-sunset-end/20 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
-                <span className="block text-[8px] uppercase tracking-wider text-sunset-end font-bold mb-2 ml-0.5">
+              <div className="bg-accent/10 border border-accent/20 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
+                <span className="block text-[8px] uppercase tracking-wider text-accent font-bold mb-2 ml-0.5">
                   🔔 Gentle Reminder
                 </span>
                 <div className="flex flex-col gap-3">
@@ -717,16 +717,16 @@ export default function Dashboard() {
                     return (
                       <div key={rem.id} className="flex justify-between items-center gap-3">
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-plum-dark">
+                          <p className="text-xs font-semibold text-text-main">
                             {rem.habits?.name}
                           </p>
-                          <p className="text-[10px] text-plum-light leading-relaxed font-light mt-0.5">
+                          <p className="text-[10px] text-text-muted leading-relaxed font-light mt-0.5">
                             "{rem.message || 'Time for your tiny win.'}"
                           </p>
                         </div>
                         <button
                           onClick={() => handleCheckIn(habitObj!)}
-                          className="bg-plum-main hover:bg-plum-dark text-cream-light py-1 px-3 rounded-lg text-[9px] font-semibold transition-colors cursor-pointer"
+                          className="bg-primary hover:bg-primary-strong text-on-primary py-1 px-3 rounded-lg text-[9px] font-semibold transition-colors cursor-pointer"
                         >
                           Complete
                         </button>
@@ -740,13 +740,13 @@ export default function Dashboard() {
             {/* Wins progress bar */}
             {scheduledToday.length > 0 && (
               <div className="mb-6 text-left">
-                <div className="flex justify-between items-center text-[9px] uppercase tracking-wider font-semibold text-plum-light/50 mb-1 px-1 select-none">
+                <div className="flex justify-between items-center text-[9px] uppercase tracking-wider font-semibold text-text-muted/50 mb-1 px-1 select-none">
                   <span>Wins Today</span>
                   <span>{completedTodayCount} of {scheduledToday.length} completed</span>
                 </div>
-                <div className="w-full bg-plum-main/10 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-primary/10 h-1.5 rounded-full overflow-hidden">
                   <div 
-                    className="bg-sunset-end h-full transition-all duration-300"
+                    className="bg-accent h-full transition-all duration-300"
                     style={{ width: `${(completedTodayCount / scheduledToday.length) * 100}%` }}
                   ></div>
                 </div>
@@ -756,8 +756,8 @@ export default function Dashboard() {
             {/* Today's scheduled habits */}
             <div className="flex flex-col gap-3 max-h-[220px] overflow-y-auto pr-1 text-left scrollbar-thin mb-4">
               {scheduledToday.length === 0 ? (
-                <div className="text-center py-10 border border-dashed border-plum-main/10 rounded-2xl select-none">
-                  <p className="text-xs text-plum-light/60 italic">
+                <div className="text-center py-10 border border-dashed border-border-main/10 rounded-2xl select-none">
+                  <p className="text-xs text-text-muted/60 italic">
                     Nothing scheduled today. Rest is part of growth.
                   </p>
                 </div>
@@ -774,31 +774,31 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={habit.id}
-                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col justify-between gap-3"
+                      className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col justify-between gap-3"
                     >
                       <div>
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                              <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                              <span className="text-[8px] font-semibold uppercase tracking-wider text-text-muted/50 bg-surface-dark/35 px-1.5 py-0.5 rounded">
                                 {habit.goals?.area || 'General'}
                               </span>
                               {stats.current_streak > 0 && (
-                                <span className="text-[8px] text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded font-bold">
+                                <span className="text-[8px] text-streak bg-streak/10 px-1.5 py-0.5 rounded font-bold">
                                   🔥 {stats.current_streak}d streak
                                 </span>
                               )}
-                              <span className="text-[8px] text-plum-light/60 bg-plum-main/5 px-1.5 py-0.5 rounded font-semibold flex items-center gap-0.5 select-none">
+                              <span className="text-[8px] text-freeze bg-freeze/10 px-1.5 py-0.5 rounded font-semibold flex items-center gap-0.5 select-none">
                                 ❄️ {stats.remaining_freezes} {stats.remaining_freezes === 1 ? 'freeze' : 'freezes'}
                               </span>
                               {isSavedByFreeze && (
-                                <span className="text-[8px] text-green-700 bg-green-50/15 border border-green-600/10 px-1.5 py-0.5 rounded font-semibold select-none">
+                                <span className="text-[8px] text-state-completed bg-state-completed/15 border border-success/10 px-1.5 py-0.5 rounded font-semibold select-none">
                                   🛡️ Saved by freeze
                                 </span>
                               )}
                             </div>
-                            <h4 className="font-semibold text-plum-dark text-sm mb-0.5">{habit.name}</h4>
-                            <p className="text-xs text-plum-light/80 font-light">
+                            <h4 className="font-semibold text-text-main text-sm mb-0.5">{habit.name}</h4>
+                            <p className="text-xs text-text-muted/80 font-light">
                               Tiny goal: {habit.tiny_goal}
                             </p>
                           </div>
@@ -806,31 +806,31 @@ export default function Dashboard() {
 
                         {/* Soft return nudge banner */}
                         {showNudge && (
-                          <div className="bg-coral-50/10 border border-plum-main/15 rounded-xl p-3.5 mt-2 mb-1 text-xs text-plum-light text-left relative animate-fadeIn leading-relaxed">
+                          <div className="bg-coral-50/10 border border-border-main/15 rounded-xl p-3.5 mt-2 mb-1 text-xs text-text-muted text-left relative animate-fadeIn leading-relaxed">
                             <button
                               type="button"
                               onClick={() => dismissNudge(habit.id)}
-                              className="absolute right-2 top-2 text-plum-light/40 hover:text-plum-main p-0.5 cursor-pointer"
+                              className="absolute right-2 top-2 text-text-muted/40 hover:text-primary p-0.5 cursor-pointer"
                               title="Dismiss nudge"
                             >
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </button>
-                            <p className="font-serif italic text-plum-dark font-medium pr-6 mb-2">
+                            <p className="font-serif italic text-text-main font-medium pr-6 mb-2">
                               "{nudgeText}"
                             </p>
                             <div className="flex gap-2.5">
                               <button
                                 type="button"
                                 onClick={() => handleCheckIn(habit)}
-                                className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3 rounded-lg font-medium cursor-pointer text-[10px]"
+                                className="bg-primary hover:bg-primary-strong text-on-primary py-1.5 px-3 rounded-lg font-medium cursor-pointer text-[10px]"
                               >
                                 Begin again
                               </button>
                               <Link
                                 to={`/habits/${habit.id}/edit?focus=tiny_goal`}
-                                className="border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-1.5 px-3 rounded-lg font-medium text-center cursor-pointer text-[10px] bg-cream-light"
+                                className="border border-border-main/20 hover:border-border-main/40 text-primary py-1.5 px-3 rounded-lg font-medium text-center cursor-pointer text-[10px] bg-surface"
                               >
                                 Make it smaller
                               </Link>
@@ -841,8 +841,8 @@ export default function Dashboard() {
 
                       <div>
                         {isCompleted ? (
-                          <div className="w-full bg-green-50/15 border border-green-600/10 text-green-700 py-2.5 px-3 rounded-xl text-center text-xs font-semibold select-none flex items-center justify-center gap-1 animate-fadeIn">
-                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <div className="w-full bg-success/15 border border-success/10 text-success py-2.5 px-3 rounded-xl text-center text-xs font-semibold select-none flex items-center justify-center gap-1 animate-fadeIn">
+                            <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
                             <span>You showed up!</span>
@@ -851,7 +851,7 @@ export default function Dashboard() {
                           <button
                             type="button"
                             onClick={() => handleCheckIn(habit)}
-                            className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-2.5 px-3 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors shadow-sm shadow-plum-main/5"
+                            className="w-full bg-primary hover:bg-primary-strong text-on-primary py-2.5 px-3 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors shadow-sm shadow-border-main/5"
                           >
                             Check In
                           </button>
@@ -865,19 +865,19 @@ export default function Dashboard() {
 
             {/* Streak Summary */}
             <div className="grid grid-cols-2 gap-3 mb-4 text-left select-none">
-              <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-3">
-                <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1">
+              <div className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-3">
+                <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1">
                   Active Streak
                 </span>
-                <span className="text-base font-serif text-plum-dark italic font-bold">
+                <span className="text-base font-serif text-text-main italic font-bold">
                   🔥 {bestCurrentStreak} {bestCurrentStreak === 1 ? 'day' : 'days'}
                 </span>
               </div>
-              <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-3">
-                <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1">
+              <div className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-3">
+                <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1">
                   Longest Streak
                 </span>
-                <span className="text-base font-serif text-plum-dark italic font-bold">
+                <span className="text-base font-serif text-text-main italic font-bold">
                   🏆 {bestLongestStreak} {bestLongestStreak === 1 ? 'day' : 'days'}
                 </span>
               </div>
@@ -885,29 +885,29 @@ export default function Dashboard() {
 
             {/* Tiny Coach Card */}
             {coachSuggestion && (
-              <div className="bg-cream-light border border-plum-main/10 rounded-2xl p-4 text-left shadow-sm select-none mb-2 relative">
+              <div className="bg-surface border border-border-main/10 rounded-2xl p-4 text-left shadow-sm select-none mb-2 relative">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${loadingCoach ? 'bg-sunset-end animate-ping' : 'bg-sunset-end'}`}></span>
-                    <h4 className="text-[10px] uppercase tracking-wider text-plum-light/60 font-bold flex items-center gap-1">
+                    <span className={`w-1.5 h-1.5 rounded-full ${loadingCoach ? 'bg-accent animate-ping' : 'bg-accent'}`}></span>
+                    <h4 className="text-[10px] uppercase tracking-wider text-text-muted/60 font-bold flex items-center gap-1">
                       <span>Tiny Coach</span>
-                      {loadingCoach && <span className="lowercase font-normal text-[7px] text-plum-light/45">(thinking...)</span>}
+                      {loadingCoach && <span className="lowercase font-normal text-[7px] text-text-muted/45">(thinking...)</span>}
                     </h4>
                   </div>
-                  <Link to="/coach" className="text-[10px] text-sunset-end hover:text-plum-main font-semibold flex items-center gap-0.5">
+                  <Link to="/coach" className="text-[10px] text-accent hover:text-primary font-semibold flex items-center gap-0.5">
                     <span>View all</span>
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>
                 </div>
-                <p className="text-xs text-plum-dark/80 font-light leading-relaxed mb-3">
+                <p className="text-xs text-text-main/80 font-light leading-relaxed mb-3">
                   "{coachSuggestion.message}"
                 </p>
                 {coachSuggestion.actionLabel && coachSuggestion.actionPath && (
                   <Link
                     to={coachSuggestion.actionPath}
-                    className="inline-block bg-plum-main/5 hover:bg-plum-main/10 text-plum-main text-[10px] font-semibold py-1.5 px-3 rounded-lg transition-colors cursor-pointer"
+                    className="inline-block bg-primary/5 hover:bg-primary/10 text-primary text-[10px] font-semibold py-1.5 px-3 rounded-lg transition-colors cursor-pointer"
                   >
                     {coachSuggestion.actionLabel}
                   </Link>
@@ -918,32 +918,32 @@ export default function Dashboard() {
           </div>
 
           {/* Bottom Navigation */}
-          <nav className="mt-8 pt-4 border-t border-plum-main/10 flex justify-around items-center text-xs select-none">
-            <Link to="/today" className="flex flex-col items-center gap-0.5 cursor-pointer text-sunset-end font-bold transition-colors">
+          <nav className="mt-8 pt-4 border-t border-border-main/10 flex justify-around items-center text-xs select-none">
+            <Link to="/today" className="flex flex-col items-center gap-0.5 cursor-pointer text-accent font-bold transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
               </svg>
               <span className="text-[9px]">Today</span>
             </Link>
-            <Link to="/habits" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+            <Link to="/habits" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 112-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
               <span className="text-[9px]">Habits</span>
             </Link>
-            <Link to="/timeline" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+            <Link to="/timeline" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
               <span className="text-[9px]">Timeline</span>
             </Link>
-            <Link to="/coach" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+            <Link to="/coach" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
               <span className="text-[9px]">Coach</span>
             </Link>
-            <Link to="/library" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+            <Link to="/library" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
@@ -956,27 +956,27 @@ export default function Dashboard() {
 
       {/* OPTIONAL REFLECTION MODAL */}
       {activeReflectionLogId && (
-        <div className="fixed inset-0 bg-plum-dark/30 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fadeIn">
-          <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 shadow-2xl text-left">
-            <span className="inline-block text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold mb-2">
+        <div className="fixed inset-0 bg-primary-strong/30 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-fadeIn">
+          <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 shadow-2xl text-left">
+            <span className="inline-block text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold mb-2">
               Reflection
             </span>
-            <h3 className="font-serif text-2xl font-normal text-plum-dark italic leading-tight mb-2">
+            <h3 className="font-serif text-2xl font-normal text-text-main italic leading-tight mb-2">
               You showed up! ✨
             </h3>
-            <p className="text-xs text-plum-light/70 mb-4 leading-relaxed font-sans">
+            <p className="text-xs text-text-muted/70 mb-4 leading-relaxed font-sans">
               Take a moment to check in with yourself. This is entirely optional.
             </p>
 
             {reflectionInspiration && (
-              <div className="bg-cream-dark/15 border border-plum-main/5 p-3 rounded-2xl mb-4 select-none">
-                <span className="block text-[7px] uppercase tracking-wider text-plum-light/55 font-bold mb-1">
+              <div className="bg-surface-dark/15 border border-border-main/5 p-3 rounded-2xl mb-4 select-none">
+                <span className="block text-[7px] uppercase tracking-wider text-text-muted/55 font-bold mb-1">
                   A small thought for today
                 </span>
-                <p className="text-[10px] font-serif italic text-plum-dark leading-relaxed font-light">
+                <p className="text-[10px] font-serif italic text-text-main leading-relaxed font-light">
                   "{reflectionInspiration.text}"
                   {(reflectionInspiration.author || reflectionInspiration.source) && (
-                    <span className="block text-[8px] text-plum-light/50 font-normal font-sans mt-0.5">
+                    <span className="block text-[8px] text-text-muted/50 font-normal font-sans mt-0.5">
                       — {reflectionInspiration.author && reflectionInspiration.source 
                           ? `${reflectionInspiration.author}, ${reflectionInspiration.source}` 
                           : (reflectionInspiration.author || reflectionInspiration.source)}
@@ -989,7 +989,7 @@ export default function Dashboard() {
             <div className="flex flex-col gap-4">
               {/* Status picker */}
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-2 ml-1">
+                <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-2 ml-1">
                   Status
                 </label>
                 <div className="flex gap-2">
@@ -1006,8 +1006,8 @@ export default function Dashboard() {
                         onClick={() => setSelectedStatus(statusOpt.value as any)}
                         className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-200 border cursor-pointer select-none text-center ${
                           isSelected
-                            ? 'bg-plum-main text-cream-light border-plum-main'
-                            : 'bg-cream-dark/15 text-plum-main border-plum-main/10 hover:bg-cream-dark/30'
+                            ? 'bg-primary text-on-primary border-border-main'
+                            : 'bg-surface-dark/15 text-primary border-border-main/10 hover:bg-surface-dark/30'
                         }`}
                         disabled={submittingReflection}
                       >
@@ -1020,13 +1020,13 @@ export default function Dashboard() {
 
               {/* Note */}
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">
+                <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">
                   What helped you show up today?
                 </label>
                 <textarea
                   value={reflectionText}
                   onChange={(e) => setReflectionText(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-4 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35 resize-none h-16"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-4 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35 resize-none h-16"
                   placeholder="e.g. Setting my shoes by the door..."
                   maxLength={300}
                   disabled={submittingReflection}
@@ -1035,7 +1035,7 @@ export default function Dashboard() {
 
               {/* Mood picker */}
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-2 ml-1">
+                <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-2 ml-1">
                   How are you feeling?
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -1048,8 +1048,8 @@ export default function Dashboard() {
                         onClick={() => setSelectedMood(mood)}
                         className={`py-1.5 px-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-200 border cursor-pointer select-none text-center ${
                           isSelected
-                            ? 'bg-plum-main text-cream-light border-plum-main'
-                            : 'bg-cream-dark/15 text-plum-main border-plum-main/10 hover:bg-cream-dark/30'
+                            ? 'bg-primary text-on-primary border-border-main'
+                            : 'bg-surface-dark/15 text-primary border-border-main/10 hover:bg-surface-dark/30'
                         }`}
                         disabled={submittingReflection}
                       >
@@ -1062,7 +1062,7 @@ export default function Dashboard() {
 
               {/* Effort level picker */}
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-2 ml-1">
+                <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-2 ml-1">
                   How was the effort today?
                 </label>
                 <div className="flex gap-2">
@@ -1075,8 +1075,8 @@ export default function Dashboard() {
                         onClick={() => setSelectedEffort(effort)}
                         className={`flex-1 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-200 border cursor-pointer select-none text-center ${
                           isSelected
-                            ? 'bg-plum-main text-cream-light border-plum-main'
-                            : 'bg-cream-dark/15 text-plum-main border-plum-main/10 hover:bg-cream-dark/30'
+                            ? 'bg-primary text-on-primary border-border-main'
+                            : 'bg-surface-dark/15 text-primary border-border-main/10 hover:bg-surface-dark/30'
                         }`}
                         disabled={submittingReflection}
                       >
@@ -1088,11 +1088,11 @@ export default function Dashboard() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 mt-4 pt-4 border-t border-plum-main/10">
+              <div className="flex gap-3 mt-4 pt-4 border-t border-border-main/10">
                 <button
                   type="button"
                   onClick={handleSkipReflection}
-                  className="flex-1 border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-2.5 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors bg-cream-light"
+                  className="flex-1 border border-border-main/20 hover:border-border-main/40 text-primary py-2.5 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors bg-surface"
                   disabled={submittingReflection}
                 >
                   Skip
@@ -1100,7 +1100,7 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={handleSaveReflection}
-                  className="flex-1 bg-plum-main hover:bg-plum-dark text-cream-light py-2.5 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors shadow-sm"
+                  className="flex-1 bg-primary hover:bg-primary-strong text-on-primary py-2.5 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors shadow-sm"
                   disabled={submittingReflection}
                 >
                   {submittingReflection ? 'Saving...' : 'Save'}

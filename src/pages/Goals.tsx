@@ -130,18 +130,18 @@ export default function Goals() {
   const restingGoals = goals.filter((g) => !g.active)
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link to="/today" className="text-plum-main/60 hover:text-plum-main transition-colors">
+          <Link to="/today" className="text-primary/60 hover:text-primary transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
-          <span className="text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold">
             My Goals
           </span>
           <div className="w-5"></div>
@@ -149,21 +149,21 @@ export default function Goals() {
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Loading goals...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Loading goals...</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col justify-between">
             <div>
               {/* Heading */}
               <header className="text-left mb-6 select-none">
-                <h1 className="font-serif text-2xl font-normal text-plum-dark italic leading-tight">
+                <h1 className="font-serif text-2xl font-normal text-text-main italic leading-tight">
                   My Focus Areas
                 </h1>
-                <p className="text-xs text-plum-light/70 font-light">Growing several paths gently at once.</p>
+                <p className="text-xs text-text-muted/70 font-light">Growing several paths gently at once.</p>
               </header>
 
               {error && (
-                <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-4 text-xs text-plum-light text-left">
+                <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 mb-4 text-xs text-text-muted text-left">
                   {error}
                 </div>
               )}
@@ -171,8 +171,8 @@ export default function Goals() {
               {/* Active Goals Section */}
               {activeGoals.length === 0 ? (
                 <div className="text-center py-8 select-none">
-                  <p className="text-sm font-medium text-plum-dark/60 mb-2">No active goals yet.</p>
-                  <p className="text-xs text-plum-light/60 max-w-[220px] mx-auto leading-normal">
+                  <p className="text-sm font-medium text-text-main/60 mb-2">No active goals yet.</p>
+                  <p className="text-xs text-text-muted/60 max-w-[220px] mx-auto leading-normal">
                     Create a new goal area to begin building tiny habits underneath it.
                   </p>
                 </div>
@@ -182,15 +182,15 @@ export default function Goals() {
                     <div
                       key={goal.id}
                       onClick={() => navigate(`/goals/${goal.id}/edit`)}
-                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col transition-all hover:border-plum-main/20 cursor-pointer relative"
+                      className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col transition-all hover:border-border-main/20 cursor-pointer relative"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <span className="text-[8px] font-semibold uppercase tracking-wider text-sunset-end bg-sunset-end/5 px-1.5 py-0.5 rounded border border-sunset-end/10">
+                          <span className="text-[8px] font-semibold uppercase tracking-wider text-accent bg-accent/5 px-1.5 py-0.5 rounded border border-accent/10">
                             {goal.area}
                           </span>
                           {goal.why && (
-                            <p className="text-[10px] text-plum-dark italic font-serif leading-relaxed mt-2 pl-1 border-l-2 border-sunset-start">
+                            <p className="text-[10px] text-text-main italic font-serif leading-relaxed mt-2 pl-1 border-l-2 border-sunset-start">
                               "{goal.why}"
                             </p>
                           )}
@@ -202,14 +202,14 @@ export default function Goals() {
                             handleRestGoal(goal.id)
                           }}
                           disabled={submittingId === goal.id}
-                          className="text-[9px] text-plum-light/50 hover:text-plum-main transition-colors font-medium border border-plum-main/10 hover:border-plum-main/35 px-2.5 py-1 rounded-xl cursor-pointer disabled:opacity-50"
+                          className="text-[9px] text-text-muted/50 hover:text-primary transition-colors font-medium border border-border-main/10 hover:border-border-main/35 px-2.5 py-1 rounded-xl cursor-pointer disabled:opacity-50"
                         >
                           {submittingId === goal.id ? 'Resting...' : 'Rest goal'}
                         </button>
                       </div>
 
                       {/* Goal Stats Info */}
-                      <div className="flex gap-4 mt-2 text-[9px] text-plum-light/60 font-semibold select-none border-t border-plum-main/5 pt-2.5">
+                      <div className="flex gap-4 mt-2 text-[9px] text-text-muted/60 font-semibold select-none border-t border-border-main/5 pt-2.5">
                         <span>⏱️ {goal.available_time}</span>
                         <span>🌅 {goal.preferred_time}</span>
                         <span>🌱 {goal.habitsCount} {goal.habitsCount === 1 ? 'active habit' : 'active habits'}</span>
@@ -221,8 +221,8 @@ export default function Goals() {
 
               {/* Resting Goals Section */}
               {restingGoals.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-plum-main/10 text-left animate-fadeIn">
-                  <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-plum-light/50 ml-1 mb-3 select-none">
+                <div className="mt-6 pt-4 border-t border-border-main/10 text-left animate-fadeIn">
+                  <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-text-muted/50 ml-1 mb-3 select-none">
                     Resting Focuses
                   </h3>
                   <div className="flex flex-col gap-3 max-h-[160px] overflow-y-auto pr-1 scrollbar-thin">
@@ -230,15 +230,15 @@ export default function Goals() {
                       <div
                         key={goal.id}
                         onClick={() => navigate(`/goals/${goal.id}/edit`)}
-                        className="bg-cream-dark/5 border border-plum-main/5 rounded-2xl p-4 flex flex-col transition-all hover:border-plum-main/15 cursor-pointer opacity-70 hover:opacity-100"
+                        className="bg-surface-dark/5 border border-border-main/5 rounded-2xl p-4 flex flex-col transition-all hover:border-border-main/15 cursor-pointer opacity-70 hover:opacity-100"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light bg-cream-dark/20 px-1.5 py-0.5 rounded border border-plum-main/5">
+                            <span className="text-[8px] font-semibold uppercase tracking-wider text-text-muted bg-surface-dark/20 px-1.5 py-0.5 rounded border border-border-main/5">
                               {goal.area}
                             </span>
                             {goal.why && (
-                              <p className="text-[10px] text-plum-light italic font-serif leading-relaxed mt-2 pl-1 border-l-2 border-plum-light/20">
+                              <p className="text-[10px] text-text-muted italic font-serif leading-relaxed mt-2 pl-1 border-l-2 border-plum-light/20">
                                 "{goal.why}"
                               </p>
                             )}
@@ -250,13 +250,13 @@ export default function Goals() {
                               handleReviveGoal(goal.id)
                             }}
                             disabled={submittingId === goal.id}
-                            className="text-[9px] text-sunset-end hover:text-plum-main transition-colors font-medium border border-sunset-end/20 hover:border-plum-main/35 px-2.5 py-1 rounded-xl cursor-pointer disabled:opacity-50"
+                            className="text-[9px] text-accent hover:text-primary transition-colors font-medium border border-accent/20 hover:border-border-main/35 px-2.5 py-1 rounded-xl cursor-pointer disabled:opacity-50"
                           >
                             {submittingId === goal.id ? 'Reviving...' : 'Bring back'}
                           </button>
                         </div>
 
-                        <div className="flex gap-4 mt-2 text-[9px] text-plum-light/50 font-semibold select-none border-t border-plum-main/5 pt-2">
+                        <div className="flex gap-4 mt-2 text-[9px] text-text-muted/50 font-semibold select-none border-t border-border-main/5 pt-2">
                           <span>⏱️ {goal.available_time}</span>
                           <span>🌅 {goal.preferred_time}</span>
                         </div>
@@ -268,10 +268,10 @@ export default function Goals() {
             </div>
 
             {/* Action Area */}
-            <div className="flex flex-col gap-3 mt-6 pt-4 border-t border-plum-main/10">
+            <div className="flex flex-col gap-3 mt-6 pt-4 border-t border-border-main/10">
               <Link
                 to="/goals/new"
-                className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-3 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-plum-main/10 text-sm text-center inline-block"
+                className="w-full bg-primary hover:bg-primary-strong text-on-primary py-3 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-border-main/10 text-sm text-center inline-block"
               >
                 Add a goal
               </Link>

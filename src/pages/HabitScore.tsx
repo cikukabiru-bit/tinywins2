@@ -208,29 +208,29 @@ export default function HabitScore() {
   const isCreationMode = existingHabits.length === 0 && !loadingExisting
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
       {/* Background ambient glowing effect */}
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         
         {loadingGoal || loadingExisting ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Loading reflection...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Loading reflection...</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col justify-between">
             <div>
               {/* Header */}
-              <span className="inline-block text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold mb-2">
+              <span className="inline-block text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold mb-2">
                 Habit Reflection
               </span>
-              <h1 className="font-serif text-3xl md:text-4xl font-normal text-plum-dark italic leading-tight mb-2">
+              <h1 className="font-serif text-3xl md:text-4xl font-normal text-text-main italic leading-tight mb-2">
                 {goalArea || 'Goal'}
               </h1>
               
               {!isFormView && (
-                <p className="text-xs text-plum-light/70 mb-4 leading-relaxed">
+                <p className="text-xs text-text-muted/70 mb-4 leading-relaxed">
                   {isCreationMode
                     ? "Let's reflect on the habits you already have that relate to this goal. Try to add between 3 and 7 habits."
                     : "Here are the habit scores you reflected on. You can convert each into a trackable habit below."}
@@ -238,26 +238,26 @@ export default function HabitScore() {
               )}
 
               {error && (
-                <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-4 text-xs text-plum-light text-left">
+                <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 mb-4 text-xs text-text-muted text-left">
                   {error}
                 </div>
               )}
 
               {/* soft warning prompt */}
               {softPrompt && !isFormView && (
-                <div className="bg-coral-50/10 border border-plum-main/15 rounded-2xl p-4 mb-6 text-xs text-plum-light text-left leading-relaxed">
-                  <p className="font-semibold text-plum-dark mb-1">A gentle reminder</p>
+                <div className="bg-coral-50/10 border border-border-main/15 rounded-2xl p-4 mb-6 text-xs text-text-muted text-left leading-relaxed">
+                  <p className="font-semibold text-text-main mb-1">A gentle reminder</p>
                   <p className="mb-3">{softPrompt}</p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => { setSoftPrompt(null); setIsAdding(true); }}
-                      className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3 rounded-xl font-medium cursor-pointer text-[11px]"
+                      className="bg-primary hover:bg-primary-strong text-on-primary py-1.5 px-3 rounded-xl font-medium cursor-pointer text-[11px]"
                     >
                       Add Habit
                     </button>
                     <button
                       onClick={() => { setSoftPrompt(null); handleSaveToDatabase(); }}
-                      className="border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-1.5 px-3 rounded-xl font-medium cursor-pointer text-[11px]"
+                      className="border border-border-main/20 hover:border-border-main/40 text-primary py-1.5 px-3 rounded-xl font-medium cursor-pointer text-[11px]"
                     >
                       Submit Anyway
                     </button>
@@ -271,17 +271,17 @@ export default function HabitScore() {
                   {existingHabits.map((habit) => (
                     <div 
                       key={habit.id} 
-                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col justify-between"
+                      className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col justify-between"
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1 pr-2">
-                          <span className="text-[9px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                          <span className="text-[9px] font-semibold uppercase tracking-wider text-text-muted/50 bg-surface-dark/35 px-1.5 py-0.5 rounded">
                             {habit.category}
                           </span>
-                          <h4 className="font-semibold text-plum-dark text-sm mt-1 mb-0.5">{habit.habit_name}</h4>
-                          {habit.note && <p className="text-[10px] text-plum-light/80 italic">"{habit.note}"</p>}
+                          <h4 className="font-semibold text-text-main text-sm mt-1 mb-0.5">{habit.habit_name}</h4>
+                          {habit.note && <p className="text-[10px] text-text-muted/80 italic">"{habit.note}"</p>}
                         </div>
-                        <span className="text-xs font-bold text-sunset-end bg-sunset-end/10 px-2 py-0.5 rounded shrink-0">
+                        <span className="text-xs font-bold text-streak bg-streak/10 px-2 py-0.5 rounded shrink-0">
                           {habit.score}/10
                         </span>
                       </div>
@@ -290,12 +290,12 @@ export default function HabitScore() {
                       {!habit.converted_to_habit && !userHabits.some(h => h.name.toLowerCase().trim() === habit.habit_name.toLowerCase().trim()) ? (
                         <Link
                           to={`/habits/new?name=${encodeURIComponent(habit.habit_name)}&category=${encodeURIComponent(habit.category)}&goalId=${goalId}&habitScoreId=${habit.id}`}
-                          className="mt-3 w-full bg-plum-main hover:bg-plum-dark text-cream-light py-2 px-3 rounded-xl font-medium text-xs text-center inline-block transition-colors shadow-sm shadow-plum-main/10"
+                          className="mt-3 w-full bg-primary hover:bg-primary-strong text-on-primary py-2 px-3 rounded-xl font-medium text-xs text-center inline-block transition-colors shadow-sm shadow-border-main/10"
                         >
                           Turn into a tracked habit
                         </Link>
                       ) : (
-                        <span className="mt-3 w-full text-center text-xs font-semibold text-green-600/80 bg-green-50/15 border border-green-600/10 py-1.5 px-3 rounded-xl select-none">
+                        <span className="mt-3 w-full text-center text-xs font-semibold text-success/80 bg-success/15 border border-success/10 py-1.5 px-3 rounded-xl select-none">
                           Tracked
                         </span>
                       )}
@@ -309,30 +309,30 @@ export default function HabitScore() {
                 <div>
                   <div className="flex flex-col gap-2.5 max-h-[260px] overflow-y-auto pr-1 text-left scrollbar-thin my-4">
                     {habitsList.length === 0 ? (
-                      <div className="text-center py-8 border border-dashed border-plum-main/10 rounded-2xl text-xs text-plum-light/50 font-medium">
+                      <div className="text-center py-8 border border-dashed border-border-main/10 rounded-2xl text-xs text-text-muted/50 font-medium">
                         No habits added yet.
                       </div>
                     ) : (
                       habitsList.map((habit) => (
                         <div 
                           key={habit.id} 
-                          className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-3.5 flex justify-between items-start"
+                          className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-3.5 flex justify-between items-start"
                         >
                           <div className="flex-1 pr-3">
                             <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                              <span className="text-[9px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                              <span className="text-[9px] font-semibold uppercase tracking-wider text-text-muted/50 bg-surface-dark/35 px-1.5 py-0.5 rounded">
                                 {habit.category}
                               </span>
-                              <span className="text-[9px] font-bold text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded">
+                              <span className="text-[9px] font-bold text-streak bg-streak/10 px-1.5 py-0.5 rounded">
                                 Score: {habit.score}/10
                               </span>
                             </div>
-                            <h4 className="font-semibold text-plum-dark text-xs mb-0.5">{habit.habit_name}</h4>
-                            {habit.note && <p className="text-[10px] text-plum-light/80 italic">"{habit.note}"</p>}
+                            <h4 className="font-semibold text-text-main text-xs mb-0.5">{habit.habit_name}</h4>
+                            {habit.note && <p className="text-[10px] text-text-muted/80 italic">"{habit.note}"</p>}
                           </div>
                           <button
                             onClick={() => handleRemoveHabitLocal(habit.id)}
-                            className="text-plum-light/40 hover:text-red-500 transition-colors p-0.5 cursor-pointer"
+                            className="text-text-muted/40 hover:text-red-500 transition-colors p-0.5 cursor-pointer"
                             title="Remove habit"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -344,9 +344,9 @@ export default function HabitScore() {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-plum-light/50 font-semibold mb-4 px-1 select-none">
+                  <div className="flex items-center justify-between text-xs text-text-muted/50 font-semibold mb-4 px-1 select-none">
                     <span>Count: {habitsList.length}/7</span>
-                    {habitsList.length >= 3 && <span className="text-green-600/70 font-semibold">Min requirement met</span>}
+                    {habitsList.length >= 3 && <span className="text-success/70 font-semibold">Min requirement met</span>}
                   </div>
                 </div>
               )}
@@ -355,12 +355,12 @@ export default function HabitScore() {
               {isFormView && (
                 <form onSubmit={handleAddHabitLocal} className="flex flex-col gap-3 text-left max-h-[340px] overflow-y-auto pr-1 scrollbar-thin my-2">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Habit Name</label>
+                    <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Habit Name</label>
                     <input
                       type="text"
                       value={habitName}
                       onChange={(e) => setHabitName(e.target.value)}
-                      className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+                      className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-3 px-4 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
                       placeholder="e.g. morning walk, water check"
                       maxLength={120}
                       required
@@ -369,11 +369,11 @@ export default function HabitScore() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Category</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Category</label>
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                       >
                         <option value="Physical">Physical</option>
                         <option value="Mental">Mental</option>
@@ -386,11 +386,11 @@ export default function HabitScore() {
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Frequency</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Frequency</label>
                       <select
                         value={currentFrequency}
                         onChange={(e) => setCurrentFrequency(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                       >
                         <option value="Every day">Every day</option>
                         <option value="Most days">Most days</option>
@@ -403,8 +403,8 @@ export default function HabitScore() {
 
                   <div>
                     <div className="flex justify-between items-center mb-1 ml-1">
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold">How are you doing with this?</label>
-                      <span className="text-xs font-bold text-sunset-end">{score} / 10</span>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold">How are you doing with this?</label>
+                      <span className="text-xs font-bold text-accent">{score} / 10</span>
                     </div>
                     <input
                       type="range"
@@ -412,16 +412,16 @@ export default function HabitScore() {
                       max="10"
                       value={score}
                       onChange={(e) => setScore(parseInt(e.target.value))}
-                      className="w-full h-1.5 bg-plum-main/10 rounded-lg appearance-none cursor-pointer accent-plum-main my-2"
+                      className="w-full h-1.5 bg-primary/10 rounded-lg appearance-none cursor-pointer accent-plum-main my-2"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Why did you give this score?</label>
+                    <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Why did you give this score?</label>
                     <textarea
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
-                      className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35 resize-none h-16"
+                      className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-4 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35 resize-none h-16"
                       placeholder="Share a short note..."
                       maxLength={300}
                     />
@@ -429,11 +429,11 @@ export default function HabitScore() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Hope for this</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Hope for this</label>
                       <select
                         value={desiredImprovement}
                         onChange={(e) => setDesiredImprovement(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                       >
                         <option value="Improve">Improve</option>
                         <option value="Maintain">Maintain</option>
@@ -442,11 +442,11 @@ export default function HabitScore() {
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Difficulty</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Difficulty</label>
                       <select
                         value={difficultyLevel}
                         onChange={(e) => setDifficultyLevel(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                       >
                         <option value="Easy">Easy</option>
                         <option value="Moderate">Moderate</option>
@@ -457,11 +457,11 @@ export default function HabitScore() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">How does it feel?</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">How does it feel?</label>
                       <select
                         value={emotionalFeeling}
                         onChange={(e) => setEmotionalFeeling(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                       >
                         <option value="Proud">Proud</option>
                         <option value="Frustrated">Frustrated</option>
@@ -472,11 +472,11 @@ export default function HabitScore() {
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Priority</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Priority</label>
                       <select
                         value={priority}
                         onChange={(e) => setPriority(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                       >
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
@@ -489,13 +489,13 @@ export default function HabitScore() {
                     <button
                       type="button"
                       onClick={() => { setIsAdding(false); resetForm(); }}
-                      className="flex-1 border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-cream-light/30 hover:bg-cream-light/60 text-sm cursor-pointer"
+                      className="flex-1 border border-border-main/20 hover:border-border-main/40 text-primary py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-surface/30 hover:bg-surface/60 text-sm cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="flex-2 bg-plum-main hover:bg-plum-dark text-cream-light py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-plum-main/10 text-sm cursor-pointer"
+                      className="flex-2 bg-primary hover:bg-primary-strong text-on-primary py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-border-main/10 text-sm cursor-pointer"
                     >
                       Add
                     </button>
@@ -506,7 +506,7 @@ export default function HabitScore() {
 
             {/* BUTTON BAR */}
             {!isFormView && (
-              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-plum-main/10">
+              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border-main/10">
                 {isCreationMode ? (
                   <>
                     {habitsList.length < 7 && (
@@ -514,7 +514,7 @@ export default function HabitScore() {
                         type="button"
                         onClick={() => { setIsAdding(true); setSoftPrompt(null); }}
                         disabled={submitting}
-                        className="w-full border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-cream-light/30 hover:bg-cream-light/60 text-sm cursor-pointer disabled:opacity-50"
+                        className="w-full border border-border-main/20 hover:border-border-main/40 text-primary py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-surface/30 hover:bg-surface/60 text-sm cursor-pointer disabled:opacity-50"
                       >
                         + Add a habit
                       </button>
@@ -524,11 +524,11 @@ export default function HabitScore() {
                       type="button"
                       onClick={triggerSubmitCheck}
                       disabled={submitting || habitsList.length === 0}
-                      className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-3.5 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-plum-main/10 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-35"
+                      className="w-full bg-primary hover:bg-primary-strong text-on-primary py-3.5 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-border-main/10 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-35"
                     >
                       {submitting ? (
                         <>
-                          <svg className="animate-spin h-5 w-5 text-cream-light" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-5 w-5 text-on-primary" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                           </svg>
@@ -543,7 +543,7 @@ export default function HabitScore() {
                   // If viewing existing habits, show back to dashboard button
                   <Link
                     to="/today"
-                    className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-3 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-plum-main/10 text-sm text-center inline-block"
+                    className="w-full bg-primary hover:bg-primary-strong text-on-primary py-3 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-border-main/10 text-sm text-center inline-block"
                   >
                     Back to Dashboard
                   </Link>

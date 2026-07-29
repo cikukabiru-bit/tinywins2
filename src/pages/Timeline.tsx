@@ -154,24 +154,24 @@ export default function Timeline() {
   const itemDates = Object.keys(groupedItems)
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
       {/* Background ambient glowing effect */}
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         
         {/* Header */}
         <header className="flex justify-between items-start mb-6 select-none">
           <div className="text-left">
-            <h1 className="font-serif text-2xl font-normal text-plum-dark italic leading-tight">
+            <h1 className="font-serif text-2xl font-normal text-text-main italic leading-tight">
               My Timeline
             </h1>
-            <p className="text-xs text-plum-light/70 font-light">A record of showing up.</p>
+            <p className="text-xs text-text-muted/70 font-light">A record of showing up.</p>
           </div>
           <div className="flex gap-1.5">
             <Link
               to="/journal"
-              className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-surface-dark/15 border border-border-main/5 text-primary hover:bg-surface-dark/30 transition-colors cursor-pointer"
               title="Private Journal"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -180,7 +180,7 @@ export default function Timeline() {
             </Link>
             <Link
               to="/settings"
-              className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-surface-dark/15 border border-border-main/5 text-primary hover:bg-surface-dark/30 transition-colors cursor-pointer"
               title="Settings"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -190,7 +190,7 @@ export default function Timeline() {
             </Link>
             <button
               onClick={handleLogout}
-              className="p-2.5 rounded-xl bg-cream-dark/15 border border-plum-main/5 text-plum-main hover:bg-cream-dark/30 hover:text-red-600 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-surface-dark/15 border border-border-main/5 text-primary hover:bg-surface-dark/30 hover:text-red-600 transition-colors cursor-pointer"
               title="Log Out"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -202,13 +202,13 @@ export default function Timeline() {
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Loading timeline...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Loading timeline...</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col justify-between animate-fadeIn">
             <div>
               {error && (
-                <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-4 text-xs text-plum-light text-left leading-relaxed">
+                <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 mb-4 text-xs text-text-muted text-left leading-relaxed">
                   {error}
                 </div>
               )}
@@ -217,7 +217,7 @@ export default function Timeline() {
               {items.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-16 text-center select-none">
                   <svg 
-                    className="w-12 h-12 text-plum-main/30 mb-4" 
+                    className="w-12 h-12 text-primary/30 mb-4" 
                     fill="none" 
                     stroke="currentColor" 
                     strokeWidth="1.5" 
@@ -225,8 +225,8 @@ export default function Timeline() {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
-                  <p className="text-sm font-medium text-plum-dark/60 mb-2">Your story starts with one small win.</p>
-                  <p className="text-xs text-plum-light/60 max-w-[220px] leading-normal">
+                  <p className="text-sm font-medium text-text-main/60 mb-2">Your story starts with one small win.</p>
+                  <p className="text-xs text-text-muted/60 max-w-[220px] leading-normal">
                     When you check in a habit or write in your journal, entries will appear here.
                   </p>
                 </div>
@@ -235,7 +235,7 @@ export default function Timeline() {
                 <div className="flex flex-col gap-5 max-h-[320px] overflow-y-auto pr-1 text-left scrollbar-thin my-2">
                   {itemDates.map((dateStr) => (
                     <div key={dateStr} className="flex flex-col gap-2.5">
-                      <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-sunset-end ml-1 mb-1">
+                      <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-accent ml-1 mb-1">
                         {formatHeadingDate(dateStr)}
                       </h3>
 
@@ -245,27 +245,27 @@ export default function Timeline() {
                           <div 
                             key={item.id} 
                             onClick={() => navigate('/journal')}
-                            className="bg-sunset-start/35 border border-sunset-end/20 rounded-2xl p-4 flex flex-col gap-1.5 transition-all hover:border-sunset-end/40 cursor-pointer"
+                            className="bg-sunset-start/35 border border-accent/20 rounded-2xl p-4 flex flex-col gap-1.5 transition-all hover:border-accent/40 cursor-pointer"
                           >
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-[7.5px] font-bold uppercase tracking-wider text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded">
+                              <span className="text-[7.5px] font-bold uppercase tracking-wider text-streak bg-streak/10 px-1.5 py-0.5 rounded">
                                 📝 Journal Note
                               </span>
                               {item.goal_area && (
-                                <span className="text-[7.5px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                                <span className="text-[7.5px] font-semibold uppercase tracking-wider text-text-muted/50 bg-surface-dark/35 px-1.5 py-0.5 rounded">
                                   {item.goal_area}
                                 </span>
                               )}
                               {item.mood && (
-                                <span className="text-[7.5px] font-bold text-sunset-end bg-sunset-end/15 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                <span className="text-[7.5px] font-bold text-accent bg-accent/15 px-1.5 py-0.5 rounded uppercase tracking-wider">
                                   {item.mood}
                                 </span>
                               )}
                             </div>
                             {item.title && (
-                              <h4 className="font-semibold text-plum-dark text-xs mb-0.5">{item.title}</h4>
+                              <h4 className="font-semibold text-text-main text-xs mb-0.5">{item.title}</h4>
                             )}
-                            <p className="text-[11px] text-plum-dark font-sans font-light leading-relaxed whitespace-pre-wrap">
+                            <p className="text-[11px] text-text-main font-sans font-light leading-relaxed whitespace-pre-wrap">
                               {item.body}
                             </p>
                           </div>
@@ -273,42 +273,42 @@ export default function Timeline() {
                           /* Habit Log Card */
                           <div 
                             key={item.id} 
-                            className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-plum-main/20"
+                            className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-border-main/20"
                           >
                             <div>
                               <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                                <span className="text-[8px] font-semibold uppercase tracking-wider text-plum-light/50 bg-cream-dark/35 px-1.5 py-0.5 rounded">
+                                <span className="text-[8px] font-semibold uppercase tracking-wider text-text-muted/50 bg-surface-dark/35 px-1.5 py-0.5 rounded">
                                   {item.goal_area}
                                 </span>
                                 <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
                                   item.status === 'completed'
-                                    ? 'text-green-700 bg-green-50/15'
+                                    ? 'text-state-completed bg-state-completed/15'
                                     : item.status === 'partial'
-                                      ? 'text-orange-700 bg-orange-50/15'
-                                      : 'text-plum-light/60 bg-plum-main/5'
+                                      ? 'text-state-partial bg-state-partial/15'
+                                      : 'text-freeze bg-freeze/10'
                                 }`}>
                                   {item.status || 'completed'}
                                 </span>
                                 {item.mood && (
-                                  <span className="text-[8px] font-bold text-sunset-end bg-sunset-end/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                  <span className="text-[8px] font-bold text-streak bg-streak/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
                                     {item.mood}
                                   </span>
                                 )}
                                 {item.effort_level && (
-                                  <span className="text-[8px] font-semibold text-plum-light/60 bg-plum-main/5 px-1.5 py-0.5 rounded">
+                                  <span className="text-[8px] font-semibold text-freeze bg-freeze/10 px-1.5 py-0.5 rounded">
                                     Effort: {item.effort_level}
                                   </span>
                                 )}
                               </div>
                               
-                              <p className="text-xs text-plum-dark leading-relaxed font-light">
+                              <p className="text-xs text-text-main leading-relaxed font-light">
                                 {item.status === 'not_done' ? 'Honest log — ' : 'Small win — '}
                                 <span className="font-semibold">{item.tiny_goal || item.habit_name}</span>
                               </p>
                             </div>
 
                             {item.reflection && (
-                              <p className="text-xs text-plum-light/85 italic font-light pl-2 border-l border-plum-main/10 leading-relaxed">
+                              <p className="text-xs text-text-muted/85 italic font-light pl-2 border-l border-border-main/10 leading-relaxed">
                                 "{item.reflection}"
                               </p>
                             )}
@@ -322,32 +322,32 @@ export default function Timeline() {
             </div>
 
             {/* Bottom Navigation */}
-            <nav className="mt-8 pt-4 border-t border-plum-main/10 flex justify-around items-center text-xs select-none">
-              <Link to="/today" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+            <nav className="mt-8 pt-4 border-t border-border-main/10 flex justify-around items-center text-xs select-none">
+              <Link to="/today" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                 </svg>
                 <span className="text-[9px]">Today</span>
               </Link>
-              <Link to="/habits" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+              <Link to="/habits" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 112-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
                 <span className="text-[9px]">Habits</span>
               </Link>
-              <Link to="/timeline" className="flex flex-col items-center gap-0.5 cursor-pointer text-sunset-end font-bold transition-colors">
+              <Link to="/timeline" className="flex flex-col items-center gap-0.5 cursor-pointer text-accent font-bold transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
                 <span className="text-[9px]">Timeline</span>
               </Link>
-              <Link to="/coach" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+              <Link to="/coach" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
                 <span className="text-[9px]">Coach</span>
               </Link>
-              <Link to="/library" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+              <Link to="/library" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>

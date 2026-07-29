@@ -266,42 +266,42 @@ export default function Onboarding() {
     : answers[currentQuestion.id] === ''
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
       {/* Background ambient glowing effect */}
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         
         {/* Progress indicator */}
         <div className="w-full flex items-center justify-between mb-4">
-          <span className="text-[10px] tracking-[0.2em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.2em] uppercase text-text-muted/50 font-semibold">
             Step {step} of {QUESTIONS.length}
           </span>
-          <span className="text-[10px] tracking-[0.2em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.2em] uppercase text-text-muted/50 font-semibold">
             {Math.round((step / QUESTIONS.length) * 100)}%
           </span>
         </div>
 
-        <div className="w-full bg-plum-main/10 h-1.5 rounded-full overflow-hidden mb-6">
+        <div className="w-full bg-primary/10 h-1.5 rounded-full overflow-hidden mb-6">
           <div 
-            className="bg-sunset-end h-full transition-all duration-300" 
+            className="bg-accent h-full transition-all duration-300" 
             style={{ width: `${(step / QUESTIONS.length) * 100}%` }}
           ></div>
         </div>
 
         {error && (
-          <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-4 text-xs text-plum-light text-left">
+          <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 mb-4 text-xs text-text-muted text-left">
             {error}
           </div>
         )}
 
         <div className="flex-1 flex flex-col justify-between">
           <div className="mb-6">
-            <h2 className="font-serif text-2xl md:text-3xl font-normal text-plum-dark italic leading-tight text-left mb-2">
+            <h2 className="font-serif text-2xl md:text-3xl font-normal text-text-main italic leading-tight text-left mb-2">
               {currentQuestion.title}
             </h2>
             {currentQuestion.subtitle && (
-              <p className="text-xs text-plum-light/70 text-left mb-4">
+              <p className="text-xs text-text-muted/70 text-left mb-4">
                 {currentQuestion.subtitle}
               </p>
             )}
@@ -320,15 +320,15 @@ export default function Onboarding() {
                     onClick={() => currentQuestion.multiple ? handleSelectMultiple(option) : handleSelect(option)}
                     className={`w-full py-3.5 px-4 rounded-2xl text-sm font-medium transition-all duration-200 text-left border cursor-pointer ${
                       isSelected
-                        ? 'bg-plum-main text-cream-light border-plum-main shadow-md shadow-plum-main/15'
-                        : 'bg-cream-dark/15 text-plum-main border-plum-main/10 hover:bg-cream-dark/30 hover:border-plum-main/20'
+                        ? 'bg-primary text-on-primary border-border-main shadow-md shadow-border-main/15'
+                        : 'bg-surface-dark/15 text-primary border-border-main/10 hover:bg-surface-dark/30 hover:border-border-main/20'
                     }`}
                     disabled={submitting}
                   >
                     <div className="flex items-center justify-between">
                       <span>{option}</span>
                       {isSelected && (
-                        <svg className="w-4 h-4 text-cream-light" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-on-primary" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       )}
@@ -340,13 +340,13 @@ export default function Onboarding() {
           </div>
 
           {/* Navigation controls */}
-          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-plum-main/10">
+          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border-main/10">
             {step > 1 && (
               <button
                 type="button"
                 onClick={handleBack}
                 disabled={submitting}
-                className="flex-1 border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-cream-light/30 hover:bg-cream-light/60 text-sm cursor-pointer disabled:opacity-50"
+                className="flex-1 border border-border-main/20 hover:border-border-main/40 text-primary py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-surface/30 hover:bg-surface/60 text-sm cursor-pointer disabled:opacity-50"
               >
                 Back
               </button>
@@ -355,11 +355,11 @@ export default function Onboarding() {
               type="button"
               onClick={handleNext}
               disabled={isNextDisabled || submitting}
-              className="flex-[2] bg-plum-main hover:bg-plum-dark text-cream-light py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-plum-main/10 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-35"
+              className="flex-[2] bg-primary hover:bg-primary-strong text-on-primary py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-border-main/10 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-35"
             >
               {submitting ? (
                 <>
-                  <svg className="animate-spin h-4 w-4 text-cream-light" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>

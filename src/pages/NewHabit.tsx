@@ -231,20 +231,20 @@ export default function NewHabit() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
       {/* Background ambient glowing effect */}
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link to="/habits" className="text-plum-main/60 hover:text-plum-main transition-colors">
+          <Link to="/habits" className="text-primary/60 hover:text-primary transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
-          <span className="text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold">
             New Habit
           </span>
           <div className="w-5"></div> {/* spacer */}
@@ -252,26 +252,26 @@ export default function NewHabit() {
 
         {loadingGoals ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Loading setup...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Loading setup...</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col justify-between">
             <div>
               {error && (
-                <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-4 text-xs text-plum-light text-left leading-relaxed">
+                <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 mb-4 text-xs text-text-muted text-left leading-relaxed">
                   {error}
                 </div>
               )}
 
               {goals.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-sm font-medium text-plum-dark/60 mb-4">No active goals found.</p>
-                  <p className="text-xs text-plum-light/60 mb-6 leading-normal">
+                  <p className="text-sm font-medium text-text-main/60 mb-4">No active goals found.</p>
+                  <p className="text-xs text-text-muted/60 mb-6 leading-normal">
                     You must complete onboarding or set up an active goal before creating a habit.
                   </p>
                   <Link
                     to="/onboarding"
-                    className="bg-plum-main hover:bg-plum-dark text-cream-light py-2.5 px-4 rounded-xl font-medium text-xs transition-colors"
+                    className="bg-primary hover:bg-primary-strong text-on-primary py-2.5 px-4 rounded-xl font-medium text-xs transition-colors"
                   >
                     Go to Onboarding
                   </Link>
@@ -281,12 +281,12 @@ export default function NewHabit() {
                   
                   {/* Name */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Habit Name</label>
+                    <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Habit Name</label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => handleNameChange(e.target.value)}
-                      className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+                      className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-3 px-4 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
                       placeholder="e.g. morning stretch"
                       required
                       disabled={submitting}
@@ -294,22 +294,22 @@ export default function NewHabit() {
                   </div>
 
                   {duplicateHabit && !dismissDuplicateAlert && (
-                    <div className="bg-cream-dark/10 border border-plum-main/5 p-4 rounded-2xl mb-4 text-left animate-fadeIn select-none">
-                      <p className="text-[10px] text-plum-dark leading-relaxed font-medium mb-2.5">
+                    <div className="bg-surface-dark/10 border border-border-main/5 p-4 rounded-2xl mb-4 text-left animate-fadeIn select-none">
+                      <p className="text-[10px] text-text-main leading-relaxed font-medium mb-2.5">
                         You already have "{duplicateHabit.name}" in {duplicateHabit.goals?.area || 'General'}. Add it to this goal instead, or keep them separate?
                       </p>
                       <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={() => handleMoveExistingHabit(duplicateHabit.id)}
-                          className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3 rounded-xl font-medium text-[10px] cursor-pointer"
+                          className="bg-primary hover:bg-primary-strong text-on-primary py-1.5 px-3 rounded-xl font-medium text-[10px] cursor-pointer"
                         >
                           Use existing one
                         </button>
                         <button
                           type="button"
                           onClick={() => setDismissDuplicateAlert(true)}
-                          className="border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-1.5 px-3 rounded-xl font-medium text-[10px] cursor-pointer bg-cream-light"
+                          className="border border-border-main/20 hover:border-border-main/40 text-primary py-1.5 px-3 rounded-xl font-medium text-[10px] cursor-pointer bg-surface"
                         >
                           Keep separate
                         </button>
@@ -319,12 +319,12 @@ export default function NewHabit() {
 
                   {/* Tiny Goal */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Tiny Goal</label>
+                    <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Tiny Goal</label>
                     <input
                       type="text"
                       value={tinyGoal}
                       onChange={(e) => setTinyGoal(e.target.value)}
-                      className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+                      className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-3 px-4 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
                       placeholder="e.g. Stretch for 2 minutes"
                       required
                       disabled={submitting}
@@ -334,11 +334,11 @@ export default function NewHabit() {
                   <div className="grid grid-cols-2 gap-3">
                     {/* Goal Association */}
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Belongs to Goal</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Belongs to Goal</label>
                       <select
                         value={goalId}
                         onChange={(e) => setGoalId(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs md:text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs md:text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                         disabled={submitting}
                       >
                         {goals.map((g) => (
@@ -351,11 +351,11 @@ export default function NewHabit() {
 
                     {/* Category */}
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Category</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Category</label>
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs md:text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs md:text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                         disabled={submitting}
                       >
                         <option value="Physical">Physical</option>
@@ -372,14 +372,14 @@ export default function NewHabit() {
 
                   {/* Add existing habit option */}
                   {activeHabits.filter(h => h.goal_id !== goalId).length > 0 && (
-                    <div className="bg-cream-dark/15 border border-plum-main/5 p-4 rounded-2xl select-none my-1 animate-fadeIn">
-                      <label className="block text-[9px] uppercase tracking-wider text-plum-light/55 font-bold mb-1.5 ml-1">
+                    <div className="bg-surface-dark/15 border border-border-main/5 p-4 rounded-2xl select-none my-1 animate-fadeIn">
+                      <label className="block text-[9px] uppercase tracking-wider text-text-muted/55 font-bold mb-1.5 ml-1">
                         Or, move an existing habit to this goal
                       </label>
                       <select
                         onChange={(e) => handleMoveExistingHabit(e.target.value)}
                         value=""
-                        className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 cursor-pointer"
+                        className="w-full bg-surface border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 cursor-pointer"
                       >
                         <option value="" disabled>Choose a habit to move...</option>
                         {activeHabits.filter(h => h.goal_id !== goalId).map((h) => {
@@ -398,11 +398,11 @@ export default function NewHabit() {
                   <div className="grid grid-cols-2 gap-3">
                     {/* Frequency */}
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Frequency</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Frequency</label>
                       <select
                         value={frequency}
                         onChange={(e) => setFrequency(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs md:text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs md:text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                         disabled={submitting}
                       >
                         <option value="daily">Daily</option>
@@ -414,12 +414,12 @@ export default function NewHabit() {
 
                     {/* Preferred Time */}
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Preferred Time</label>
+                      <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Preferred Time</label>
                       <input
                         type="text"
                         value={preferredTime}
                         onChange={(e) => setPreferredTime(e.target.value)}
-                        className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+                        className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
                         placeholder="e.g. Morning, 8:00 AM"
                         disabled={submitting}
                       />
@@ -429,7 +429,7 @@ export default function NewHabit() {
                   {/* Custom days multi-select (conditional) */}
                   {frequency === 'custom' && (
                     <div className="mt-1 mb-2 animate-fadeIn text-center">
-                      <label className="block text-[10px] text-left uppercase tracking-wider text-plum-light/70 font-semibold mb-2 ml-1">
+                      <label className="block text-[10px] text-left uppercase tracking-wider text-text-muted/70 font-semibold mb-2 ml-1">
                         Select Active Days
                       </label>
                       <div className="flex gap-1.5 justify-between">
@@ -442,8 +442,8 @@ export default function NewHabit() {
                               onClick={() => handleToggleCustomDay(idx)}
                               className={`w-9 h-9 rounded-full text-xs font-bold transition-all duration-200 border cursor-pointer select-none ${
                                 isChecked
-                                  ? 'bg-plum-main text-cream-light border-plum-main shadow-sm'
-                                  : 'bg-cream-dark/15 text-plum-main border-plum-main/10 hover:bg-cream-dark/30'
+                                  ? 'bg-primary text-on-primary border-border-main shadow-sm'
+                                  : 'bg-surface-dark/15 text-primary border-border-main/10 hover:bg-surface-dark/30'
                               }`}
                               disabled={submitting}
                             >
@@ -457,11 +457,11 @@ export default function NewHabit() {
 
                   {/* Growth Mode */}
                   <div>
-                    <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1 ml-1">Growth Mode</label>
+                    <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1 ml-1">Growth Mode</label>
                     <select
                       value={growthMode}
                       onChange={(e) => setGrowthMode(e.target.value)}
-                      className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                      className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                       disabled={submitting}
                     >
                       <option value="Keep tiny">Keep tiny</option>
@@ -479,33 +479,33 @@ export default function NewHabit() {
                         id="reminder-toggle"
                         checked={reminderEnabled}
                         onChange={(e) => setReminderEnabled(e.target.checked)}
-                        className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main cursor-pointer"
+                        className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main cursor-pointer"
                         disabled={submitting}
                       />
-                      <span className="text-xs text-plum-light/80">
+                      <span className="text-xs text-text-muted/80">
                         Enable habit reminders
                       </span>
                     </label>
 
                     {reminderEnabled && (
-                      <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 mt-1 text-left animate-fadeIn flex flex-col gap-3">
+                      <div className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 mt-1 text-left animate-fadeIn flex flex-col gap-3">
                         {/* Time */}
                         <div>
-                          <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                          <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                             Reminder Time
                           </label>
                           <input
                             type="time"
                             value={reminderTime}
                             onChange={(e) => setReminderTime(e.target.value)}
-                            className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                            className="w-full bg-surface border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                             disabled={submitting}
                           />
                         </div>
 
                         {/* Days */}
                         <div>
-                          <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                          <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                             Active Days
                           </label>
                           <div className="flex gap-1 justify-between">
@@ -522,8 +522,8 @@ export default function NewHabit() {
                                   }
                                   className={`w-7 h-7 rounded-full text-[10px] font-bold transition-all border cursor-pointer select-none ${
                                     isChecked
-                                      ? 'bg-plum-main text-cream-light border-plum-main'
-                                      : 'bg-cream-light text-plum-main border-plum-main/10 hover:bg-cream-dark/15'
+                                      ? 'bg-primary text-on-primary border-border-main'
+                                      : 'bg-surface text-primary border-border-main/10 hover:bg-surface-dark/15'
                                   }`}
                                   disabled={submitting}
                                 >
@@ -536,14 +536,14 @@ export default function NewHabit() {
 
                         {/* Message */}
                         <div>
-                          <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1.5 ml-1">
+                          <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
                             Reminder Message
                           </label>
                           <input
                             type="text"
                             value={reminderMessage}
                             onChange={(e) => setReminderMessage(e.target.value)}
-                            className="w-full bg-cream-light border border-plum-main/10 rounded-xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                            className="w-full bg-surface border border-border-main/10 rounded-xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                             placeholder="Time for your tiny win."
                             maxLength={100}
                             disabled={submitting}
@@ -554,21 +554,21 @@ export default function NewHabit() {
                   </div>
 
                   {/* Form Actions */}
-                  <div className="flex gap-3 mt-4 pt-3 border-t border-plum-main/10">
+                  <div className="flex gap-3 mt-4 pt-3 border-t border-border-main/10">
                     <Link
                       to="/habits"
-                      className="flex-1 border border-plum-main/20 hover:border-plum-main/40 text-plum-main py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-cream-light/30 hover:bg-cream-light/60 text-sm text-center"
+                      className="flex-1 border border-border-main/20 hover:border-border-main/40 text-primary py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 bg-surface/30 hover:bg-surface/60 text-sm text-center"
                     >
                       Cancel
                     </Link>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="flex-2 bg-plum-main hover:bg-plum-dark text-cream-light py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-plum-main/10 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                      className="flex-2 bg-primary hover:bg-primary-strong text-on-primary py-3 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-border-main/10 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
                       {submitting ? (
                         <>
-                          <svg className="animate-spin h-4 w-4 text-cream-light" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                           </svg>

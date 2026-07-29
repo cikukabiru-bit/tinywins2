@@ -180,20 +180,20 @@ export default function Inspiration() {
   })
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         
         {/* Sub-header Navigation */}
-        <div className="flex border-b border-plum-main/5 mb-4 select-none">
+        <div className="flex border-b border-border-main/5 mb-4 select-none">
           <Link
             to="/library"
-            className="flex-1 text-center py-2 text-xs font-semibold text-plum-light/60 hover:text-plum-main transition-colors border-b-2 border-transparent"
+            className="flex-1 text-center py-2 text-xs font-semibold text-text-muted/60 hover:text-primary transition-colors border-b-2 border-transparent"
           >
             Support Links
           </Link>
-          <span className="flex-1 text-center py-2 text-xs font-bold text-plum-main border-b-2 border-plum-main">
+          <span className="flex-1 text-center py-2 text-xs font-bold text-primary border-b-2 border-border-main">
             Inspirations
           </span>
         </div>
@@ -201,17 +201,17 @@ export default function Inspiration() {
         {/* Header */}
         <header className="flex justify-between items-start mb-6 select-none">
           <div className="text-left">
-            <h1 className="font-serif text-2xl font-normal text-plum-dark italic leading-tight">
+            <h1 className="font-serif text-2xl font-normal text-text-main italic leading-tight">
               Inspirations
             </h1>
-            <p className="text-xs text-plum-light/70 font-light">Small thoughts for big growth.</p>
+            <p className="text-xs text-text-muted/70 font-light">Small thoughts for big growth.</p>
           </div>
           <button
             onClick={() => setShowSettings(!showSettings)}
             className={`p-2.5 rounded-xl border transition-colors cursor-pointer ${
               showSettings
-                ? 'bg-plum-main text-cream-light border-plum-main'
-                : 'bg-cream-dark/15 border-plum-main/5 text-plum-main hover:bg-cream-dark/30'
+                ? 'bg-primary text-on-primary border-border-main'
+                : 'bg-surface-dark/15 border-border-main/5 text-primary hover:bg-surface-dark/30'
             }`}
             title="Configure Preferences"
           >
@@ -223,26 +223,26 @@ export default function Inspiration() {
         </header>
 
         {error && (
-          <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-3 mb-4 text-xs text-plum-light text-left">
+          <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-3 mb-4 text-xs text-text-muted text-left">
             {error}
           </div>
         )}
 
         {/* Collapsible preferences card */}
         {showSettings && (
-          <div className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
-            <h4 className="text-[10px] uppercase tracking-wider text-plum-light/60 font-bold mb-2 ml-0.5">Inspiration Focus</h4>
-            <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-2 ml-0.5">Preferred Themes</span>
+          <div className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 mb-4 text-left animate-fadeIn select-none">
+            <h4 className="text-[10px] uppercase tracking-wider text-text-muted/60 font-bold mb-2 ml-0.5">Inspiration Focus</h4>
+            <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-2 ml-0.5">Preferred Themes</span>
             <div className="flex flex-col gap-2">
               {TYPES.map((pref) => {
                 const checked = inspirationPreferences.includes(pref.value)
                 return (
-                  <label key={pref.value} className="flex items-center gap-2 cursor-pointer text-[10px] text-plum-dark">
+                  <label key={pref.value} className="flex items-center gap-2 cursor-pointer text-[10px] text-text-main">
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={() => handleTogglePreference(pref.value)}
-                      className="w-3.5 h-3.5 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main"
+                      className="w-3.5 h-3.5 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main"
                     />
                     <span>{pref.label}</span>
                   </label>
@@ -254,11 +254,11 @@ export default function Inspiration() {
 
         {/* Filters */}
         <div className="mb-4 text-left select-none">
-          <label className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1 ml-1">Theme Filter</label>
+          <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1 ml-1">Theme Filter</label>
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-full bg-cream-dark/15 border border-plum-main/10 rounded-xl py-1.5 px-2 text-plum-dark font-sans text-[10px] focus:outline-none focus:border-plum-main/40"
+            className="w-full bg-surface-dark/15 border border-border-main/10 rounded-xl py-1.5 px-2 text-text-main font-sans text-[10px] focus:outline-none focus:border-border-main/40"
           >
             <option value="All">All Themes</option>
             <option value="motivational">Motivational</option>
@@ -273,7 +273,7 @@ export default function Inspiration() {
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Reflecting...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Reflecting...</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col justify-between">
@@ -281,27 +281,27 @@ export default function Inspiration() {
               {/* Cards List */}
               {filteredItems.length === 0 ? (
                 <div className="text-center py-12 select-none">
-                  <p className="text-xs text-plum-light/60">No quotes match this filter.</p>
+                  <p className="text-xs text-text-muted/60">No quotes match this filter.</p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-3 max-h-[220px] overflow-y-auto pr-1 scrollbar-thin my-1 text-left">
                   {filteredItems.map((item) => (
                     <div
                       key={item.id}
-                      className="bg-cream-dark/15 border border-plum-main/10 rounded-2xl p-4 flex flex-col justify-between hover:border-plum-main/20 transition-all duration-200 relative animate-fadeIn"
+                      className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col justify-between hover:border-border-main/20 transition-all duration-200 relative animate-fadeIn"
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <span className="text-[7px] font-bold uppercase tracking-wider text-plum-light bg-cream-dark/30 px-1 py-0.5 rounded">
+                        <span className="text-[7px] font-bold uppercase tracking-wider text-text-muted bg-surface-dark/30 px-1 py-0.5 rounded">
                           {item.type.replace('_', ' ')}
                         </span>
 
                         {/* Favorite button */}
                         <button
                           onClick={() => handleToggleFavourite(item.id, item.is_favourite)}
-                          className="text-plum-light/50 hover:text-red-500 transition-colors p-1"
+                          className="text-text-muted/50 hover:text-red-500 transition-colors p-1"
                         >
                           <svg
-                            className={`w-3.5 h-3.5 ${item.is_favourite ? 'fill-red-500 text-red-500' : 'text-plum-light/40'}`}
+                            className={`w-3.5 h-3.5 ${item.is_favourite ? 'fill-red-500 text-red-500' : 'text-text-muted/40'}`}
                             fill={item.is_favourite ? 'currentColor' : 'none'}
                             stroke="currentColor"
                             strokeWidth="2"
@@ -312,12 +312,12 @@ export default function Inspiration() {
                         </button>
                       </div>
 
-                      <p className="text-xs text-plum-dark italic leading-relaxed font-serif mb-2">
+                      <p className="text-xs text-text-main italic leading-relaxed font-serif mb-2">
                         "{item.text}"
                       </p>
 
-                      <div className="flex justify-between items-center pt-1.5 border-t border-plum-main/5 mt-1">
-                        <span className="text-[8px] text-plum-light/60 font-semibold font-sans">
+                      <div className="flex justify-between items-center pt-1.5 border-t border-border-main/5 mt-1">
+                        <span className="text-[8px] text-text-muted/60 font-semibold font-sans">
                           {item.author || 'Anonymous'}
                           {item.source ? ` (${item.source})` : ''}
                         </span>
@@ -326,7 +326,7 @@ export default function Inspiration() {
                           <div className="flex items-center gap-2">
                             <Link
                               to={`/library/inspiration/${item.id}/edit`}
-                              className="text-[9px] font-bold text-plum-light hover:text-plum-main transition-colors"
+                              className="text-[9px] font-bold text-text-muted hover:text-primary transition-colors"
                             >
                               Edit
                             </Link>
@@ -346,41 +346,41 @@ export default function Inspiration() {
             </div>
 
             {/* Bottom Actions & Nav */}
-            <div className="mt-4 pt-4 border-t border-plum-main/10 flex flex-col gap-4">
+            <div className="mt-4 pt-4 border-t border-border-main/10 flex flex-col gap-4">
               <Link
                 to="/library/inspiration/new"
-                className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-2.5 rounded-xl font-medium text-xs tracking-wide transition-all shadow-md shadow-plum-main/10 text-center block"
+                className="w-full bg-primary hover:bg-primary-strong text-on-primary py-2.5 rounded-xl font-medium text-xs tracking-wide transition-all shadow-md shadow-border-main/10 text-center block"
               >
                 Add custom quote
               </Link>
 
               {/* Bottom Navigation (5 tabs) */}
-              <nav className="flex justify-around items-center text-xs select-none border-t border-plum-main/5 pt-3">
-                <Link to="/today" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+              <nav className="flex justify-around items-center text-xs select-none border-t border-border-main/5 pt-3">
+                <Link to="/today" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                   </svg>
                   <span className="text-[9px]">Today</span>
                 </Link>
-                <Link to="/habits" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+                <Link to="/habits" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 112-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                   </svg>
                   <span className="text-[9px]">Habits</span>
                 </Link>
-                <Link to="/timeline" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+                <Link to="/timeline" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                   <span className="text-[9px]">Timeline</span>
                 </Link>
-                <Link to="/coach" className="flex flex-col items-center gap-0.5 cursor-pointer text-plum-light/50 hover:text-plum-main transition-colors">
+                <Link to="/coach" className="flex flex-col items-center gap-0.5 cursor-pointer text-text-muted/50 hover:text-primary transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                   <span className="text-[9px]">Coach</span>
                 </Link>
-                <Link to="/library" className="flex flex-col items-center gap-0.5 cursor-pointer text-sunset-end font-bold transition-colors">
+                <Link to="/library" className="flex flex-col items-center gap-0.5 cursor-pointer text-accent font-bold transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>

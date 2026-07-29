@@ -88,18 +88,18 @@ export default function NewLibraryItem() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link to="/library" className="text-plum-main/60 hover:text-plum-main transition-colors">
+          <Link to="/library" className="text-primary/60 hover:text-primary transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
-          <span className="text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold">
             Add Support Link
           </span>
           <div className="w-5"></div>
@@ -108,19 +108,19 @@ export default function NewLibraryItem() {
         <div className="flex-1 flex flex-col justify-between text-left">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-h-[380px] overflow-y-auto pr-1 scrollbar-thin my-1">
             {error && (
-              <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-3 text-xs text-plum-light leading-relaxed animate-fadeIn">
+              <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-3 text-xs text-text-muted leading-relaxed animate-fadeIn">
                 {error}
               </div>
             )}
 
             {/* Title */}
             <div>
-              <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Title</label>
+              <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Title</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 placeholder-plum-light/35"
+                className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 placeholder-plum-light/35"
                 placeholder="e.g. 5 Minute Breathing Exercise"
                 required
                 disabled={submitting}
@@ -129,12 +129,12 @@ export default function NewLibraryItem() {
 
             {/* URL */}
             <div>
-              <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Resource URL</label>
+              <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Resource URL</label>
               <input
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 placeholder-plum-light/35"
+                className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 placeholder-plum-light/35"
                 placeholder="https://example.com/video"
                 required
                 disabled={submitting}
@@ -144,11 +144,11 @@ export default function NewLibraryItem() {
             {/* Category & Format */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Category</label>
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                   disabled={submitting}
                 >
                   {CATEGORIES.map((cat) => (
@@ -158,11 +158,11 @@ export default function NewLibraryItem() {
               </div>
 
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Format</label>
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Format</label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                   disabled={submitting}
                 >
                   {TYPES.map((t) => (
@@ -175,24 +175,24 @@ export default function NewLibraryItem() {
             {/* Platform & Duration */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Platform</label>
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Platform</label>
                 <input
                   type="text"
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 placeholder-plum-light/35"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 placeholder-plum-light/35"
                   placeholder="e.g. YouTube, Spotify"
                   disabled={submitting}
                 />
               </div>
 
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Duration</label>
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Duration</label>
                 <input
                   type="text"
                   value={estimatedDuration}
                   onChange={(e) => setEstimatedDuration(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 placeholder-plum-light/35"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 placeholder-plum-light/35"
                   placeholder="e.g. 5 mins"
                   disabled={submitting}
                 />
@@ -202,11 +202,11 @@ export default function NewLibraryItem() {
             {/* Mood & Tags */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Recommended Mood</label>
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Recommended Mood</label>
                 <select
                   value={mood}
                   onChange={(e) => setMood(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                   disabled={submitting}
                 >
                   {MOODS.map((m) => (
@@ -216,12 +216,12 @@ export default function NewLibraryItem() {
               </div>
 
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Tags (split by comma)</label>
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Tags (split by comma)</label>
                 <input
                   type="text"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 placeholder-plum-light/35"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 placeholder-plum-light/35"
                   placeholder="e.g. calm, stretch"
                   disabled={submitting}
                 />
@@ -230,22 +230,22 @@ export default function NewLibraryItem() {
 
             {/* Short Description */}
             <div>
-              <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Description</label>
+              <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Description</label>
               <textarea
                 value={shortDescription}
                 onChange={(e) => setShortDescription(e.target.value)}
-                className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 placeholder-plum-light/35 h-16 resize-none"
+                className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 placeholder-plum-light/35 h-16 resize-none"
                 placeholder="Write a brief, encouraging note about this resource..."
                 maxLength={250}
                 disabled={submitting}
               />
             </div>
 
-            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-plum-main/10">
+            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border-main/10">
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all shadow-md shadow-plum-main/10 text-center cursor-pointer"
+                className="w-full bg-primary hover:bg-primary-strong text-on-primary py-2.5 rounded-2xl font-medium text-xs tracking-wide transition-all shadow-md shadow-border-main/10 text-center cursor-pointer"
               >
                 {submitting ? 'Saving...' : 'Add Resource Link'}
               </button>

@@ -111,33 +111,33 @@ export default function Register() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
       {/* Background ambient glowing effect */}
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 md:p-10 shadow-2xl shadow-plum-main/10 text-center z-10">
-        <Link to="/" className="inline-block text-plum-main/60 hover:text-plum-main transition-colors mb-4">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 md:p-10 shadow-2xl shadow-border-main/10 text-center z-10">
+        <Link to="/" className="inline-block text-primary/60 hover:text-primary transition-colors mb-4">
           <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
         </Link>
 
-        <h1 className="font-serif text-4xl font-normal text-plum-dark italic leading-none mb-2">
+        <h1 className="font-serif text-4xl font-normal text-text-main italic leading-none mb-2">
           Create account
         </h1>
-        <p className="font-sans text-xs text-plum-light/70 tracking-wide uppercase mb-6">
+        <p className="font-sans text-xs text-text-muted/70 tracking-wide uppercase mb-6">
           Start your TinyWins journey
         </p>
 
         {error && (
-          <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-4 mb-6 text-sm text-plum-light text-left">
-            <p className="font-medium text-plum-dark mb-1">Take a look</p>
+          <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 mb-6 text-sm text-text-muted text-left">
+            <p className="font-medium text-text-main mb-1">Take a look</p>
             {error}
           </div>
         )}
 
         {successMessage && (
-          <div className="bg-green-50/10 border border-green-600/20 rounded-2xl p-4 mb-6 text-sm text-plum-dark text-left">
+          <div className="bg-green-50/10 border border-green-600/20 rounded-2xl p-4 mb-6 text-sm text-text-main text-left">
             <p className="font-medium text-green-800 mb-1">Almost there</p>
             {successMessage}
           </div>
@@ -149,7 +149,7 @@ export default function Register() {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full bg-cream-dark/20 hover:bg-cream-dark/35 border border-plum-main/10 rounded-2xl py-3 px-4 font-sans text-xs font-semibold text-plum-dark flex items-center justify-center gap-2.5 cursor-pointer transition-colors duration-200 disabled:opacity-50 select-none"
+            className="w-full bg-surface-dark/20 hover:bg-surface-dark/35 border border-border-main/10 rounded-2xl py-3 px-4 font-sans text-xs font-semibold text-text-main flex items-center justify-center gap-2.5 cursor-pointer transition-colors duration-200 disabled:opacity-50 select-none"
           >
             {/* Google G Icon */}
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -176,21 +176,21 @@ export default function Register() {
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-4 select-none">
-          <div className="flex-1 border-t border-plum-main/10"></div>
-          <span className="text-[9px] uppercase tracking-widest text-plum-light/50 font-bold">or</span>
-          <div className="flex-1 border-t border-plum-main/10"></div>
+          <div className="flex-1 border-t border-border-main/10"></div>
+          <span className="text-[9px] uppercase tracking-widest text-text-muted/50 font-bold">or</span>
+          <div className="flex-1 border-t border-border-main/10"></div>
         </div>
 
         <form onSubmit={handleRegister} className="flex flex-col gap-4 text-left">
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1.5 ml-1">
+            <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1.5 ml-1">
               Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+              className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-3 px-4 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
               placeholder="Your name"
               disabled={loading}
               required
@@ -198,14 +198,14 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1.5 ml-1">
+            <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1.5 ml-1">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 px-4 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+              className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-3 px-4 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
               placeholder="you@example.com"
               disabled={loading}
               required
@@ -213,7 +213,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1.5 ml-1">
+            <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1.5 ml-1">
               Password
             </label>
             <div className="relative">
@@ -221,7 +221,7 @@ export default function Register() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 pl-4 pr-12 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+                className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-3 pl-4 pr-12 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
                 placeholder="At least 6 characters"
                 disabled={loading}
                 required
@@ -230,7 +230,7 @@ export default function Register() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-plum-light/60 hover:text-plum-main p-1.5 focus:outline-none transition-colors cursor-pointer flex items-center justify-center"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted/60 hover:text-primary p-1.5 focus:outline-none transition-colors cursor-pointer flex items-center justify-center"
               >
                 {showPassword ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -247,7 +247,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-plum-light/70 font-semibold mb-1.5 ml-1">
+            <label className="block text-[10px] uppercase tracking-wider text-text-muted/70 font-semibold mb-1.5 ml-1">
               Confirm Password
             </label>
             <div className="relative">
@@ -255,7 +255,7 @@ export default function Register() {
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-3 pl-4 pr-12 text-plum-dark font-sans text-sm focus:outline-none focus:border-plum-main/40 transition-colors placeholder-plum-light/35"
+                className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-3 pl-4 pr-12 text-text-main font-sans text-sm focus:outline-none focus:border-border-main/40 transition-colors placeholder-plum-light/35"
                 placeholder="Repeat password"
                 disabled={loading}
                 required
@@ -264,7 +264,7 @@ export default function Register() {
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-plum-light/60 hover:text-plum-main p-1.5 focus:outline-none transition-colors cursor-pointer flex items-center justify-center"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted/60 hover:text-primary p-1.5 focus:outline-none transition-colors cursor-pointer flex items-center justify-center"
               >
                 {showConfirmPassword ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -280,13 +280,13 @@ export default function Register() {
             </div>
           </div>
 
-          <div className="flex items-start gap-2 mt-1 text-xs text-plum-light/80 ml-1 select-none leading-tight">
+          <div className="flex items-start gap-2 mt-1 text-xs text-text-muted/80 ml-1 select-none leading-tight">
             <input
               type="checkbox"
               id="consent-checkbox"
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
-              className="w-4 h-4 mt-0.5 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main cursor-pointer"
+              className="w-4 h-4 mt-0.5 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main cursor-pointer"
               disabled={loading}
               required
             />
@@ -298,11 +298,11 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-3.5 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-plum-main/10 text-sm md:text-base mt-4 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary-strong text-on-primary py-3.5 px-5 rounded-2xl font-medium tracking-wide transition-all duration-200 shadow-md shadow-border-main/10 text-sm md:text-base mt-4 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {loading ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-cream-light" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-5 w-5 text-on-primary" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
@@ -314,15 +314,15 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="mt-6 text-xs text-plum-light/80">
+        <p className="mt-6 text-xs text-text-muted/80">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-plum-main hover:underline">
+          <Link to="/login" className="font-semibold text-primary hover:underline">
             Log in
           </Link>
         </p>
 
-        <div className="mt-8 pt-6 border-t border-plum-main/10 flex flex-col items-center">
-          <span className="w-1.5 h-1.5 rounded-full bg-sunset-end opacity-60"></span>
+        <div className="mt-8 pt-6 border-t border-border-main/10 flex flex-col items-center">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent opacity-60"></span>
         </div>
       </div>
     </main>

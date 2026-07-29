@@ -137,18 +137,18 @@ export default function Preferences() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link to="/settings" className="text-plum-main/60 hover:text-plum-main transition-colors">
+          <Link to="/settings" className="text-primary/60 hover:text-primary transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
-          <span className="text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold">
             Edit Preferences
           </span>
           <div className="w-5"></div>
@@ -156,31 +156,31 @@ export default function Preferences() {
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Loading choices...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Loading choices...</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col justify-between text-left">
             <form onSubmit={handleSave} className="flex flex-col gap-5 max-h-[420px] overflow-y-auto pr-1 scrollbar-thin my-1">
               {error && (
-                <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-3 text-xs text-plum-light mb-1 animate-fadeIn">
+                <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-3 text-xs text-text-muted mb-1 animate-fadeIn">
                   {error}
                 </div>
               )}
               {success && (
-                <div className="bg-green-50/15 border border-green-600/10 rounded-2xl p-3 text-xs text-green-800 mb-1 animate-fadeIn">
+                <div className="bg-success/15 border border-success/10 rounded-2xl p-3 text-xs text-green-800 mb-1 animate-fadeIn">
                   {success}
                 </div>
               )}
 
               {/* Consistency Blocker */}
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1.5 ml-1">
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1.5 ml-1">
                   What blocks consistency?
                 </label>
                 <select
                   value={consistencyBlocker}
                   onChange={(e) => setConsistencyBlocker(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer capitalize"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer capitalize"
                   disabled={submitting}
                 >
                   <option value="" disabled>Select blocker...</option>
@@ -192,13 +192,13 @@ export default function Preferences() {
 
               {/* Tiny Coach Tone */}
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1.5 ml-1">
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1.5 ml-1">
                   Tiny Coach Tone
                 </label>
                 <select
                   value={coachTone}
                   onChange={(e) => setCoachTone(e.target.value)}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer capitalize"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer capitalize"
                   disabled={submitting}
                 >
                   {TONES.map((t) => (
@@ -209,13 +209,13 @@ export default function Preferences() {
 
               {/* Evening reflection hour */}
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-1.5 ml-1">
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-1.5 ml-1">
                   Evening Reflection Time
                 </label>
                 <select
                   value={eveningHour}
                   onChange={(e) => setEveningHour(parseInt(e.target.value))}
-                  className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40 transition-colors cursor-pointer"
+                  className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2.5 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40 transition-colors cursor-pointer"
                   disabled={submitting}
                 >
                   {[17, 18, 19, 20, 21, 22, 23].map((hr) => {
@@ -232,7 +232,7 @@ export default function Preferences() {
 
               {/* Support Style Options */}
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-2 ml-1">
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-2 ml-1">
                   Types of Support
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -246,8 +246,8 @@ export default function Preferences() {
                         disabled={submitting}
                         className={`py-1.5 px-3 rounded-xl text-[10px] font-semibold transition-all border cursor-pointer ${
                           isChecked
-                            ? 'bg-plum-main text-cream-light border-plum-main'
-                            : 'bg-cream-dark/15 text-plum-main border-plum-main/5 hover:bg-cream-dark/25'
+                            ? 'bg-primary text-on-primary border-border-main'
+                            : 'bg-surface-dark/15 text-primary border-border-main/5 hover:bg-surface-dark/25'
                         }`}
                       >
                         {style}
@@ -259,7 +259,7 @@ export default function Preferences() {
 
               {/* Inspiration preferences */}
               <div>
-                <label className="block text-[9px] uppercase tracking-wider text-plum-light/60 font-bold mb-2 ml-1">
+                <label className="block text-[9px] uppercase tracking-wider text-text-muted/60 font-bold mb-2 ml-1">
                   Preferred Inspiration Types
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -273,8 +273,8 @@ export default function Preferences() {
                         disabled={submitting}
                         className={`py-1.5 px-3 rounded-xl text-[10px] font-semibold transition-all border cursor-pointer ${
                           isChecked
-                            ? 'bg-plum-main text-cream-light border-plum-main'
-                            : 'bg-cream-dark/15 text-plum-main border-plum-main/5 hover:bg-cream-dark/25'
+                            ? 'bg-primary text-on-primary border-border-main'
+                            : 'bg-surface-dark/15 text-primary border-border-main/5 hover:bg-surface-dark/25'
                         }`}
                       >
                         {pref}
@@ -285,26 +285,26 @@ export default function Preferences() {
               </div>
 
               {/* Goal-level redirect notice */}
-              <div className="bg-cream-dark/10 p-3.5 rounded-2xl border border-plum-main/5 mt-2">
-                <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-1">
+              <div className="bg-surface-dark/10 p-3.5 rounded-2xl border border-border-main/5 mt-2">
+                <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1">
                   Looking for Goal Settings?
                 </span>
-                <p className="text-[10.5px] text-plum-dark/95 leading-relaxed font-light">
+                <p className="text-[10.5px] text-text-main/95 leading-relaxed font-light">
                   Goal parameters (improvement area, times, growth modes) live inside each individual goal.
                 </p>
                 <Link
                   to="/goals"
-                  className="inline-block text-[10px] text-sunset-end hover:text-plum-main font-semibold mt-2.5 transition-colors underline decoration-dotted cursor-pointer"
+                  className="inline-block text-[10px] text-accent hover:text-primary font-semibold mt-2.5 transition-colors underline decoration-dotted cursor-pointer"
                 >
                   Adjust your specific goal details here →
                 </Link>
               </div>
 
-              <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-plum-main/10">
+              <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border-main/10">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-plum-main hover:bg-plum-dark text-cream-light py-3 rounded-2xl font-medium text-xs tracking-wide transition-all shadow-md shadow-plum-main/10 text-center cursor-pointer disabled:opacity-50"
+                  className="w-full bg-primary hover:bg-primary-strong text-on-primary py-3 rounded-2xl font-medium text-xs tracking-wide transition-all shadow-md shadow-border-main/10 text-center cursor-pointer disabled:opacity-50"
                 >
                   {submitting ? 'Saving...' : 'Save Preferences'}
                 </button>

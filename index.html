@@ -7,6 +7,16 @@
     <meta name="theme-color" content="#ff7a60" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>TinyWins</title>
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('tinywins_theme') || 'sunset';
+        let resolvedTheme = savedTheme;
+        if (savedTheme === 'device') {
+          resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'sunset';
+        }
+        document.documentElement.setAttribute('data-theme', resolvedTheme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

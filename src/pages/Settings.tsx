@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { supabase } from '../lib/supabase'
 
 export default function Settings() {
   const { user, signOut } = useAuth()
+  const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
 
   // Loading and feedback
@@ -386,18 +388,18 @@ export default function Settings() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-sunset-start via-sunset-mid to-sunset-end font-sans relative overflow-hidden">
-      <div className="absolute w-[300px] h-[300px] bg-sunset-end/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-bg-start via-bg-mid to-bg-end font-sans relative overflow-hidden">
+      <div className="absolute w-[300px] h-[300px] bg-accent/20 rounded-full blur-3xl -translate-y-12 select-none pointer-events-none"></div>
 
-      <div className="relative max-w-sm w-full bg-cream-light rounded-3xl border border-cream-dark/40 p-8 shadow-2xl shadow-plum-main/10 flex flex-col z-10 min-h-[500px]">
+      <div className="relative max-w-sm w-full bg-surface rounded-3xl border border-surface-dark/40 p-8 shadow-2xl shadow-border-main/10 flex flex-col z-10 min-h-[500px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link to="/" className="text-plum-main/60 hover:text-plum-main transition-colors">
+          <Link to="/" className="text-primary/60 hover:text-primary transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
-          <span className="text-[10px] tracking-[0.25em] uppercase text-plum-light/50 font-semibold">
+          <span className="text-[10px] tracking-[0.25em] uppercase text-text-muted/50 font-semibold">
             Privacy & Settings
           </span>
           <div className="w-5"></div>
@@ -405,45 +407,77 @@ export default function Settings() {
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-plum-main font-medium tracking-wide animate-pulse">Loading settings...</span>
+            <span className="text-primary font-medium tracking-wide animate-pulse">Loading settings...</span>
           </div>
         ) : (
           <div className="flex-1 flex flex-col justify-between text-left max-h-[500px] overflow-y-auto pr-1 scrollbar-thin">
             {error && (
-              <div className="bg-coral-50/10 border border-plum-main/10 rounded-2xl p-3 text-xs text-plum-light mb-4 animate-fadeIn">
+              <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-3 text-xs text-text-muted mb-4 animate-fadeIn">
                 {error}
               </div>
             )}
             {success && (
-              <div className="bg-green-50/15 border border-green-600/10 rounded-2xl p-3 text-xs text-green-800 mb-4 animate-fadeIn">
+              <div className="bg-success/15 border border-success/10 rounded-2xl p-3 text-xs text-green-800 mb-4 animate-fadeIn">
                 {success}
               </div>
             )}
 
+             {/* THEME SELECTION */}
+            <div className="bg-surface-dark/10 border border-border-main/5 p-4 rounded-2xl mb-6 flex flex-col gap-3 select-none animate-fadeIn">
+              <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-0.5">
+                Appearance / Theme
+              </span>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'sunset', label: 'Sunset', previewBg: 'from-[#fff0e6] via-[#ffd1b3] to-[#ff7a60]', text: 'text-[#220b19]' },
+                  { id: 'peach', label: 'Peach', previewBg: 'from-[#fffaf5] via-[#ffede0] to-[#ffd4b8]', text: 'text-[#4a2c22]' },
+                  { id: 'teal', label: 'Teal', previewBg: 'from-[#f0fdfa] via-[#ccfbf1] to-[#99f6e4]', text: 'text-[#042f2e]' },
+                  { id: 'plum', label: 'Plum', previewBg: 'from-[#faf5ff] via-[#f3e8ff] to-[#e9d5ff]', text: 'text-[#2e1065]' },
+                  { id: 'dark', label: 'Dark', previewBg: 'from-[#151c2c] via-[#0f131f] to-[#080a10]', text: 'text-[#f8fafc]' },
+                  { id: 'device', label: 'Device', previewBg: 'from-[#fcfaf2] via-[#ffd1b3] to-[#0f131f]', text: 'text-text-main' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setTheme(t.id as any)}
+                    className={`relative flex flex-col items-center gap-1.5 p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                      theme === t.id
+                        ? 'bg-surface border-primary ring-2 ring-primary/20 scale-105 shadow-sm'
+                        : 'bg-surface/50 border-border-main/15 hover:bg-surface hover:border-border-main/30'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${t.previewBg} border border-border-main/20 flex items-center justify-center shadow-inner`}>
+                      <span className={`text-[9px] font-serif italic ${t.text}`}>A</span>
+                    </div>
+                    <span className="text-[9px] font-medium text-text-main">{t.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* PRIVACY STATEMENT */}
-            <div className="bg-cream-dark/20 border border-plum-main/5 p-4 rounded-2xl mb-6">
-              <p className="text-[10px] text-plum-light leading-relaxed font-light select-none">
+            <div className="bg-surface-dark/20 border border-border-main/5 p-4 rounded-2xl mb-6">
+              <p className="text-[10px] text-text-muted leading-relaxed font-light select-none">
                 "Your TinyWins are private. Your habits, reflections, scores, and preferences belong to you. We store them only to help you form tiny habits, never for advertising or tracking."
               </p>
             </div>
 
             {/* PREFERENCES NAVIGATION LINK */}
-            <div className="bg-cream-dark/10 border border-plum-main/5 p-4 rounded-2xl mb-6 flex flex-col gap-1.5 select-none">
-              <span className="block text-[8px] uppercase tracking-wider text-plum-light/50 font-bold mb-0.5">
+            <div className="bg-surface-dark/10 border border-border-main/5 p-4 rounded-2xl mb-6 flex flex-col gap-1.5 select-none">
+              <span className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-0.5">
                 Profile Settings
               </span>
-              <p className="text-[10px] text-plum-dark/95 leading-normal font-light">
+              <p className="text-[10px] text-text-main/95 leading-normal font-light">
                 Revisit and change your consistency blockers, coach tone, preferred inspirations, and support styles.
               </p>
               <Link
                 to="/settings/preferences"
-                className="inline-block text-[10px] text-sunset-end hover:text-plum-main font-semibold mt-2 transition-colors underline decoration-dotted cursor-pointer"
+                className="inline-block text-[10px] text-accent hover:text-primary font-semibold mt-2 transition-colors underline decoration-dotted cursor-pointer"
               >
                 Edit my onboarding answers →
               </Link>
               <Link
                 to="/journal"
-                className="inline-block text-[10px] text-sunset-end hover:text-plum-main font-semibold mt-1.5 transition-colors underline decoration-dotted cursor-pointer"
+                className="inline-block text-[10px] text-accent hover:text-primary font-semibold mt-1.5 transition-colors underline decoration-dotted cursor-pointer"
               >
                 My Private Journal →
               </Link>
@@ -451,19 +485,19 @@ export default function Settings() {
 
             {/* CONSENTS SECTION */}
             <section className="mb-6">
-              <h3 className="text-[9px] uppercase tracking-wider text-plum-light/55 font-bold mb-3 ml-1">Consent Preferences</h3>
+              <h3 className="text-[9px] uppercase tracking-wider text-text-muted/55 font-bold mb-3 ml-1">Consent Preferences</h3>
               <div className="flex flex-col gap-3">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={aiConsent}
                     onChange={(e) => handleToggleConsent('ai', e.target.checked)}
-                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
                     disabled={submittingConsent}
                   />
                   <div className="flex-1">
-                    <span className="text-xs font-semibold text-plum-dark block">Personalize Tiny Coach</span>
-                    <span className="text-[9px] text-plum-light/60 leading-normal block mt-0.5">Allow the Tiny Coach engine to utilize habit trends for personalized suggestions.</span>
+                    <span className="text-xs font-semibold text-text-main block">Personalize Tiny Coach</span>
+                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Allow the Tiny Coach engine to utilize habit trends for personalized suggestions.</span>
                   </div>
                 </label>
 
@@ -472,12 +506,12 @@ export default function Settings() {
                     type="checkbox"
                     checked={supportConsent}
                     onChange={(e) => handleToggleConsent('support', e.target.checked)}
-                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
                     disabled={submittingConsent}
                   />
                   <div className="flex-1">
-                    <span className="text-xs font-semibold text-plum-dark block">Personalize Library Links</span>
-                    <span className="text-[9px] text-plum-light/60 leading-normal block mt-0.5">Use habit category tags to surface relevant support articles and videos.</span>
+                    <span className="text-xs font-semibold text-text-main block">Personalize Library Links</span>
+                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Use habit category tags to surface relevant support articles and videos.</span>
                   </div>
                 </label>
 
@@ -486,12 +520,12 @@ export default function Settings() {
                     type="checkbox"
                     checked={scoreConsent}
                     onChange={(e) => handleToggleConsent('score', e.target.checked)}
-                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
                     disabled={submittingConsent}
                   />
                   <div className="flex-1">
-                    <span className="text-xs font-semibold text-plum-dark block">Habit Score Recommendations</span>
-                    <span className="text-[9px] text-plum-light/60 leading-normal block mt-0.5">Process microhabit completion rates to suggest friction-reducing solutions.</span>
+                    <span className="text-xs font-semibold text-text-main block">Habit Score Recommendations</span>
+                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Process microhabit completion rates to suggest friction-reducing solutions.</span>
                   </div>
                 </label>
 
@@ -500,12 +534,12 @@ export default function Settings() {
                     type="checkbox"
                     checked={inspirationConsent}
                     onChange={(e) => handleToggleConsent('inspiration', e.target.checked)}
-                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
                     disabled={submittingConsent}
                   />
                   <div className="flex-1">
-                    <span className="text-xs font-semibold text-plum-dark block">Inspiration Settings Sharing</span>
-                    <span className="text-[9px] text-plum-light/60 leading-normal block mt-0.5">Use quote categories (e.g. spiritual) to curate your Today dashboard encouragement.</span>
+                    <span className="text-xs font-semibold text-text-main block">Inspiration Settings Sharing</span>
+                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Use quote categories (e.g. spiritual) to curate your Today dashboard encouragement.</span>
                   </div>
                 </label>
 
@@ -514,41 +548,41 @@ export default function Settings() {
                     type="checkbox"
                     checked={journalConsent}
                     onChange={(e) => handleToggleConsent('journal', e.target.checked)}
-                    className="w-4 h-4 rounded border-plum-main/20 text-plum-main focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
                     disabled={submittingConsent}
                   />
                   <div className="flex-1">
-                    <span className="text-xs font-semibold text-plum-dark block">Let Tiny Coach read my journal entries</span>
-                    <span className="text-[9px] text-plum-light/60 leading-normal block mt-0.5">Used ONLY locally/AI (default off). Journals will never be sent anywhere without your explicit permission.</span>
+                    <span className="text-xs font-semibold text-text-main block">Let Tiny Coach read my journal entries</span>
+                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Used ONLY locally/AI (default off). Journals will never be sent anywhere without your explicit permission.</span>
                   </div>
                 </label>
               </div>
             </section>
 
-            <hr className="border-plum-main/10 mb-6" />
+            <hr className="border-border-main/10 mb-6" />
 
             {/* PASSWORD UPDATE */}
             <section className="mb-6">
-              <h3 className="text-[9px] uppercase tracking-wider text-plum-light/55 font-bold mb-3 ml-1">Account & Security</h3>
+              <h3 className="text-[9px] uppercase tracking-wider text-text-muted/55 font-bold mb-3 ml-1">Account & Security</h3>
               <form onSubmit={handleChangePassword} className="flex flex-col gap-3">
                 <div>
-                  <label className="block text-[8px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">New Password</label>
+                  <label className="block text-[8px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">New Password</label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                    className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                     placeholder="Min 6 characters"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[8px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Confirm New Password</label>
+                  <label className="block text-[8px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Confirm New Password</label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                    className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                     placeholder="Re-enter password"
                     required
                   />
@@ -556,7 +590,7 @@ export default function Settings() {
                 <button
                   type="submit"
                   disabled={submittingPassword}
-                  className="bg-plum-main hover:bg-plum-dark text-cream-light py-2 rounded-2xl text-xs font-medium tracking-wide transition-all shadow-md shadow-plum-main/10 text-center cursor-pointer disabled:opacity-50 mt-1"
+                  className="bg-primary hover:bg-primary-strong text-on-primary py-2 rounded-2xl text-xs font-medium tracking-wide transition-all shadow-md shadow-border-main/10 text-center cursor-pointer disabled:opacity-50 mt-1"
                 >
                   {submittingPassword ? 'Saving...' : 'Update Password'}
                 </button>
@@ -565,67 +599,67 @@ export default function Settings() {
               {/* Phone Settings */}
               <form onSubmit={handleChangePhone} className="flex flex-col gap-3 mt-4">
                 <div>
-                  <label className="block text-[8px] uppercase tracking-wider text-plum-light/60 font-bold mb-1 ml-1">Phone Number</label>
+                  <label className="block text-[8px] uppercase tracking-wider text-text-muted/60 font-bold mb-1 ml-1">Phone Number</label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-cream-dark/25 border border-plum-main/10 rounded-2xl py-2 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-plum-main/40"
+                    className="w-full bg-surface-dark/25 border border-border-main/10 rounded-2xl py-2 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-border-main/40"
                     placeholder="e.g. +123456789"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={submittingPhone}
-                  className="bg-plum-main/80 hover:bg-plum-dark text-cream-light py-2 rounded-2xl text-xs font-medium tracking-wide transition-all text-center cursor-pointer disabled:opacity-50"
+                  className="bg-primary/80 hover:bg-primary-strong text-on-primary py-2 rounded-2xl text-xs font-medium tracking-wide transition-all text-center cursor-pointer disabled:opacity-50"
                 >
                   {submittingPhone ? 'Saving...' : 'Save Phone Number'}
                 </button>
               </form>
             </section>
 
-            <hr className="border-plum-main/10 mb-6" />
+            <hr className="border-border-main/10 mb-6" />
 
             {/* DATA RIGHTS */}
             <section className="mb-6">
-              <h3 className="text-[9px] uppercase tracking-wider text-plum-light/55 font-bold mb-3 ml-1">My Data Rights</h3>
+              <h3 className="text-[9px] uppercase tracking-wider text-text-muted/55 font-bold mb-3 ml-1">My Data Rights</h3>
               <div className="flex flex-col gap-3">
                 {/* Export */}
-                <div className="bg-cream-dark/10 p-3 rounded-2xl border border-plum-main/5">
-                  <h4 className="text-xs font-semibold text-plum-dark mb-1">Export My Data</h4>
-                  <p className="text-[9px] text-plum-light/75 leading-relaxed mb-3">Download your full history, profile parameters, logs, and goals in plain CSV and JSON formats.</p>
+                <div className="bg-surface-dark/10 p-3 rounded-2xl border border-border-main/5">
+                  <h4 className="text-xs font-semibold text-text-main mb-1">Export My Data</h4>
+                  <p className="text-[9px] text-text-muted/75 leading-relaxed mb-3">Download your full history, profile parameters, logs, and goals in plain CSV and JSON formats.</p>
                   <button
                     onClick={handleExportData}
-                    className="bg-plum-main hover:bg-plum-dark text-cream-light py-1.5 px-3 rounded-xl text-xs font-medium cursor-pointer"
+                    className="bg-primary hover:bg-primary-strong text-on-primary py-1.5 px-3 rounded-xl text-xs font-medium cursor-pointer"
                   >
                     Export Data
                   </button>
                 </div>
 
                 {/* Specific Clears */}
-                <div className="bg-cream-dark/10 p-3 rounded-2xl border border-plum-main/5 flex flex-col gap-2">
-                  <h4 className="text-xs font-semibold text-plum-dark">Clear Specific History</h4>
+                <div className="bg-surface-dark/10 p-3 rounded-2xl border border-border-main/5 flex flex-col gap-2">
+                  <h4 className="text-xs font-semibold text-text-main">Clear Specific History</h4>
                   <button
                     onClick={() => handleDeleteSpecificData('reflections')}
-                    className="w-full border border-plum-main/20 hover:bg-plum-main/5 text-plum-main py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
+                    className="w-full border border-border-main/20 hover:bg-primary/5 text-primary py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
                   >
                     🗑️ Clear Reflections (Leaves logs)
                   </button>
                   <button
                     onClick={() => handleDeleteSpecificData('logs')}
-                    className="w-full border border-plum-main/20 hover:bg-plum-main/5 text-plum-main py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
+                    className="w-full border border-border-main/20 hover:bg-primary/5 text-primary py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
                   >
                     🗑️ Clear Habit Log History & Streaks
                   </button>
                   <button
                     onClick={() => handleDeleteSpecificData('reminders')}
-                    className="w-full border border-plum-main/20 hover:bg-plum-main/5 text-plum-main py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
+                    className="w-full border border-border-main/20 hover:bg-primary/5 text-primary py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
                   >
                     🗑️ Clear Scheduled Reminders
                   </button>
                   <button
                     onClick={() => handleDeleteSpecificData('journal')}
-                    className="w-full border border-plum-main/20 hover:bg-plum-main/5 text-plum-main py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
+                    className="w-full border border-border-main/20 hover:bg-primary/5 text-primary py-1.5 rounded-xl text-xs font-medium text-left px-3 cursor-pointer"
                   >
                     🗑️ Clear Journal Entries
                   </button>
@@ -639,7 +673,7 @@ export default function Settings() {
                   {!showDeleteModal ? (
                     <button
                       onClick={() => setShowDeleteModal(true)}
-                      className="bg-red-600 hover:bg-red-700 text-cream-light py-1.5 px-3 rounded-xl text-xs font-medium cursor-pointer"
+                      className="bg-red-600 hover:bg-red-700 text-on-primary py-1.5 px-3 rounded-xl text-xs font-medium cursor-pointer"
                     >
                       Delete Account...
                     </button>
@@ -650,19 +684,19 @@ export default function Settings() {
                         type="text"
                         value={deleteConfirmText}
                         onChange={(e) => setDeleteConfirmText(e.target.value)}
-                        className="w-full bg-cream-light border border-red-500/20 rounded-xl py-1.5 px-3 text-plum-dark font-sans text-xs focus:outline-none focus:border-red-500/50"
+                        className="w-full bg-surface border border-red-500/20 rounded-xl py-1.5 px-3 text-text-main font-sans text-xs focus:outline-none focus:border-red-500/50"
                         placeholder="Type verification sentence..."
                       />
                       <div className="flex gap-2">
                         <button
                           onClick={handleDeleteAccount}
-                          className="bg-red-700 hover:bg-red-800 text-cream-light py-1 px-3 rounded-xl text-xs font-medium cursor-pointer"
+                          className="bg-red-700 hover:bg-red-800 text-on-primary py-1 px-3 rounded-xl text-xs font-medium cursor-pointer"
                         >
                           Confirm Delete
                         </button>
                         <button
                           onClick={() => { setShowDeleteModal(false); setDeleteConfirmText(''); }}
-                          className="border border-plum-main/20 text-plum-main py-1 px-3 rounded-xl text-xs font-medium cursor-pointer bg-cream-light"
+                          className="border border-border-main/20 text-primary py-1 px-3 rounded-xl text-xs font-medium cursor-pointer bg-surface"
                         >
                           Cancel
                         </button>
