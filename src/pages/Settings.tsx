@@ -15,6 +15,7 @@ export default function Settings() {
   const [submittingPassword, setSubmittingPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [consentsError, setConsentsError] = useState<string | null>(null)
 
   // Consent toggles
   const [aiConsent, setAiConsent] = useState(false)
@@ -91,7 +92,7 @@ export default function Settings() {
         }
       } catch (err) {
         console.error('Error loading consents:', err)
-        setError('Could not load privacy consents. Other settings remain available.')
+        setConsentsError('Could not load privacy consents. Other settings remain available.')
       }
 
       // Load profile / metadata independently
@@ -503,77 +504,83 @@ export default function Settings() {
             {/* CONSENTS SECTION */}
             <section className="mb-6">
               <h3 className="text-[9px] uppercase tracking-wider text-text-muted/55 font-bold mb-3 ml-1">Consent Preferences</h3>
-              <div className="flex flex-col gap-3">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={aiConsent}
-                    onChange={(e) => handleToggleConsent('ai', e.target.checked)}
-                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
-                    disabled={submittingConsent}
-                  />
-                  <div className="flex-1">
-                    <span className="text-xs font-semibold text-text-main block">Personalize Tiny Coach</span>
-                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Allow the Tiny Coach engine to utilize habit trends for personalized suggestions.</span>
-                  </div>
-                </label>
+              {consentsError ? (
+                <div className="bg-coral-50/10 border border-border-main/10 rounded-2xl p-4 text-xs text-text-muted select-none leading-relaxed">
+                  {consentsError}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={aiConsent}
+                      onChange={(e) => handleToggleConsent('ai', e.target.checked)}
+                      className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                      disabled={submittingConsent}
+                    />
+                    <div className="flex-1">
+                      <span className="text-xs font-semibold text-text-main block">Personalize Tiny Coach</span>
+                      <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Allow the Tiny Coach engine to utilize habit trends for personalized suggestions.</span>
+                    </div>
+                  </label>
 
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={supportConsent}
-                    onChange={(e) => handleToggleConsent('support', e.target.checked)}
-                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
-                    disabled={submittingConsent}
-                  />
-                  <div className="flex-1">
-                    <span className="text-xs font-semibold text-text-main block">Personalize Library Links</span>
-                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Use habit category tags to surface relevant support articles and videos.</span>
-                  </div>
-                </label>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={supportConsent}
+                      onChange={(e) => handleToggleConsent('support', e.target.checked)}
+                      className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                      disabled={submittingConsent}
+                    />
+                    <div className="flex-1">
+                      <span className="text-xs font-semibold text-text-main block">Personalize Library Links</span>
+                      <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Use habit category tags to surface relevant support articles and videos.</span>
+                    </div>
+                  </label>
 
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={scoreConsent}
-                    onChange={(e) => handleToggleConsent('score', e.target.checked)}
-                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
-                    disabled={submittingConsent}
-                  />
-                  <div className="flex-1">
-                    <span className="text-xs font-semibold text-text-main block">Habit Score Recommendations</span>
-                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Process microhabit completion rates to suggest friction-reducing solutions.</span>
-                  </div>
-                </label>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={scoreConsent}
+                      onChange={(e) => handleToggleConsent('score', e.target.checked)}
+                      className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                      disabled={submittingConsent}
+                    />
+                    <div className="flex-1">
+                      <span className="text-xs font-semibold text-text-main block">Habit Score Recommendations</span>
+                      <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Process microhabit completion rates to suggest friction-reducing solutions.</span>
+                    </div>
+                  </label>
 
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={inspirationConsent}
-                    onChange={(e) => handleToggleConsent('inspiration', e.target.checked)}
-                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
-                    disabled={submittingConsent}
-                  />
-                  <div className="flex-1">
-                    <span className="text-xs font-semibold text-text-main block">Inspiration Settings Sharing</span>
-                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Use quote categories (e.g. spiritual) to curate your Today dashboard encouragement.</span>
-                  </div>
-                </label>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={inspirationConsent}
+                      onChange={(e) => handleToggleConsent('inspiration', e.target.checked)}
+                      className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                      disabled={submittingConsent}
+                    />
+                    <div className="flex-1">
+                      <span className="text-xs font-semibold text-text-main block">Inspiration Settings Sharing</span>
+                      <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Use quote categories (e.g. spiritual) to curate your Today dashboard encouragement.</span>
+                    </div>
+                  </label>
 
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={journalConsent}
-                    onChange={(e) => handleToggleConsent('journal', e.target.checked)}
-                    className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
-                    disabled={submittingConsent}
-                  />
-                  <div className="flex-1">
-                    <span className="text-xs font-semibold text-text-main block">Let Tiny Coach read my journal entries</span>
-                    <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Used ONLY locally/AI (default off). Journals will never be sent anywhere without your explicit permission.</span>
-                  </div>
-                </label>
-              </div>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={journalConsent}
+                      onChange={(e) => handleToggleConsent('journal', e.target.checked)}
+                      className="w-4 h-4 rounded border-border-main/20 text-primary focus:ring-plum-main/30 accent-plum-main mt-0.5"
+                      disabled={submittingConsent}
+                    />
+                    <div className="flex-1">
+                      <span className="text-xs font-semibold text-text-main block">Let Tiny Coach read my journal entries</span>
+                      <span className="text-[9px] text-text-muted/60 leading-normal block mt-0.5">Used ONLY locally/AI (default off). Journals will never be sent anywhere without your explicit permission.</span>
+                    </div>
+                  </label>
+                </div>
+              )}
             </section>
 
             <hr className="border-border-main/10 mb-6" />

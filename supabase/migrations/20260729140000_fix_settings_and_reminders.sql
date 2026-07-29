@@ -1,3 +1,7 @@
+-- Fix profiles table missing theme column
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'sunset';
+
 -- Fix missing foreign key relationship between public.reminders and public.habits
 ALTER TABLE public.reminders
 DROP CONSTRAINT IF EXISTS reminders_habit_id_fkey,
@@ -8,8 +12,8 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
   -- Insert into profiles
-  INSERT INTO public.profiles (user_id, coach_tone, onboarding_completed)
-  VALUES (new.id, 'Gentle', false)
+  INSERT INTO public.profiles (user_id, coach_tone, onboarding_completed, theme)
+  VALUES (new.id, 'Gentle', false, 'sunset')
   ON CONFLICT (user_id) DO NOTHING;
 
   -- Insert into user_consents
@@ -67,10 +71,15 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- One-time backfill SQL for any existing auth.users missing profiles / user_consents / user_security_settings
-INSERT INTO public.profiles (user_id, coach_tone, onboarding_completed)
-SELECT id, 'Gentle', false
+INSERT INTO public.profiles (user_id, coach_tone, onboarding_completed, theme)
+SELECT id, 'Gentle', false, 'sunset'
 FROM auth.users
 ON CONFLICT (user_id) DO NOTHING;
+
+-- Make sure existing profiles have sunset theme if they were null
+UPDATE public.profiles
+SET theme = 'sunset'
+WHERE theme IS NULL;
 
 INSERT INTO public.user_consents (
   user_id, 
@@ -113,3 +122,85 @@ SELECT
   false
 FROM auth.users
 ON CONFLICT (user_id) DO NOTHING;
+
+-- Ensure Row Level Security (RLS) is enabled on all tables
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_consents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_security_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reminders ENABLE ROW LEVEL SECURITY;
+
+-- ----------------------------------------------------
+-- profiles Policies
+-- ----------------------------------------------------
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
+CREATE POLICY "Users can view their own profile" ON public.profiles
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.profiles;
+CREATE POLICY "Users can insert their own profile" ON public.profiles
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+CREATE POLICY "Users can update their own profile" ON public.profiles
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete their own profile" ON public.profiles;
+CREATE POLICY "Users can delete their own profile" ON public.profiles
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+-- ----------------------------------------------------
+-- user_consents Policies
+-- ----------------------------------------------------
+DROP POLICY IF EXISTS "Users can view own consents" ON public.user_consents;
+CREATE POLICY "Users can view own consents" ON public.user_consents
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert own consents" ON public.user_consents;
+CREATE POLICY "Users can insert own consents" ON public.user_consents
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own consents" ON public.user_consents;
+CREATE POLICY "Users can update own consents" ON public.user_consents
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete own consents" ON public.user_consents;
+CREATE POLICY "Users can delete own consents" ON public.user_consents
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+-- ----------------------------------------------------
+-- user_security_settings Policies
+-- ----------------------------------------------------
+DROP POLICY IF EXISTS "Users can view own security settings" ON public.user_security_settings;
+CREATE POLICY "Users can view own security settings" ON public.user_security_settings
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert own security settings" ON public.user_security_settings;
+CREATE POLICY "Users can insert own security settings" ON public.user_security_settings
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own security settings" ON public.user_security_settings;
+CREATE POLICY "Users can update own security settings" ON public.user_security_settings
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete own security settings" ON public.user_security_settings;
+CREATE POLICY "Users can delete own security settings" ON public.user_security_settings
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+-- ----------------------------------------------------
+-- reminders Policies
+-- ----------------------------------------------------
+DROP POLICY IF EXISTS "Users can view their own reminders" ON public.reminders;
+CREATE POLICY "Users can view their own reminders" ON public.reminders
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert their own reminders" ON public.reminders;
+CREATE POLICY "Users can insert their own reminders" ON public.reminders
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update their own reminders" ON public.reminders;
+CREATE POLICY "Users can update their own reminders" ON public.reminders
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete their own reminders" ON public.reminders;
+CREATE POLICY "Users can delete their own reminders" ON public.reminders
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);

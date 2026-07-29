@@ -54,7 +54,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           .eq('user_id', user.id)
           .maybeSingle()
 
-        if (!error && data?.theme) {
+        const validThemes: Theme[] = ['sunset', 'peach', 'teal', 'plum', 'dark', 'device']
+        if (!error && data?.theme && validThemes.includes(data.theme as Theme)) {
           const dbTheme = data.theme as Theme
           setThemeState(currentTheme => currentTheme !== dbTheme ? dbTheme : currentTheme)
         }
