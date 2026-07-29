@@ -2,6 +2,19 @@
 ALTER TABLE public.profiles 
 ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'sunset';
 
+-- Repair foreign key constraints on settings tables to point explicitly to auth.users(id)
+ALTER TABLE public.profiles
+DROP CONSTRAINT IF EXISTS profiles_user_id_fkey,
+ADD CONSTRAINT profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+ALTER TABLE public.user_consents
+DROP CONSTRAINT IF EXISTS user_consents_user_id_fkey,
+ADD CONSTRAINT user_consents_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+ALTER TABLE public.user_security_settings
+DROP CONSTRAINT IF EXISTS user_security_settings_user_id_fkey,
+ADD CONSTRAINT user_security_settings_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
 -- Fix missing foreign key relationship between public.reminders and public.habits
 ALTER TABLE public.reminders
 DROP CONSTRAINT IF EXISTS reminders_habit_id_fkey,
