@@ -330,133 +330,135 @@ export default function HabitsList() {
                 /* HABITS LIST */
                 <div className="flex flex-col gap-5 max-h-[340px] overflow-y-auto pr-1 text-left scrollbar-thin my-2">
                   {goalAreas.map((area) => (
-                    <div key={area} className="flex flex-col gap-2">
+                    <div key={area} className="flex flex-col gap-3 p-4 rounded-2xl border border-border-main/10 bg-surface-dark/5">
                       {/* Goal Heading */}
-                      <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-accent ml-1 mb-1">
+                      <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-accent ml-1">
                         {area}
                       </h3>
 
-                      {groupedHabits[area].map((habit) => {
-                        const stats = calculateStreaks(habit.start_date, habit.frequency, habit.custom_days, habit.habit_logs, todayStr)
-                        const isDoneToday = habit.habit_logs.some((l) => l.log_date === todayStr)
-                        const isSavedByFreeze = stats.freeze_used_dates.includes(yesterdayStr)
+                      <div className="flex flex-col gap-3">
+                        {groupedHabits[area].map((habit) => {
+                          const stats = calculateStreaks(habit.start_date, habit.frequency, habit.custom_days, habit.habit_logs, todayStr)
+                          const isDoneToday = habit.habit_logs.some((l) => l.log_date === todayStr)
+                          const isSavedByFreeze = stats.freeze_used_dates.includes(yesterdayStr)
 
-                        const nudgeMessages = [
-                          "It's been a little while. Want to begin again today?",
-                          "No pressure at all — shall we start this one gently again?",
-                          "Ready to return? We can make this habit even smaller so it's easier to come back to."
-                        ]
-                        const charCodeSum = habit.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-                        const nudgeText = nudgeMessages[charCodeSum % nudgeMessages.length]
-                        const showNudge = stats.consecutive_missed >= 3 && !isDoneToday && !dismissedNudges.includes(habit.id)
+                          const nudgeMessages = [
+                            "It's been a little while. Want to begin again today?",
+                            "No pressure at all — shall we start this one gently again?",
+                            "Ready to return? We can make this habit even smaller so it's easier to come back to."
+                          ]
+                          const charCodeSum = habit.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+                          const nudgeText = nudgeMessages[charCodeSum % nudgeMessages.length]
+                          const showNudge = stats.consecutive_missed >= 3 && !isDoneToday && !dismissedNudges.includes(habit.id)
 
-                        return (
-                          <div 
-                            key={habit.id} 
-                            className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col transition-all hover:border-border-main/20 gap-3"
-                          >
-                            <div>
-                              <div className="flex justify-between items-start mb-2">
-                                <div>
-                                  <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                                    <span className="text-[9px] font-semibold uppercase tracking-wider text-text-muted/50 bg-surface-dark/35 px-1.5 py-0.5 rounded">
-                                      {habit.category}
-                                    </span>
-                                    {habit.preferred_time && (
-                                      <span className="text-[9px] text-freeze bg-freeze/10 px-1.5 py-0.5 rounded font-medium">
-                                        {habit.preferred_time}
+                          return (
+                            <div 
+                              key={habit.id} 
+                              className="bg-surface border border-border-main/15 rounded-xl p-3.5 flex flex-col transition-all hover:border-border-main/30 gap-3 shadow-sm"
+                            >
+                              <div>
+                                <div className="flex justify-between items-start mb-2">
+                                  <div>
+                                    <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                                      <span className="text-[9px] font-semibold uppercase tracking-wider text-text-muted/50 bg-surface-dark/35 px-1.5 py-0.5 rounded">
+                                        {habit.category}
                                       </span>
-                                    )}
-                                    <span className="text-[9px] text-freeze bg-freeze/10 px-1.5 py-0.5 rounded font-semibold flex items-center gap-0.5 select-none">
-                                      ❄️ {stats.remaining_freezes} {stats.remaining_freezes === 1 ? 'freeze' : 'freezes'}
-                                    </span>
-                                    {isSavedByFreeze && (
-                                      <span className="text-[9px] text-state-completed bg-state-completed/15 border border-success/10 px-1.5 py-0.5 rounded font-semibold select-none">
-                                        🛡️ Saved by freeze
+                                      {habit.preferred_time && (
+                                        <span className="text-[9px] text-freeze bg-freeze/10 px-1.5 py-0.5 rounded font-medium">
+                                          {habit.preferred_time}
+                                        </span>
+                                      )}
+                                      <span className="text-[9px] text-freeze bg-freeze/10 px-1.5 py-0.5 rounded font-semibold flex items-center gap-0.5 select-none">
+                                        ❄️ {stats.remaining_freezes} {stats.remaining_freezes === 1 ? 'freeze' : 'freezes'}
                                       </span>
-                                    )}
+                                      {isSavedByFreeze && (
+                                        <span className="text-[9px] text-state-completed bg-state-completed/15 border border-success/10 px-1.5 py-0.5 rounded font-semibold select-none">
+                                          🛡️ Saved by freeze
+                                        </span>
+                                      )}
+                                    </div>
+                                    <h4 className="font-semibold text-text-main text-sm mb-0.5">{habit.name}</h4>
+                                    <p className="text-xs text-text-muted/80 font-light">
+                                      Tiny goal: {habit.tiny_goal}
+                                    </p>
                                   </div>
-                                  <h4 className="font-semibold text-text-main text-sm mb-0.5">{habit.name}</h4>
-                                  <p className="text-xs text-text-muted/80 font-light">
-                                    Tiny goal: {habit.tiny_goal}
-                                  </p>
-                                </div>
 
-                                <button
-                                  onClick={() => navigate(`/habits/${habit.id}/edit`)}
-                                  className="text-text-muted/40 hover:text-primary transition-colors p-1 cursor-pointer"
-                                  title="Edit habit"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                  </svg>
-                                </button>
-                              </div>
-
-                              {/* Soft return nudge banner */}
-                              {showNudge && (
-                                <div className="bg-coral-50/10 border border-border-main/15 rounded-xl p-3.5 mt-2 mb-1 text-xs text-text-muted text-left relative animate-fadeIn leading-relaxed">
                                   <button
-                                    type="button"
-                                    onClick={() => dismissNudge(habit.id)}
-                                    className="absolute right-2 top-2 text-text-muted/40 hover:text-primary p-0.5 cursor-pointer"
-                                    title="Dismiss nudge"
+                                    onClick={() => navigate(`/habits/${habit.id}/edit`)}
+                                    className="text-text-muted/40 hover:text-primary transition-colors p-1 cursor-pointer"
+                                    title="Edit habit"
                                   >
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                   </button>
-                                  <p className="font-serif italic text-text-main font-medium pr-6 mb-2">
-                                    "{nudgeText}"
-                                  </p>
-                                  <div className="flex gap-2.5">
+                                </div>
+
+                                {/* Soft return nudge banner */}
+                                {showNudge && (
+                                  <div className="bg-coral-50/10 border border-border-main/15 rounded-xl p-3.5 mt-2 mb-1 text-xs text-text-muted text-left relative animate-fadeIn leading-relaxed">
                                     <button
                                       type="button"
-                                      onClick={() => handleCheckIn(habit)}
-                                      className="bg-primary hover:bg-primary-strong text-on-primary py-1.5 px-3 rounded-lg font-medium cursor-pointer text-[10px]"
+                                      onClick={() => dismissNudge(habit.id)}
+                                      className="absolute right-2 top-2 text-text-muted/40 hover:text-primary p-0.5 cursor-pointer"
+                                      title="Dismiss nudge"
                                     >
-                                      Begin again
+                                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
                                     </button>
-                                    <Link
-                                      to={`/habits/${habit.id}/edit?focus=tiny_goal`}
-                                      className="border border-border-main/20 hover:border-border-main/40 text-primary py-1.5 px-3 rounded-lg font-medium text-center cursor-pointer text-[10px] bg-surface"
-                                    >
-                                      Make it smaller
-                                    </Link>
+                                    <p className="font-serif italic text-text-main font-medium pr-6 mb-2">
+                                      "{nudgeText}"
+                                    </p>
+                                    <div className="flex gap-2.5">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleCheckIn(habit)}
+                                        className="bg-primary hover:bg-primary-strong text-on-primary py-1.5 px-3 rounded-lg font-medium cursor-pointer text-[10px]"
+                                      >
+                                        Begin again
+                                      </button>
+                                      <Link
+                                        to={`/habits/${habit.id}/edit?focus=tiny_goal`}
+                                        className="border border-border-main/20 hover:border-border-main/40 text-primary py-1.5 px-3 rounded-lg font-medium text-center cursor-pointer text-[10px] bg-surface"
+                                      >
+                                        Make it smaller
+                                      </Link>
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                            </div>
+                                )}
+                              </div>
 
-                            {/* Streaks & Stats */}
-                            <div className="flex gap-4 mt-1 text-[10px] text-text-muted/60 font-semibold select-none border-t border-border-main/5 pt-2.5">
-                              <span>🔥 {stats.current_streak} streak</span>
-                              <span>🏆 {stats.longest_streak} longest</span>
-                              <span>✨ {stats.total_completions} completions</span>
-                            </div>
+                              {/* Streaks & Stats */}
+                              <div className="flex gap-4 mt-1 text-[10px] text-text-muted/60 font-semibold select-none border-t border-border-main/5 pt-2.5">
+                                <span>🔥 {stats.current_streak} streak</span>
+                                <span>🏆 {stats.longest_streak} longest</span>
+                                <span>✨ {stats.total_completions} completions</span>
+                              </div>
 
-                            {/* Check In Action */}
-                            <div className="mt-1">
-                              {isDoneToday ? (
-                                <div className="w-full bg-success/15 border border-success/10 text-success py-2 px-3 rounded-xl text-center text-xs font-semibold select-none flex items-center justify-center gap-1">
-                                  <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                  </svg>
-                                  <span>You showed up today!</span>
-                                </div>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => handleCheckIn(habit)}
-                                  className="w-full bg-primary hover:bg-primary-strong text-on-primary py-2 px-3 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors shadow-sm shadow-border-main/5"
-                                >
-                                  Check In
-                                </button>
-                              )}
+                              {/* Check In Action */}
+                              <div className="mt-1">
+                                {isDoneToday ? (
+                                  <div className="w-full bg-success/15 border border-success/10 text-success py-2 px-3 rounded-xl text-center text-xs font-semibold select-none flex items-center justify-center gap-1">
+                                    <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span>You showed up today!</span>
+                                  </div>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCheckIn(habit)}
+                                    className="w-full bg-primary hover:bg-primary-strong text-on-primary py-2 px-3 rounded-xl font-medium text-xs text-center cursor-pointer transition-colors shadow-sm shadow-border-main/5"
+                                  >
+                                    Check In
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )
-                      })}
+                          )
+                        })}
+                      </div>
                     </div>
                   ))}
                 </div>
