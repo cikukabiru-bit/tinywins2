@@ -45,6 +45,7 @@ export default function EditGoal() {
   const [preferredTime, setPreferredTime] = useState('')
   const [growthPreference, setGrowthPreference] = useState('')
   const [why, setWhy] = useState('')
+  const [colorIndex, setColorIndex] = useState(0)
   const [isActive, setIsActive] = useState(true)
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function EditGoal() {
         setPreferredTime(goalData.preferred_time)
         setGrowthPreference(goalData.growth_preference)
         setWhy(goalData.why || '')
+        setColorIndex(goalData.color_index || 0)
         setIsActive(goalData.active)
 
         // Fetch active habits under this goal
@@ -159,6 +161,7 @@ export default function EditGoal() {
           preferred_time: preferredTime,
           growth_preference: growthPreference,
           why: why.trim() || null,
+          color_index: colorIndex,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
@@ -335,6 +338,28 @@ export default function EditGoal() {
                   placeholder="Keep it brief and honest..."
                   maxLength={400}
                 />
+              </div>
+
+              {/* Goal Color Accent */}
+              <div>
+                <label className="block text-[8px] uppercase tracking-wider text-text-muted/50 font-bold mb-1.5 ml-1">
+                  Goal Color Accent
+                </label>
+                <div className="flex gap-2.5">
+                  {[0, 1, 2, 3, 4].map((idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setColorIndex(idx)}
+                      className={`w-7 h-7 rounded-full border-2 cursor-pointer transition-all bg-goal-${idx} ${
+                        colorIndex === idx 
+                          ? 'border-text-main scale-110 shadow-md shadow-border-main/10' 
+                          : 'border-border-main/10 hover:scale-105'
+                      }`}
+                      title={`Accent Color ${idx + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Add existing habit dropdown */}

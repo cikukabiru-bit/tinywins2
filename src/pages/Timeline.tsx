@@ -15,8 +15,19 @@ interface TimelineItem {
   habit_name?: string
   tiny_goal?: string
   goal_area?: string
+  goal_color_index?: number
   title?: string | null
   body?: string
+}
+
+const getGoalBorderClass = (index?: number) => {
+  switch (index) {
+    case 1: return 'border-l-goal-1'
+    case 2: return 'border-l-goal-2'
+    case 3: return 'border-l-goal-3'
+    case 4: return 'border-l-goal-4'
+    default: return 'border-l-goal-0'
+  }
 }
 
 export default function Timeline() {
@@ -47,7 +58,7 @@ export default function Timeline() {
         // Fetch journal entries
         const { data: journalData, error: journalError } = await supabase
           .from('journal_entries')
-          .select('*, goals:goals(area)')
+          .select('*, goals:goals(area, color_index)')
           .eq('user_id', user.id)
           .order('entry_date', { ascending: false })
 
@@ -64,7 +75,7 @@ export default function Timeline() {
         // Fetch goals
         const { data: goalsData, error: goalsError } = await supabase
           .from('goals')
-          .select('id, area')
+          .select('id, area, color_index')
           .eq('user_id', user.id)
 
         if (goalsError) throw goalsError
@@ -83,7 +94,8 @@ export default function Timeline() {
             effort_level: log.effort_level,
             habit_name: habit ? habit.name : 'Unknown Habit',
             tiny_goal: habit ? habit.tiny_goal : '',
-            goal_area: goal ? goal.area : 'General'
+            goal_area: goal ? goal.area : 'General',
+            goal_color_index: goal ? goal.color_index : undefined
           }
         })
 
@@ -96,7 +108,8 @@ export default function Timeline() {
             mood: j.mood,
             title: j.title,
             body: j.body,
-            goal_area: j.goals?.area || undefined
+            goal_area: j.goals?.area || undefined,
+            goal_color_index: j.goals?.color_index || undefined
           }
         })
 
@@ -245,7 +258,7 @@ export default function Timeline() {
                           <div 
                             key={item.id} 
                             onClick={() => navigate('/journal')}
-                            className="bg-sunset-start/35 border border-accent/20 rounded-2xl p-4 flex flex-col gap-1.5 transition-all hover:border-accent/40 cursor-pointer"
+                            className={`bg-sunset-start/35 border border-accent/20 border-l-4 rounded-2xl p-4 flex flex-col gap-1.5 transition-all hover:border-accent/40 cursor-pointer pl-5 ${getGoalBorderClass(item.goal_color_index)}`}
                           >
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="text-[7.5px] font-bold uppercase tracking-wider text-streak bg-streak/10 px-1.5 py-0.5 rounded">
@@ -273,7 +286,7 @@ export default function Timeline() {
                           /* Habit Log Card */
                           <div 
                             key={item.id} 
-                            className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-border-main/20"
+                            className={`bg-surface-dark/15 border border-border-main/10 border-l-4 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-border-main/20 pl-5 ${getGoalBorderClass(item.goal_color_index)}`}
                           >
                             <div>
                               <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">

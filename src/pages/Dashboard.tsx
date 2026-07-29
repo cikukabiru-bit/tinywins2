@@ -22,6 +22,7 @@ interface Habit {
   active: boolean
   goals: {
     area: string
+    color_index?: number
   } | null
   habit_logs: {
     id?: string
@@ -33,7 +34,15 @@ interface Habit {
   }[]
 }
 
-
+const getGoalBorderClass = (index?: number) => {
+  switch (index) {
+    case 1: return 'border-l-goal-1'
+    case 2: return 'border-l-goal-2'
+    case 3: return 'border-l-goal-3'
+    case 4: return 'border-l-goal-4'
+    default: return 'border-l-goal-0'
+  }
+}
 
 export default function Dashboard() {
   const { user, name, signOut } = useAuth()
@@ -151,7 +160,7 @@ export default function Dashboard() {
 
       const { data: goalsData, error: goalsError } = await supabase
         .from('goals')
-        .select('id, area, active')
+        .select('id, area, active, color_index')
         .eq('user_id', user.id)
         .eq('active', true)
 
@@ -774,7 +783,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={habit.id}
-                      className="bg-surface-dark/15 border border-border-main/10 rounded-2xl p-4 flex flex-col justify-between gap-3"
+                      className={`bg-surface-dark/15 border border-border-main/10 border-l-4 rounded-2xl p-4 flex flex-col justify-between gap-3 pl-5 ${getGoalBorderClass(habit.goals?.color_index)}`}
                     >
                       <div>
                         <div className="flex justify-between items-start mb-2">

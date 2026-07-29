@@ -25,6 +25,12 @@
   --color-state-completed: var(--color-state-completed);
   --color-state-partial: var(--color-state-partial);
   --color-state-not-done: var(--color-state-not-done);
+
+  --color-goal-0: var(--color-goal-0);
+  --color-goal-1: var(--color-goal-1);
+  --color-goal-2: var(--color-goal-2);
+  --color-goal-3: var(--color-goal-3);
+  --color-goal-4: var(--color-goal-4);
 }
 
 :root {
@@ -49,6 +55,12 @@
   --color-state-completed: #15803d;
   --color-state-partial: #eab308;
   --color-state-not-done: #94a3b8;
+
+  --color-goal-0: #ff7a60; /* Coral */
+  --color-goal-1: #e29578; /* Soft Ochre */
+  --color-goal-2: #d27d2d; /* Terracotta */
+  --color-goal-3: #dd9f43; /* Golden Amber */
+  --color-goal-4: #b86b5c; /* Muted Peach */
 }
 
 [data-theme="sunset"] {
@@ -72,6 +84,12 @@
   --color-state-completed: #15803d;
   --color-state-partial: #eab308;
   --color-state-not-done: #94a3b8;
+
+  --color-goal-0: #ff7a60; /* Coral */
+  --color-goal-1: #e29578; /* Soft Ochre */
+  --color-goal-2: #d27d2d; /* Terracotta */
+  --color-goal-3: #dd9f43; /* Golden Amber */
+  --color-goal-4: #b86b5c; /* Muted Peach */
 }
 
 [data-theme="peach"] {
@@ -95,6 +113,12 @@
   --color-state-completed: #16a34a;
   --color-state-partial: #f59e0b;
   --color-state-not-done: #94a3b8;
+
+  --color-goal-0: #df8a76; /* Soft Terracotta */
+  --color-goal-1: #ea9c7f; /* Apricot */
+  --color-goal-2: #db9e7e; /* Sandy Ochre */
+  --color-goal-3: #cca098; /* Muted Rose Gold */
+  --color-goal-4: #d7a98c; /* Warm Wheat */
 }
 
 [data-theme="teal"] {
@@ -118,6 +142,12 @@
   --color-state-completed: #10b981;
   --color-state-partial: #eab308;
   --color-state-not-done: #94a3b8;
+
+  --color-goal-0: #0d9488; /* Medium Teal */
+  --color-goal-1: #4a7c59; /* Sage Green */
+  --color-goal-2: #2563eb; /* Blue */
+  --color-goal-3: #0f766e; /* Deep Teal */
+  --color-goal-4: #0284c7; /* Cyan */
 }
 
 [data-theme="plum"] {
@@ -141,6 +171,12 @@
   --color-state-completed: #10b981;
   --color-state-partial: #eab308;
   --color-state-not-done: #94a3b8;
+
+  --color-goal-0: #701a75; /* Deep Plum */
+  --color-goal-1: #b83280; /* Lavender Rose */
+  --color-goal-2: #805ad5; /* Purple */
+  --color-goal-3: #db2777; /* Pink */
+  --color-goal-4: #4f46e5; /* Indigo */
 }
 
 [data-theme="dark"] {
@@ -164,4 +200,10 @@
   --color-state-completed: #10b981;
   --color-state-partial: #fbbf24;
   --color-state-not-done: #475569;
+
+  --color-goal-0: #ff8c7a; /* Glowing Coral */
+  --color-goal-1: #ffd28a; /* Glowing Amber */
+  --color-goal-2: #4fd1c5; /* Cool Teal */
+  --color-goal-3: #d6bcfa; /* Lavender */
+  --color-goal-4: #fbb6ce; /* Soft Rose */
 }

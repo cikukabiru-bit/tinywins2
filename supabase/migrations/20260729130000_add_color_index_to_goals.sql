@@ -1,0 +1,1 @@
+ALTER TABLE public.goals ADD COLUMN color_index INTEGER NOT NULL DEFAULT 0;

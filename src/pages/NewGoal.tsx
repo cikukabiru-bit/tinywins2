@@ -70,6 +70,14 @@ export default function NewGoal() {
     setError(null)
 
     try {
+      // Query existing goals count to cycle colors
+      const { data: existingGoals } = await supabase
+        .from('goals')
+        .select('id')
+        .eq('user_id', user.id)
+
+      const nextColorIndex = existingGoals ? (existingGoals.length % 5) : 0
+
       const { data, error: insertError } = await supabase
         .from('goals')
         .insert({
@@ -79,6 +87,7 @@ export default function NewGoal() {
           preferred_time: preferredTime,
           growth_preference: growthPreference,
           why: why.trim() || null,
+          color_index: nextColorIndex,
           active: true
         })
         .select('id')

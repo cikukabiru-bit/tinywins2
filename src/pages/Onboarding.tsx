@@ -191,6 +191,7 @@ export default function Onboarding() {
         preferred_time: answers.preferred_time,
         growth_preference: answers.growth_preference,
         active: true,
+        color_index: 0,
         updated_at: new Date().toISOString()
       }
 
