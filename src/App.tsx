@@ -25,12 +25,14 @@ import EditInspiration from './pages/EditInspiration'
 import Settings from './pages/Settings'
 import Preferences from './pages/Preferences'
 import Journal from './pages/Journal'
+import PWAInstallPrompt from './components/PWAInstallPrompt'
 
 function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
         <Router>
+          <PWAInstallPrompt />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
