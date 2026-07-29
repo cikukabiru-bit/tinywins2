@@ -40,8 +40,8 @@ export default function Settings() {
     const fetchSettings = async () => {
       if (!user) return
 
+      // Load consents independently
       try {
-        // Fetch consents
         let { data: consentData, error: consentError } = await supabase
           .from('user_consents')
           .select('*')
@@ -50,25 +50,36 @@ export default function Settings() {
 
         if (consentError) throw consentError
 
-        // If no consents exist yet, create default entry
+        // If no consents exist yet, create default entry using resilient upsert
         if (!consentData) {
-          const { data: newConsents, error: insertError } = await supabase
-            .from('user_consents')
-            .insert({
-              user_id: user.id,
-              data_storage_consent: true,
-              ai_personalization_consent: false,
-              support_content_consent: false,
-              habit_score_personalization_consent: false,
-              inspiration_personalization_consent: false,
-              journal_ai_consent: false,
-              consent_version: '1.0'
-            })
-            .select()
-            .single()
+          try {
+            const { data: newConsents, error: insertError } = await supabase
+              .from('user_consents')
+              .upsert({
+                user_id: user.id,
+                data_storage_consent: true,
+                ai_personalization_consent: false,
+                support_content_consent: false,
+                habit_score_personalization_consent: false,
+                inspiration_personalization_consent: false,
+                journal_ai_consent: false,
+                consent_version: '1.0'
+              }, { onConflict: 'user_id' })
+              .select()
+              .single()
 
-          if (insertError) throw insertError
-          consentData = newConsents
+            if (insertError) throw insertError
+            consentData = newConsents
+          } catch (upsertErr) {
+            console.warn('Resilient consents upsert failed, trying fallback select:', upsertErr)
+            const { data: retryData, error: retryError } = await supabase
+              .from('user_consents')
+              .select('*')
+              .eq('user_id', user.id)
+              .maybeSingle()
+            if (retryError) throw retryError
+            consentData = retryData
+          }
         }
 
         if (consentData) {
@@ -78,15 +89,19 @@ export default function Settings() {
           setInspirationConsent(consentData.inspiration_personalization_consent)
           setJournalConsent(consentData.journal_ai_consent || false)
         }
+      } catch (err) {
+        console.error('Error loading consents:', err)
+        setError('Could not load privacy consents. Other settings remain available.')
+      }
 
-        // Fetch user phone from metadata
+      // Load profile / metadata independently
+      try {
         setPhone(user.phone || '')
       } catch (err) {
-        console.error('Error loading settings:', err)
-        setError('A small issue occurred loading settings.')
-      } finally {
-        setLoading(false)
+        console.error('Error loading profile phone:', err)
       }
+
+      setLoading(false)
     }
 
     fetchSettings()
@@ -222,28 +237,30 @@ export default function Settings() {
     setSuccess(null)
 
     try {
-      // Gather all tables
-      const results = await Promise.all([
-        supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle(),
-        supabase.from('goals').select('*').eq('user_id', user.id),
-        supabase.from('habits').select('*').eq('user_id', user.id),
-        supabase.from('habit_logs').select('*').eq('user_id', user.id),
-        supabase.from('habit_scores').select('*').eq('user_id', user.id),
-        supabase.from('reminders').select('*').eq('user_id', user.id),
-        supabase.from('inspiration_items').select('*').eq('user_id', user.id),
-        supabase.from('content_items').select('*').eq('user_id', user.id),
-        supabase.from('journal_entries').select('*').eq('user_id', user.id)
-      ])
+      const fetchSafe = async (query: any, fallback: any = []) => {
+        try {
+          const res = await query
+          if (res.error) {
+            console.error('Error fetching data for export:', res.error)
+            return fallback
+          }
+          return res.data || fallback
+        } catch (err) {
+          console.error('Unexpected error fetching data for export:', err)
+          return fallback
+        }
+      }
 
-      const profile = results[0].data
-      const goals = results[1].data
-      const habits = results[2].data
-      const logs = results[3].data
-      const scores = results[4].data
-      const reminders = results[5].data
-      const inspiration = results[6].data
-      const content = results[7].data
-      const journal = results[8].data
+      // Gather all tables independently and safely
+      const profile = await fetchSafe(supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle(), null) as any
+      const goals = await fetchSafe(supabase.from('goals').select('*').eq('user_id', user.id)) as any[]
+      const habits = await fetchSafe(supabase.from('habits').select('*').eq('user_id', user.id)) as any[]
+      const logs = await fetchSafe(supabase.from('habit_logs').select('*').eq('user_id', user.id)) as any[]
+      const scores = await fetchSafe(supabase.from('habit_scores').select('*').eq('user_id', user.id)) as any[]
+      const reminders = await fetchSafe(supabase.from('reminders').select('*').eq('user_id', user.id)) as any[]
+      const inspiration = await fetchSafe(supabase.from('inspiration_items').select('*').eq('user_id', user.id)) as any[]
+      const content = await fetchSafe(supabase.from('content_items').select('*').eq('user_id', user.id)) as any[]
+      const journal = await fetchSafe(supabase.from('journal_entries').select('*').eq('user_id', user.id)) as any[]
 
       const dataBundle = {
         profile,
