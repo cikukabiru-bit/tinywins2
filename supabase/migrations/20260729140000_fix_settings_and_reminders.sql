@@ -2,6 +2,10 @@
 ALTER TABLE public.profiles 
 ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'sunset';
 
+-- Fix goals table missing color_index column
+ALTER TABLE public.goals
+ADD COLUMN IF NOT EXISTS color_index INTEGER NOT NULL DEFAULT 0;
+
 -- Repair foreign key constraints on settings tables to point explicitly to auth.users(id)
 ALTER TABLE public.profiles
 DROP CONSTRAINT IF EXISTS profiles_user_id_fkey,

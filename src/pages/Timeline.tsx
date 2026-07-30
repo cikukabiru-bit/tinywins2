@@ -56,13 +56,27 @@ export default function Timeline() {
         if (logsError) throw logsError
 
         // Fetch journal entries
-        const { data: journalData, error: journalError } = await supabase
+        // Fetch journal entries
+        let journalData: any[] | null = null
+        const { data: primaryJournalData, error: journalError } = await supabase
           .from('journal_entries')
           .select('*, goals:goals(area, color_index)')
           .eq('user_id', user.id)
           .order('entry_date', { ascending: false })
 
-        if (journalError) throw journalError
+        if (journalError) {
+          console.warn('Failed to fetch journal entries with goals(color_index), retrying without it:', journalError)
+          const { data: fallbackJournalData, error: fallbackJournalError } = await supabase
+            .from('journal_entries')
+            .select('*, goals:goals(area)')
+            .eq('user_id', user.id)
+            .order('entry_date', { ascending: false })
+
+          if (fallbackJournalError) throw fallbackJournalError
+          journalData = fallbackJournalData as any[]
+        } else {
+          journalData = primaryJournalData as any[]
+        }
 
         // Fetch habits
         const { data: habitsData, error: habitsError } = await supabase
@@ -73,12 +87,24 @@ export default function Timeline() {
         if (habitsError) throw habitsError
 
         // Fetch goals
-        const { data: goalsData, error: goalsError } = await supabase
+        let goalsData: any[] | null = null
+        const { data: primaryGoalsData, error: goalsError } = await supabase
           .from('goals')
           .select('id, area, color_index')
           .eq('user_id', user.id)
 
-        if (goalsError) throw goalsError
+        if (goalsError) {
+          console.warn('Failed to fetch goals with color_index, retrying without it:', goalsError)
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('goals')
+            .select('id, area')
+            .eq('user_id', user.id)
+
+          if (fallbackError) throw fallbackError
+          goalsData = fallbackData as any[]
+        } else {
+          goalsData = primaryGoalsData as any[]
+        }
 
         // Map habit logs
         const mappedLogs: TimelineItem[] = (logsData || []).map((log) => {

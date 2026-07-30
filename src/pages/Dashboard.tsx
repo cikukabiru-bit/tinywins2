@@ -158,13 +158,26 @@ export default function Dashboard() {
 
       if (habitsError) throw habitsError
 
-      const { data: goalsData, error: goalsError } = await supabase
+      let goalsData = null
+      let { data: primaryGoalsData, error: goalsError } = await supabase
         .from('goals')
         .select('id, area, active, color_index')
         .eq('user_id', user.id)
         .eq('active', true)
 
-      if (goalsError) throw goalsError
+      if (goalsError) {
+        console.warn('Failed to fetch goals with color_index, retrying without it:', goalsError)
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('goals')
+          .select('id, area, active')
+          .eq('user_id', user.id)
+          .eq('active', true)
+        
+        if (fallbackError) throw fallbackError
+        goalsData = fallbackData
+      } else {
+        goalsData = primaryGoalsData
+      }
 
       const combined = (habitsData || []).map((h) => ({
         ...h,
