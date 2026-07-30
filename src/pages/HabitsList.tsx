@@ -31,15 +31,6 @@ interface Habit {
   }[]
 }
 
-const getGoalBorderClass = (index?: number) => {
-  switch (index) {
-    case 1: return 'border-l-goal-1'
-    case 2: return 'border-l-goal-2'
-    case 3: return 'border-l-goal-3'
-    case 4: return 'border-l-goal-4'
-    default: return 'border-l-goal-0'
-  }
-}
 
 export default function HabitsList() {
   const { user, signOut } = useAuth()
@@ -354,12 +345,10 @@ export default function HabitsList() {
                 /* HABITS LIST */
                 <div className="flex flex-col gap-5 max-h-[340px] overflow-y-auto pr-1 text-left scrollbar-thin my-2">
                   {goalAreas.map((area) => {
-                    const firstHabit = groupedHabits[area][0]
-                    const colorIndex = firstHabit?.goals?.color_index
                     return (
-                      <div key={area} className={`flex flex-col gap-3 p-4 rounded-2xl border border-border-main/10 border-l-4 bg-surface-dark/5 pl-5 ${getGoalBorderClass(colorIndex)}`}>
+                      <div key={area} className="flex flex-col gap-4 p-5 rounded-2xl border border-border-main/15 bg-surface-dark/5">
                         {/* Goal Heading */}
-                        <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-accent ml-1">
+                        <h3 className="text-[10px] tracking-[0.2em] uppercase font-bold text-accent ml-1 select-none">
                           {area}
                         </h3>
 
@@ -381,7 +370,7 @@ export default function HabitsList() {
                             return (
                               <div 
                                 key={habit.id} 
-                                className={`bg-surface border border-border-main/15 border-l-2 rounded-xl p-3.5 flex flex-col transition-all hover:border-border-main/30 gap-3 shadow-sm pl-4.5 ${getGoalBorderClass(habit.goals?.color_index)}`}
+                                className="bg-surface border border-border-main/15 rounded-xl p-4 flex flex-col transition-all hover:border-border-main/25 gap-3 shadow-sm"
                               >
                                 <div>
                                   <div className="flex justify-between items-start mb-2">

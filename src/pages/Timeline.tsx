@@ -20,15 +20,7 @@ interface TimelineItem {
   body?: string
 }
 
-const getGoalBorderClass = (index?: number) => {
-  switch (index) {
-    case 1: return 'border-l-goal-1'
-    case 2: return 'border-l-goal-2'
-    case 3: return 'border-l-goal-3'
-    case 4: return 'border-l-goal-4'
-    default: return 'border-l-goal-0'
-  }
-}
+
 
 export default function Timeline() {
   const { user, signOut } = useAuth()
@@ -284,7 +276,7 @@ export default function Timeline() {
                           <div 
                             key={item.id} 
                             onClick={() => navigate('/journal')}
-                            className={`bg-sunset-start/35 border border-accent/20 border-l-4 rounded-2xl p-4 flex flex-col gap-1.5 transition-all hover:border-accent/40 cursor-pointer pl-5 ${getGoalBorderClass(item.goal_color_index)}`}
+                            className="bg-surface-dark/10 border border-border-main/15 rounded-2xl p-4 flex flex-col gap-1.5 transition-all hover:border-border-main/25 cursor-pointer"
                           >
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="text-[7.5px] font-bold uppercase tracking-wider text-streak bg-streak/10 px-1.5 py-0.5 rounded">
@@ -312,7 +304,7 @@ export default function Timeline() {
                           /* Habit Log Card */
                           <div 
                             key={item.id} 
-                            className={`bg-surface-dark/15 border border-border-main/10 border-l-4 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-border-main/20 pl-5 ${getGoalBorderClass(item.goal_color_index)}`}
+                            className="bg-surface border border-border-main/15 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-border-main/25 shadow-sm"
                           >
                             <div>
                               <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">

@@ -15,15 +15,7 @@ interface Goal {
   habitsCount?: number
 }
 
-const getGoalBorderClass = (index?: number) => {
-  switch (index) {
-    case 1: return 'border-l-goal-1'
-    case 2: return 'border-l-goal-2'
-    case 3: return 'border-l-goal-3'
-    case 4: return 'border-l-goal-4'
-    default: return 'border-l-goal-0'
-  }
-}
+
 
 export default function Goals() {
   const { user } = useAuth()
@@ -193,7 +185,7 @@ export default function Goals() {
                     <div
                       key={goal.id}
                       onClick={() => navigate(`/goals/${goal.id}/edit`)}
-                      className={`bg-surface-dark/15 border border-border-main/10 border-l-4 rounded-2xl p-4 flex flex-col transition-all hover:border-border-main/20 cursor-pointer relative pl-5 ${getGoalBorderClass(goal.color_index)}`}
+                      className="bg-surface border border-border-main/15 rounded-2xl p-4 flex flex-col transition-all hover:border-border-main/25 hover:shadow-sm cursor-pointer relative"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -241,7 +233,7 @@ export default function Goals() {
                       <div
                         key={goal.id}
                         onClick={() => navigate(`/goals/${goal.id}/edit`)}
-                        className={`bg-surface-dark/5 border border-border-main/5 border-l-4 rounded-2xl p-4 flex flex-col transition-all hover:border-border-main/15 cursor-pointer opacity-70 hover:opacity-100 pl-5 ${getGoalBorderClass(goal.color_index)}`}
+                        className="bg-surface-dark/10 border border-border-main/10 rounded-2xl p-4 flex flex-col transition-all hover:border-border-main/20 cursor-pointer opacity-70 hover:opacity-100"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
