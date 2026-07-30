@@ -11,7 +11,6 @@ interface Goal {
   growth_preference: string
   why: string
   active: boolean
-  color_index?: number
   habitsCount?: number
 }
 

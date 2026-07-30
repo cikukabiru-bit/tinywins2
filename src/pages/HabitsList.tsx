@@ -19,7 +19,6 @@ interface Habit {
   active: boolean
   goals: {
     area: string
-    color_index?: number
   } | null
   habit_logs: {
     id?: string
@@ -93,26 +92,13 @@ export default function HabitsList() {
 
       if (habitsError) throw habitsError
 
-      let goalsData = null
-      let { data: primaryGoalsData, error: goalsError } = await supabase
+       const { data: goalsData, error: goalsError } = await supabase
         .from('goals')
-        .select('id, area, active, color_index')
+        .select('id, area, active')
         .eq('user_id', user.id)
         .eq('active', true)
 
-      if (goalsError) {
-        console.warn('Failed to fetch goals with color_index, retrying without it:', goalsError)
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('goals')
-          .select('id, area, active')
-          .eq('user_id', user.id)
-          .eq('active', true)
-        
-        if (fallbackError) throw fallbackError
-        goalsData = fallbackData
-      } else {
-        goalsData = primaryGoalsData
-      }
+      if (goalsError) throw goalsError
 
       const combined = (habitsData || []).map((h) => ({
         ...h,

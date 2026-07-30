@@ -15,7 +15,6 @@ interface TimelineItem {
   habit_name?: string
   tiny_goal?: string
   goal_area?: string
-  goal_color_index?: number
   title?: string | null
   body?: string
 }
@@ -48,27 +47,13 @@ export default function Timeline() {
         if (logsError) throw logsError
 
         // Fetch journal entries
-        // Fetch journal entries
-        let journalData: any[] | null = null
-        const { data: primaryJournalData, error: journalError } = await supabase
+        const { data: journalData, error: journalError } = await supabase
           .from('journal_entries')
-          .select('*, goals:goals(area, color_index)')
+          .select('*, goals:goals(area)')
           .eq('user_id', user.id)
           .order('entry_date', { ascending: false })
 
-        if (journalError) {
-          console.warn('Failed to fetch journal entries with goals(color_index), retrying without it:', journalError)
-          const { data: fallbackJournalData, error: fallbackJournalError } = await supabase
-            .from('journal_entries')
-            .select('*, goals:goals(area)')
-            .eq('user_id', user.id)
-            .order('entry_date', { ascending: false })
-
-          if (fallbackJournalError) throw fallbackJournalError
-          journalData = fallbackJournalData as any[]
-        } else {
-          journalData = primaryJournalData as any[]
-        }
+        if (journalError) throw journalError
 
         // Fetch habits
         const { data: habitsData, error: habitsError } = await supabase
@@ -79,24 +64,12 @@ export default function Timeline() {
         if (habitsError) throw habitsError
 
         // Fetch goals
-        let goalsData: any[] | null = null
-        const { data: primaryGoalsData, error: goalsError } = await supabase
+        const { data: goalsData, error: goalsError } = await supabase
           .from('goals')
-          .select('id, area, color_index')
+          .select('id, area')
           .eq('user_id', user.id)
 
-        if (goalsError) {
-          console.warn('Failed to fetch goals with color_index, retrying without it:', goalsError)
-          const { data: fallbackData, error: fallbackError } = await supabase
-            .from('goals')
-            .select('id, area')
-            .eq('user_id', user.id)
-
-          if (fallbackError) throw fallbackError
-          goalsData = fallbackData as any[]
-        } else {
-          goalsData = primaryGoalsData as any[]
-        }
+        if (goalsError) throw goalsError
 
         // Map habit logs
         const mappedLogs: TimelineItem[] = (logsData || []).map((log) => {
@@ -112,8 +85,7 @@ export default function Timeline() {
             effort_level: log.effort_level,
             habit_name: habit ? habit.name : 'Unknown Habit',
             tiny_goal: habit ? habit.tiny_goal : '',
-            goal_area: goal ? goal.area : 'General',
-            goal_color_index: goal ? goal.color_index : undefined
+            goal_area: goal ? goal.area : 'General'
           }
         })
 
@@ -126,8 +98,7 @@ export default function Timeline() {
             mood: j.mood,
             title: j.title,
             body: j.body,
-            goal_area: j.goals?.area || undefined,
-            goal_color_index: j.goals?.color_index || undefined
+            goal_area: j.goals?.area || undefined
           }
         })
 
